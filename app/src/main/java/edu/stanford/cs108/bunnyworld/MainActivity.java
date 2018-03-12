@@ -36,8 +36,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         db = openOrCreateDatabase("GamesDB",MODE_PRIVATE,null);
-        resetDB();
+        String sql = "select * from games";
+
         setupDatabase();
+        Cursor cursor = db.rawQuery(sql,null);
+        if(cursor.getCount() != 0) {
+            resetDB();
+        }
         populateDatabase();
         checkDB();
 
@@ -111,23 +116,23 @@ public class MainActivity extends AppCompatActivity {
      -     * This method is used to add setup the database.
      -     */
     private void setupDatabase() {
-        String setupStrGames = "CREATE TABLE games ("
+        String setupStrGames = "CREATE TABLE if not exists games ("
                 + "name TEXT, image_id INTEGER,"
                 + "_id INTEGER PRIMARY KEY AUTOINCREMENT"
                 + ");";
 
-        String setupStrPages = "CREATE TABLE pages ("
+        String setupStrPages = "CREATE TABLE if not exists  pages ("
                 + "name TEXT, game_name TEXT, visibility INTEGER,"
                 + "_id INTEGER PRIMARY KEY AUTOINCREMENT"
                 + ");";
 
-        String setupStrShapes = "CREATE TABLE shapes ("
+        String setupStrShapes = "CREATE TABLE if not exists  shapes ("
                 + "name TEXT, x REAL, y REAL, width REAL, height REAL,"
                 + "movable INTEGER, visible INTEGER, image_name TEXT, text TEXT,"
                 + "page_id INTEGER, in_possession INTEGER, _id INTEGER PRIMARY KEY AUTOINCREMENT"
                 + ");";
 
-        String setupStrScripts = "CREATE TABLE scripts ("
+        String setupStrScripts = "CREATE TABLE if not exists  scripts ("
                 + "trigger INTEGER, action INTEGER, to_shape TEXT, to_resource TEXT, to_page INTEGER,"
                 + "drop_shape TEXT, shape_id INTEGER, _id INTEGER PRIMARY KEY AUTOINCREMENT"
                 + ");";
