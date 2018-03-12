@@ -116,7 +116,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
                         //newPage = null;
                         //newPage = (Page)mLayout.getChildAt(0);
 
-                       // mLayout.bringChildToFront(page);
+                        // mLayout.bringChildToFront(page);
                         break;
                     }
                 }
@@ -319,7 +319,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
 
     /*** This method saves the game into the Database. The game
      * is the newGame object instantiated here in this activity
-      *
+     *
      * Farhad Code goes here, can add private methods as many as
      * needed to decompose the below method.
      */

@@ -31,9 +31,9 @@ import java.util.List;
 public class Page extends View /*implements View.OnClickListener*/ {
     protected List<Shape> shapes = new ArrayList<>();
     private int shapeCounter = 0;
-    //private int x, y, x1Offset, y1Offset;  //captures user touch coordinates
+
     private Shape selectedShape;
-    private int prevX,prevY;
+    private int prevX,prevY, pX, pY;
     private boolean visibility;
     private boolean dragging;
 
@@ -143,9 +143,9 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 break;
             case MotionEvent.ACTION_MOVE:
                 if(selectedShape != null) {
-                    DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(),selectedShape.getImageIdentifier());
-                    ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.getName());
-                    ClipData.Item item2_imageId = new ClipData.Item(selectedShape.getName());
+                    DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(),selectedShape.imageIdentifier);
+                    ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.imageName);
+                    ClipData.Item item2_imageId = new ClipData.Item(selectedShape.imageName);
                     String mimeTypes[] = {ClipDescription.MIMETYPE_TEXT_PLAIN};
                     ClipData draggedShape = new ClipData(selectedShape.getName(), mimeTypes, item1_shapeName);
                     draggedShape.addItem(item2_imageId);

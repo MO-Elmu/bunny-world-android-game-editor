@@ -75,4 +75,3 @@ public class SpinnerAdapter extends ArrayAdapter<SpinnerAdapter.ItemData> {
 
 }
 
-

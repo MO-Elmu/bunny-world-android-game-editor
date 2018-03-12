@@ -24,24 +24,24 @@ public class Document extends LinearLayout {
     private String iconName = "";
     private String gameType = "";
 
- //   public Possessions possessions;
+    //public View possessions;
     private LinearLayout.LayoutParams lpPossessions;
+
     private LinearLayout.LayoutParams lpPages;
 
     public Document(Context context) {
         super(context);
         this.setOrientation(LinearLayout.VERTICAL);
         this.setWeightSum(1.0f);
- //       this.setGravity(Gravity.BOTTOM);
+        this.setGravity(Gravity.BOTTOM);
         //this.setBaselineAligned(false);
-        lpPages = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,0, 0.8f);
-        lpPossessions = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 0.2f);
+        lpPossessions = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 0.3f);
+        lpPages = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,0, 0.7f);
         this.setLayoutTransition(new LayoutTransition());  //regular animation enforced by the layout.
- //       possessions = new Possessions(context);
-
-  //      possessions.setLayoutParams(lpPossessions);
+        //possessions = new Possessions(context);
+        //possessions.setLayoutParams(lpPossessions);
         //possessions.setVisibility(VISIBLE);
- //       this.addView(possessions);
+        //this.addView(possessions);
     }
     public Document(Context context, String name) {
         this(context);

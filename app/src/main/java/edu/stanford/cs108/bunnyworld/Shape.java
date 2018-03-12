@@ -7,10 +7,13 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaPlayer;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,8 +30,8 @@ public class Shape /* implements View.OnDragListener, View.OnLongClickListener*/
     private boolean movable = true;
     private boolean visible = true;
     private boolean inPossession = false;
-    private String imageName = "";
-    private int imageIdentifier;
+    protected String imageName = "";
+    protected int imageIdentifier;
     private String text = "";
     private String onClickScript = "";
     private String onEnterScript = "";
