@@ -343,14 +343,14 @@ public class Shape /* implements View.OnDragListener, View.OnLongClickListener*/
              }*/
             System.out.println(parentPage.shapes);
             for (Shape sh : parentPage.shapes){
-                System.out.println("finding the drop shape in the page");
-                System.out.println("SHAPE " + sh.getName());
+                System.out.println("#1 finding the drop shape in the page");
+                System.out.println("#1 SHAPE " + sh.getName());
 
-                System.out.println("DROP SHAPE " + onDropShapes.get(i));
+                System.out.println("#1 DROP SHAPE " + onDropShapes.get(i));
                 if(onDropShapes.get(i).equals(sh.getName())){
-                    System.out.println("DROP SHAPE " + sh.getName());
+                    System.out.println("#1 DROP SHAPE " + sh.getName());
                     if( x1 < sh.getX2() && x2 > sh.getX1() && y1 < sh.getY2() && y2>sh.getY1()) {
-                        System.out.println("OVERLAP");
+                        System.out.println("#1 OVERLAP");
                         execScripts(parseOnDropScript(onDropScript).get(i), context, game, parentPage);
                     }
                 }
@@ -360,26 +360,13 @@ public class Shape /* implements View.OnDragListener, View.OnLongClickListener*/
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public List<String> getOnDropShapes() {
+        return onDropShapes;
+    }
 
     /*** Setters and Getters ***/
+
+
 
     //Shape name setters and getters
     public String getName() {

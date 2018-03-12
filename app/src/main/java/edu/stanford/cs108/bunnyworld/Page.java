@@ -125,14 +125,17 @@ public class Page extends View /*implements View.OnClickListener*/ {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         this.setBackgroundColor(Color.WHITE);
+
+        if(dragging) {
+            flicker(canvas, selectedShape);
+        }
+
         if(!shapes.isEmpty()){
             System.out.println("drawing shapes");
             for (Shape sh : shapes) {
                 sh.drawSelf(canvas, this.getContext());
                 System.out.println("drawing shape " + sh);
-                if(sh.isVisible() && sh.isOnDrop() && dragging) {
-                    flicker(canvas, sh);
-                }
+
             }
         }
     }
@@ -201,7 +204,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 return true;
 
             case DragEvent.ACTION_DROP:
-                System.out.println("ACTION_DRAG_DROP In page");
+                System.out.println("#1 ACTION_DRAG_DROP In page");
                 dragging = false;
                 //if()
                 selectedShape = new Shape(event.getClipData().getItemAt(1).getText().toString(), this.getContext());
@@ -223,7 +226,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 return false;
 
             case DragEvent.ACTION_DRAG_ENDED:
-                System.out.println("ACTION_DRAG_ENDED In page");
+                System.out.println("#1 ACTION_DRAG_ENDED In page");
                 dragging = false;
                 if(event.getResult()){
                     invalidate();
@@ -243,17 +246,25 @@ public class Page extends View /*implements View.OnClickListener*/ {
     }
 
     void flicker(Canvas canvas, Shape sh) {
-        System.out.println("FLICKER");
-        int rectX1 = sh.getX1();
-        int rectY1 = sh.getY1();
-        int rectX2 = sh.getX2();
-        int rectY2 = sh.getY2();
-        System.out.println("trying to draw a rectangle FLICKER");
-        Paint boundaryPaint =  new Paint();
-        boundaryPaint.setStyle(Paint.Style.STROKE);
-        boundaryPaint.setStrokeWidth(5.0f);
-        boundaryPaint.setColor(Color.rgb(0,255,0));
-        canvas.drawRect(rectX1-10, rectY1+10, rectX2+10, rectY2-10, boundaryPaint);
+        System.out.println("Called FLICKER");
+        for (Shape shape2 : shapes) {
+            System.out.println("Called FLICKER");
+            if(shape2.getOnDropShapes().contains(sh.getName())) {
+                System.out.println("FLICKER this one is dragging" + sh.getName() + " this one is flickering " + shape2.getName());
+ /*               int rectX1 = sh.getX1();
+                int rectY1 = sh.getY1();
+                int rectX2 = sh.getX2();
+                int rectY2 = sh.getY2();
+                System.out.println("trying to draw a rectangle FLICKER");
+                Paint boundaryPaint =  new Paint();
+                boundaryPaint.setStyle(Paint.Style.STROKE);
+                boundaryPaint.setStrokeWidth(5.0f);
+                boundaryPaint.setColor(Color.rgb(0,255,0));
+                canvas.drawRect(rectX1-10, rectY1+10, rectX2+10, rectY2-10, boundaryPaint);
+                */
+            }
+        }
+
     }
 
 
