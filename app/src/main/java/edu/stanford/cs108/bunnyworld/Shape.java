@@ -4,17 +4,13 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaPlayer;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,14 +21,14 @@ import java.util.StringTokenizer;
  * Created by emohelw on 2/23/2018.
  */
 
-public class Shape {
+public class Shape /* implements View.OnDragListener, View.OnLongClickListener*/  {
 
     private String name = "";       // Shape name
     private boolean movable = true;
     private boolean visible = true;
     private boolean inPossession = false;
-    protected String imageName = "";
-    protected int imageIdentifier;
+    private String imageName = "";
+    private int imageIdentifier;
     private String text = "";
     private String onClickScript = "";
     private String onEnterScript = "";
@@ -110,6 +106,7 @@ public class Shape {
         this(x1,y1,width,height, movable, visible);
         this.setImage(imageName, context);
     }
+
     //Construct a shape given Image name
 
     public Shape(String imageName, Context context){
@@ -155,12 +152,8 @@ public class Shape {
 
         //if image is provided and no text draw the provided image
         imageDrawable = (BitmapDrawable) context.getResources().getDrawable(imageIdentifier);
-        if(visible) {
-            canvas.drawBitmap(imageDrawable.getBitmap(), null, shapeRect, null);
-        }
+        if(visible) canvas.drawBitmap(imageDrawable.getBitmap(),null, shapeRect, null);
         //else canvas.drawBitmap(imageDrawable.getBitmap(),null, shapeRect, defaultFillPaint);
-
-
 
     }
 
@@ -211,12 +204,14 @@ public class Shape {
      */
     private void populateOnDropShapesArray (String onDropScript){
         List<String> clauses = tokenizeScript(onDropScript);
+        System.out.println(clauses);
         for (String clause : clauses) {
             if (clause.trim().indexOf(' ') < 0) {
                 onDropShapes.add(clause.trim());
             } else {
                 onDropShapes.add(clause.trim().substring(0, clause.trim().indexOf(' ')));
             }
+            System.out.println(onDropShapes);
         }
     }
     private List<Map<String, String>> parseOnDropScript(String onDropScript) {
@@ -231,15 +226,19 @@ public class Shape {
             }
             allOnDropActions.add(scriptTokens);
         }
+        System.out.println("ALL action   "+allOnDropActions);
         return allOnDropActions;
     }
 
     private void execScripts(Map<String, String> scriptToken, Context context, ViewGroup game, Page parentPage){
+        System.out.println("Executing scripts");
         int pageCount = game.getChildCount();
         for(Map.Entry<String, String> entry : scriptToken.entrySet()){
+            System.out.println("before switch");
             String action = entry.getKey();
             switch (action.toLowerCase()){
                 case "play":
+                    System.out.println("PLAYING SOUND");
                     String soundFileName = entry.getValue();
                     int soundFileId = context.getResources().getIdentifier(soundFileName, "raw",context.getPackageName());
                     MediaPlayer mp = MediaPlayer.create(context,soundFileId);
@@ -247,14 +246,25 @@ public class Shape {
                     break;
                 case "goto":
                     String pageName = entry.getValue();
+                    System.out.println("GOTO SCRIPT!!! " + pageName  + " c: "+pageCount);
                     for(int i=0; i<pageCount; i++){
                         final Page page = (Page)game.getChildAt(i);
+                        System.out.println("pagename " + pageName  + " pageItr: "+page.getPageName());
                         if(pageName.equals(page.getPageName())){
+
+                            System.out.println("pn " + page.getPageName() );
                             //parentPage.animate().translationY(parentPage.getHeight());
+
+                            page.setVis(true);
+                            parentPage.setVis(false);
                             parentPage.setVisibility(View.GONE);
                             //page.animate().translationY(parentPage.getHeight());
                             page.setVisibility(View.VISIBLE);
+                            System.out.println("goto PAGE shapes:  "+page.getShapes());
                             //page.clearAnimation();
+                        } else {
+                            page.setVis(false);
+                            page.setVisibility(View.GONE);
                         }
                     }
                     break;
@@ -262,6 +272,8 @@ public class Shape {
                     String shapeName = entry.getValue();
                     for(int i=0; i<pageCount; i++){
                         final Page page = (Page)game.getChildAt(i);
+
+                        System.out.println( " pageItr: "+page.getPageName());
                         for (Shape sh : page.shapes){
                             if(shapeName.equals(sh.getName())){
                                 sh.visible = false;
@@ -272,10 +284,15 @@ public class Shape {
                     break;
                 case "show":
                     String name = entry.getValue();
+                    System.out.println("SHOWING! "+name);
                     for(int i=0; i<pageCount; i++){
                         final Page page = (Page)game.getChildAt(i);
+
+                        System.out.println( "showing pageItr on enter : "+page.getPageName());
                         for (Shape sh : page.shapes){
+                            System.out.println( "showing shape name : "+sh.getName());
                             if(name.equals(sh.getName())){
+                                System.out.println("SHOWING2 "+ sh.getName());
                                 sh.visible = true;
                                 page.invalidate();
                             }
@@ -306,18 +323,58 @@ public class Shape {
         execScripts(parseScript(onEnterScript), context, game, parentPage);
     }
 
-    public void execOnDropScript(Context context, ViewGroup game, Page parentPage, String shapeName){
+    public void execOnDropScript(Context context, ViewGroup game, Page parentPage, String shapeName, int x1, int x2, int y1, int y2){
+        System.out.println("PAGE SHAPE " +parentPage.getPageName()+shapeName);
+        System.out.println("drop script " +onDropScript);
+        System.out.println("EXEC drop script  "+onDrop + " "+onDropScript.trim().isEmpty()+isValidScript(onDropScript));
         if(!onDrop || onDropScript.trim().isEmpty() || !isValidScript(onDropScript)) return;
         populateOnDropShapesArray(onDropScript);
+        System.out.println("about to iter drop shapes");
         for(int i=0; i<onDropShapes.size(); i++){
-            //System.out.println(name);
-            if(onDropShapes.get(i).equals(shapeName)) {
 
-                execScripts(parseOnDropScript(onDropScript).get(i), context, game, parentPage);
+            System.out.println("iter drop shapes");
+            System.out.println(onDropShapes.get(i));
+
+            System.out.println(shapeName);
+            System.out.println("parent page "+parentPage.getPageName());
+            /**if(onDropShapes.get(i).equals(shapeName)) {
+
+             execScripts(parseOnDropScript(onDropScript).get(i), context, game, parentPage);
+             }*/
+            System.out.println(parentPage.shapes);
+            for (Shape sh : parentPage.shapes){
+                System.out.println("finding the drop shape in the page");
+                System.out.println("SHAPE " + sh.getName());
+
+                System.out.println("DROP SHAPE " + onDropShapes.get(i));
+                if(onDropShapes.get(i).equals(sh.getName())){
+                    System.out.println("DROP SHAPE " + sh.getName());
+                    if( x1 < sh.getX2() && x2 > sh.getX1() && y1 < sh.getY2() && y2>sh.getY1()) {
+                        System.out.println("OVERLAP");
+                        execScripts(parseOnDropScript(onDropScript).get(i), context, game, parentPage);
+                    }
+                }
             }
         }
         onDropShapes.clear();
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -331,6 +388,10 @@ public class Shape {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getImageIdentifier() {
+        return imageIdentifier;
     }
 
     public int getTxtFontSize() {
@@ -402,13 +463,21 @@ public class Shape {
     //Setters and getters for the Shape geometry
 
 
-    public boolean isInPossession() {return inPossession;}
+    public boolean isVisible() {
+        return visible;
+    }
 
-    public void setInPossession(boolean inPossession) {this.inPossession = inPossession;}
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
 
-    public boolean isVisible() {return visible;}
+    public boolean isInPossession() {
+        return inPossession;
+    }
 
-    public void setVisible(boolean visible) {this.visible = visible;}
+    public void setInPossession(boolean inPossession) {
+        this.inPossession = inPossession;
+    }
 
     public int getX1() {
         return x1;
@@ -457,7 +526,6 @@ public class Shape {
     public void setHeight(int height) {
         this.height = height;
     }
-
 
 /*
     @Override

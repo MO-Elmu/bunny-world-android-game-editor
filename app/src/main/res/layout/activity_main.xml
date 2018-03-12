@@ -8,15 +8,34 @@
     tools:context="edu.stanford.cs108.bunnyworld.MainActivity"
     android:orientation="vertical">
 
+    <GridView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/grid_view"
+        android:columnWidth="90dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="10dp"
+        android:horizontalSpacing="10dp"
+        android:stretchMode="columnWidth"
+        android:gravity="center"
+        />
+    <TextView
+        android:id="@+id/name_texts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="25sp"
+        android:textAlignment="center"
+        android:layout_marginTop="2dp"/>
+
     <Button
-        android:id="@+id/create_game"
+        android:id="@+id/createGame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="createGame"
         android:text="Create Game" />
 
     <Button
-        android:id="@+id/play_game"
+        android:id="@+id/playGame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="playGame"

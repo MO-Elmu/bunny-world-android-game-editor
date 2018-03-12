@@ -103,9 +103,9 @@ public class Possessions extends View {
                 break;
             case MotionEvent.ACTION_MOVE:
                 if(selectedShape != null) {
-                    DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(),selectedShape.imageIdentifier);
+                    DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(),selectedShape.getImageIdentifier());
                     ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.getName());
-                    ClipData.Item item2_imageId = new ClipData.Item(selectedShape.imageName);
+                    ClipData.Item item2_imageId = new ClipData.Item(selectedShape.getName());
                     String mimeTypes[] = {ClipDescription.MIMETYPE_TEXT_PLAIN};
                     ClipData draggedShape = new ClipData(selectedShape.getName(), mimeTypes, item1_shapeName);
                     draggedShape.addItem(item2_imageId);
