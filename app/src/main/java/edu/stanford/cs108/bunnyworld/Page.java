@@ -1,20 +1,28 @@
 package edu.stanford.cs108.bunnyworld;
 
+import android.content.ClipData;
+import android.content.ClipDescription;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v4.view.GestureDetectorCompat;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.DragEvent;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -32,9 +40,58 @@ public class Page extends View /*implements View.OnClickListener*/ {
     private String pageName = "";
 
 
+    private class TapGestureListener extends
+            GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onDoubleTap(MotionEvent event) {
+            Toast toast = Toast.makeText(getContext(), "You are in "+ getPageName(), Toast.LENGTH_SHORT);
+            toast.show();
+            return true;
+        }
+
+    }
+
+    private GestureDetectorCompat mDetector;
+
+
+
+    /****** View.DragShadowBuilder methods overridden by the our ShapeDragShadowBuilder Class ******/
+
+    /*** All this is done to allow us to use the Drag and Drop frame work to move
+     * Shapes between different views like the page view and possessions view and since
+     * the Shape class isn't a view class we hav to override onProvideShadowMetrics()
+     * and onDrawShadow() methods in the DragShadowBuilder.
+     */
+
+    private class ShapeDragShadowBuilder extends View.DragShadowBuilder {
+        @Override
+        public void onProvideShadowMetrics(Point outShadowSize, Point outShadowTouchPoint) {
+            //super.onProvideShadowMetrics(outShadowSize, outShadowTouchPoint);
+            if(selectedShape != null) {
+                outShadowSize.set(400, 400);
+                outShadowTouchPoint.set(selectedShape.getWidth()/2, selectedShape.getHeight()/2);
+            }
+
+        }
+
+        @Override
+        public void onDrawShadow(Canvas canvas) {
+            //super.onDrawShadow(canvas);
+            //if(selectedShape != null) {
+            selectedShape.drawSelf(canvas, Page.this.getContext());
+            //}
+        }
+
+    }
+
+
     public Page(Context context) {
         super(context);
         init(null, 0);
+        LinearLayout.LayoutParams lpPages = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0, 0.7f);
+        this.setLayoutParams(lpPages);
+        mDetector = new GestureDetectorCompat(context, new TapGestureListener());
     }
 
     public Page(Context context, AttributeSet attrs) {
@@ -70,19 +127,32 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 selectedShape = null;  //nullify the previously selected shape
                 if(!shapes.isEmpty()){
                     for (Shape sh : shapes) {
-                        if (sh.contains(x,y)) selectedShape = sh;  //select last added shape to the page
-                    }
+                        if (sh.contains(x,y)) {
+                            selectedShape = sh;  //select last added shape to the page
+                            //DragShadowBuilder shapeShadowBuilder = new ShapeDragShadowBuilder();
+                            //this.startDrag(null, shapeShadowBuilder, null, 0);
+                            //selectedShape.setVisible(false);
+                            //invalidate();
+                        }                    }
                     //if the clicked shape has an on click action scripts execute it
                     if(selectedShape != null) selectedShape.execOnClickScript(getContext(),(ViewGroup)this.getParent(),this);
                 }
-                prevX = x;
-                prevY = y;
+                //prevX = x;
+                //prevY = y;
                 invalidate();
                 break;
             case MotionEvent.ACTION_MOVE:
-                int currX, currY, xOffset, yOffset;
                 if(selectedShape != null) {
-                    currX = (int) event.getX();
+                    DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(),selectedShape.getImageIdentifier());
+                    ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.getName());
+                    ClipData.Item item2_imageId = new ClipData.Item(selectedShape.getName());
+                    String mimeTypes[] = {ClipDescription.MIMETYPE_TEXT_PLAIN};
+                    ClipData draggedShape = new ClipData(selectedShape.getName(), mimeTypes, item1_shapeName);
+                    draggedShape.addItem(item2_imageId);
+                    this.startDrag(draggedShape, shapeShadowBuilder, null, 0);
+                    //selectedShape.setVisible(false);
+                    //invalidate();
+                    /*currX = (int) event.getX();
                     currY = (int) event.getY();
                     xOffset = currX - prevX;
                     yOffset = currY - prevY;
@@ -92,31 +162,30 @@ public class Page extends View /*implements View.OnClickListener*/ {
                     selectedShape.setY1(selectedShape.getY1() + yOffset);
                     selectedShape.setX2(selectedShape.getX1() + selectedShape.getWidth());
                     selectedShape.setY2(selectedShape.getY1() + selectedShape.getHeight());
-                    invalidate();
+                    invalidate();*/
                 }
 
                 break;
             case MotionEvent.ACTION_UP:
-                int relX, relY;
+                /*int relX, relY;
                 relX = (int) event.getX();
                 relY = (int) event.getY();
                 if(selectedShape != null) {
                     if (!shapes.isEmpty()) {
                         for (Shape sh : shapes) {
                             if (sh.contains(relX, relY)) {
-                                System.out.println("about to exec drop script");
-                                System.out.println(sh.getX1());
-                                System.out.println(sh.getX2());
-                                sh.execOnDropScript(getContext(), (ViewGroup) this.getParent(), this, selectedShape.getName(),sh.getX1(), sh.getX2(), sh.getY1(), sh.getY2() );
+                                sh.execOnDropScript(getContext(), (ViewGroup) this.getParent(), this, selectedShape.getName());
                             }
                         }
                     }
-                }
+                }*/
                 selectedShape = null; //nullify selected shape when the user lift his finger
-                invalidate();
+                System.out.println("ACTION_UP called !!!!!!!!");
+                //invalidate();
                 break;
 
         }
+//        mDetector.onTouchEvent(event);
 
         return true;
     }
@@ -131,11 +200,14 @@ public class Page extends View /*implements View.OnClickListener*/ {
         }
 
         if(!shapes.isEmpty()){
-            System.out.println("drawing shapes");
-            for (Shape sh : shapes) {
+            Iterator<Shape> it = shapes.iterator();
+            while (it.hasNext()) {
+                Shape sh = it.next();
+                if(sh.isInPossession())  {
+                    it.remove();
+                    shapeCounter -= 1;
+                }
                 sh.drawSelf(canvas, this.getContext());
-                System.out.println("drawing shape " + sh);
-
             }
         }
     }
@@ -182,7 +254,6 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 System.out.println("ACTION_DRAG_STARTED In page");
                 if(selectedShape != null) {
                     selectedShape.setVisible(false);
-                    dragging = true;
                     invalidate();
                 }
                 return true;
@@ -190,7 +261,6 @@ public class Page extends View /*implements View.OnClickListener*/ {
             case DragEvent.ACTION_DRAG_ENTERED:
                 System.out.println("ACTION_DRAG_ENTERED In page");
                 if(selectedShape != null) selectedShape.setInPossession(false);
-                dragging = true;
                 return true;
 
             case DragEvent.ACTION_DRAG_LOCATION:
@@ -200,12 +270,10 @@ public class Page extends View /*implements View.OnClickListener*/ {
             case DragEvent.ACTION_DRAG_EXITED:
                 System.out.println("ACTION_DRAG_EXITED In page");
                 if(selectedShape != null) selectedShape.setInPossession(true);
-                dragging = true;
                 return true;
 
             case DragEvent.ACTION_DROP:
-                System.out.println("#1 ACTION_DRAG_DROP In page");
-                dragging = false;
+                System.out.println("ACTION_DRAG_DROP In page");
                 //if()
                 selectedShape = new Shape(event.getClipData().getItemAt(1).getText().toString(), this.getContext());
                 selectedShape.setName(event.getClipData().getItemAt(0).getText().toString());
@@ -226,8 +294,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 return false;
 
             case DragEvent.ACTION_DRAG_ENDED:
-                System.out.println("#1 ACTION_DRAG_ENDED In page");
-                dragging = false;
+                System.out.println("ACTION_DRAG_ENDED In page");
                 if(event.getResult()){
                     invalidate();
                     return true;
