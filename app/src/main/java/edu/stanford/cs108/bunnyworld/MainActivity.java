@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         Cursor cursor = db.rawQuery(sql,null);
         if(cursor.getCount() != 0) {
             resetDB();
+            setupDatabase();
         }
         populateDatabase();
         checkDB();
