@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
     private Shape selectedShape;
     private int prevX,prevY;
     private boolean visibility;
+    private boolean dragging;
 
     private String pageName = "";
 
@@ -128,6 +130,9 @@ public class Page extends View /*implements View.OnClickListener*/ {
             for (Shape sh : shapes) {
                 sh.drawSelf(canvas, this.getContext());
                 System.out.println("drawing shape " + sh);
+                if(sh.isVisible() && sh.isOnDrop() && dragging) {
+                    flicker(canvas, sh);
+                }
             }
         }
     }
@@ -162,6 +167,94 @@ public class Page extends View /*implements View.OnClickListener*/ {
     public void onClick(View v){
 
     }*/
+
+
+    @Override
+    public boolean onDragEvent(DragEvent event) {
+        int x, y;
+        final int action = event.getAction();
+        // Handles all the expected events
+        switch(action) {
+            case DragEvent.ACTION_DRAG_STARTED:
+                System.out.println("ACTION_DRAG_STARTED In page");
+                if(selectedShape != null) {
+                    selectedShape.setVisible(false);
+                    dragging = true;
+                    invalidate();
+                }
+                return true;
+
+            case DragEvent.ACTION_DRAG_ENTERED:
+                System.out.println("ACTION_DRAG_ENTERED In page");
+                if(selectedShape != null) selectedShape.setInPossession(false);
+                dragging = true;
+                return true;
+
+            case DragEvent.ACTION_DRAG_LOCATION:
+                // Ignore the event
+                return true;
+
+            case DragEvent.ACTION_DRAG_EXITED:
+                System.out.println("ACTION_DRAG_EXITED In page");
+                if(selectedShape != null) selectedShape.setInPossession(true);
+                dragging = true;
+                return true;
+
+            case DragEvent.ACTION_DROP:
+                System.out.println("ACTION_DRAG_DROP In page");
+                dragging = false;
+                //if()
+                selectedShape = new Shape(event.getClipData().getItemAt(1).getText().toString(), this.getContext());
+                selectedShape.setName(event.getClipData().getItemAt(0).getText().toString());
+                this.addShape(selectedShape);
+                if(selectedShape != null) {
+                    int currX, currY;
+                    currX = (int) event.getX();
+                    currY = (int) event.getY();
+                    selectedShape.setX1(currX - (selectedShape.getWidth()/2));
+                    selectedShape.setY1(currY -(selectedShape.getHeight()/2));
+                    selectedShape.setX2(currX + (selectedShape.getWidth()/2));
+                    selectedShape.setY2(currY + (selectedShape.getHeight()/2));
+                    selectedShape.setVisible(true);
+                    invalidate();
+                    selectedShape = null;
+                    return true;
+                }
+                return false;
+
+            case DragEvent.ACTION_DRAG_ENDED:
+                System.out.println("ACTION_DRAG_ENDED In page");
+                dragging = false;
+                if(event.getResult()){
+                    invalidate();
+                    return true;
+                }
+                selectedShape.setVisible(true);
+                invalidate();
+                return true;
+
+            // An unknown action type was received.
+            default:
+                return true;
+        }
+
+
+        //return false;
+    }
+
+    void flicker(Canvas canvas, Shape sh) {
+        System.out.println("FLICKER");
+        int rectX1 = sh.getX1();
+        int rectY1 = sh.getY1();
+        int rectX2 = sh.getX2();
+        int rectY2 = sh.getY2();
+        System.out.println("trying to draw a rectangle FLICKER");
+        Paint boundaryPaint =  new Paint();
+        boundaryPaint.setStyle(Paint.Style.STROKE);
+        boundaryPaint.setStrokeWidth(5.0f);
+        boundaryPaint.setColor(Color.rgb(0,255,0));
+        canvas.drawRect(rectX1-10, rectY1+10, rectX2+10, rectY2-10, boundaryPaint);
+    }
 
 
 
