@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/created_pages"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_note_add_black_24dpxxx"
+        android:title="Pages" >
+        <menu>
+
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/add_shape"
+        android:icon="@drawable/plus"
+        app:showAsAction="always"
+        android:title="Add Shape" />
+    <item
+        android:id="@+id/create_page"
+        android:icon="@drawable/ic_note_add_black_24dpxxx"
+        app:showAsAction="always"
+        android:title="Add Page" />
+    <item
+        android:id="@+id/save_page"
+        app:showAsAction="never"
+        android:title="Save Page" />
+    <item
+        android:id="@+id/delete_page"
+        app:showAsAction="never"
+        android:title="Delete Page" />
+    <item
+        android:id="@+id/play_game"
+        app:showAsAction="never"
+        android:title="Play Game" />
+    <item
+        android:id="@+id/exit_game"
+        app:showAsAction="never"
+        android:title="Exit Game" />
+    <item
+        android:id="@+id/save_game"
+        app:showAsAction="never"
+        android:title="Save Game" />
+
+
+
+
+</menu>
