@@ -211,18 +211,22 @@ public class Shape /* implements View.OnDragListener, View.OnLongClickListener*/
             } else {
                 onDropShapes.add(clause.trim().substring(0, clause.trim().indexOf(' ')));
             }
-            System.out.println(onDropShapes);
+            System.out.println("The shapes for ondrop "+onDropShapes);
         }
     }
     private List<Map<String, String>> parseOnDropScript(String onDropScript) {
         List<Map<String, String>> allOnDropActions = new ArrayList<>();
         List<String> clauses = tokenizeScript(onDropScript);
         for (String clause : clauses) {
+            System.out.println("#1 clauses: "+clause);
             Map<String, String> scriptTokens = new LinkedHashMap<>();
             StringTokenizer tokenizer = new StringTokenizer(clause);
+
+            System.out.println("#1 tokensizer: "+tokenizer);
             tokenizer.nextToken();  //Skip the shape name store only the actions and their parameters
             while (tokenizer.hasMoreTokens()) {
                 scriptTokens.put(tokenizer.nextToken(), tokenizer.nextToken());
+                System.out.println("#1 scriptTokens: "+ scriptTokens);
             }
             allOnDropActions.add(scriptTokens);
         }
@@ -233,9 +237,12 @@ public class Shape /* implements View.OnDragListener, View.OnLongClickListener*/
     private void execScripts(Map<String, String> scriptToken, Context context, ViewGroup game, Page parentPage){
         System.out.println("Executing scripts");
         int pageCount = game.getChildCount();
+
+        System.out.println("#1 action: "+scriptToken);
         for(Map.Entry<String, String> entry : scriptToken.entrySet()){
-            System.out.println("before switch");
+
             String action = entry.getKey();
+            System.out.println("#1 action: "+action);
             switch (action.toLowerCase()){
                 case "play":
                     System.out.println("PLAYING SOUND");
@@ -273,7 +280,7 @@ public class Shape /* implements View.OnDragListener, View.OnLongClickListener*/
                     for(int i=0; i<pageCount; i++){
                         final Page page = (Page)game.getChildAt(i);
 
-                        System.out.println( " pageItr: "+page.getPageName());
+                        System.out.println( "#1 pageItr: "+page.getPageName());
                         for (Shape sh : page.shapes){
                             if(shapeName.equals(sh.getName())){
                                 sh.visible = false;
@@ -324,33 +331,33 @@ public class Shape /* implements View.OnDragListener, View.OnLongClickListener*/
     }
 
     public void execOnDropScript(Context context, ViewGroup game, Page parentPage, String shapeName, int x1, int x2, int y1, int y2){
-        System.out.println("PAGE SHAPE " +parentPage.getPageName()+shapeName);
-        System.out.println("drop script " +onDropScript);
-        System.out.println("EXEC drop script  "+onDrop + " "+onDropScript.trim().isEmpty()+isValidScript(onDropScript));
+        System.out.println("#1 PAGE SHAPE " +parentPage.getPageName()+shapeName);
+        System.out.println("#1 drop script " +onDropScript);
+        System.out.println("#1 EXEC drop script  "+onDrop + " "+onDropScript.trim().isEmpty()+isValidScript(onDropScript));
         if(!onDrop || onDropScript.trim().isEmpty() || !isValidScript(onDropScript)) return;
         populateOnDropShapesArray(onDropScript);
-        System.out.println("about to iter drop shapes");
+        System.out.println("#1 about to iter drop shapes");
         for(int i=0; i<onDropShapes.size(); i++){
 
-            System.out.println("iter drop shapes");
+            System.out.println("#1 iter drop shapes");
             System.out.println(onDropShapes.get(i));
 
             System.out.println(shapeName);
-            System.out.println("parent page "+parentPage.getPageName());
+            System.out.println("#1 parent page "+parentPage.getPageName());
             /**if(onDropShapes.get(i).equals(shapeName)) {
 
              execScripts(parseOnDropScript(onDropScript).get(i), context, game, parentPage);
              }*/
             System.out.println(parentPage.shapes);
             for (Shape sh : parentPage.shapes){
-                System.out.println("finding the drop shape in the page");
-                System.out.println("SHAPE " + sh.getName());
+                System.out.println("#1 finding the drop shape in the page");
+                System.out.println("#1 SHAPE " + sh.getName());
 
-                System.out.println("DROP SHAPE " + onDropShapes.get(i));
+                System.out.println("#1 DROP SHAPE " + onDropShapes.get(i));
                 if(onDropShapes.get(i).equals(sh.getName())){
-                    System.out.println("DROP SHAPE " + sh.getName());
+                    System.out.println("#1 DROP SHAPE " + sh.getName());
                     if( x1 < sh.getX2() && x2 > sh.getX1() && y1 < sh.getY2() && y2>sh.getY1()) {
-                        System.out.println("OVERLAP");
+                        System.out.println("#1 OVERLAP");
                         execScripts(parseOnDropScript(onDropScript).get(i), context, game, parentPage);
                     }
                 }
