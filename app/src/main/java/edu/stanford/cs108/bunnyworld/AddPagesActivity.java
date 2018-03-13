@@ -329,22 +329,22 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
 
         db = openOrCreateDatabase("BunnyDB",MODE_PRIVATE,null);
 
-        //if (!checkTableExist("games"))
+        if (!checkTableExist("games"))
             setupGameTable();
 
-        //if (!checkTableExist("pages"))
+        if (!checkTableExist("pages"))
             setupPageTable();
 
-        //if (!checkTableExist("shapes"))
+        if (!checkTableExist("shapes"))
             setupShapeTable();
 
-        //if (!checkTableExist("triggers"))
+        if (!checkTableExist("triggers"))
             setupTriggerTable();
 
-        //if (!checkTableExist("actions"))
+        if (!checkTableExist("actions"))
             setupActionTable();
 
-        //if (!checkTableExist("scripts"))
+        if (!checkTableExist("scripts"))
             setupScriptTable();
 
         // save game in db
