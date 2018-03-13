@@ -5,7 +5,7 @@
     <item
         android:id="@+id/created_pages"
         app:showAsAction="always"
-        android:icon="@drawable/ic_note_add_black_24dpxxx"
+        android:icon="@drawable/ic_find_in_page_black_24dpxxx"
         android:title="Pages" >
         <menu>
 
@@ -26,6 +26,10 @@
         android:id="@+id/save_page"
         app:showAsAction="never"
         android:title="Save Page" />
+    <item
+        android:id="@+id/edit_page"
+        app:showAsAction="never"
+        android:title="Edit Page" />
     <item
         android:id="@+id/delete_page"
         app:showAsAction="never"

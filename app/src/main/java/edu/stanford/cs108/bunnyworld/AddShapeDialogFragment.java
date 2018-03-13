@@ -29,7 +29,7 @@ public class AddShapeDialogFragment extends DialogFragment implements View.OnCli
     private addShapeDialogFragmentListener mListener;
     private Spinner imagesSpinner;
     private EditText shapeName, shapeText, shapeTxtFont, shapeOnClickScript, shapeOnEnterScript, shapeOnDropScript;
-    private CheckBox onClick, onEnter, onDrop, movable;
+    private CheckBox onClick, onEnter, onDrop, movable, invisible;
 
 
     /*public AddShapeDialogFragment() {
@@ -53,14 +53,8 @@ public class AddShapeDialogFragment extends DialogFragment implements View.OnCli
         onEnter = (CheckBox)view.findViewById(R.id.on_enter);
         onDrop = (CheckBox)view.findViewById(R.id.on_drop);
         movable = (CheckBox)view.findViewById(R.id.checkbox_movable);
-        /*save.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-                if(v.getId() == R.id.saveShape){
-                    System.out.println(shapeName.getText().toString());
-                }
-            }
-
-        });*/
+        invisible = (CheckBox)view.findViewById(R.id.checkbox_invisible);
+        
         save.setOnClickListener(this);
         cancel.setOnClickListener(this);
         ArrayList<SpinnerAdapter.ItemData> list = new ArrayList<>();
@@ -117,7 +111,7 @@ public class AddShapeDialogFragment extends DialogFragment implements View.OnCli
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.save_shape:
-                boolean checkBoxValues[] = {onClick.isChecked(), onEnter.isChecked(), onDrop.isChecked(), movable.isChecked()};
+                boolean checkBoxValues[] = {onClick.isChecked(), onEnter.isChecked(), onDrop.isChecked(), movable.isChecked(), invisible.isChecked()};
                 String[] shapeStringValues = {shapeName.getText().toString(), shapeText.getText().toString(),
                         shapeTxtFont.getText().toString(), imagesSpinner.getSelectedItem().toString(),
                         shapeOnClickScript.getText().toString(), shapeOnEnterScript.getText().toString(),

@@ -34,16 +34,11 @@ public class Document extends LinearLayout {
     public Document(Context context) {
         super(context);
         this.setOrientation(LinearLayout.VERTICAL);
-        this.setWeightSum(1.0f);
+        this.setWeightSum(5.0f);
         this.setGravity(Gravity.BOTTOM);
-        //this.setBaselineAligned(false);
-        lpPossessions = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 0.3f);
-        lpPages = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,0, 0.7f);
+        lpPossessions = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 4.0f);
+        lpPages = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,0, 1.0f);
         this.setLayoutTransition(new LayoutTransition());  //regular animation enforced by the layout.
-        //possessions = new Possessions(context);
-        //possessions.setLayoutParams(lpPossessions);
-        //possessions.setVisibility(VISIBLE);
-        //this.addView(possessions);
     }
     public Document(Context context, String name) {
         this(context);

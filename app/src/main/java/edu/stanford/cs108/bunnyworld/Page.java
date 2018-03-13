@@ -20,7 +20,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
+import android.content.Intent;
+import android.view.Gravity;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -32,10 +33,9 @@ public class Page extends View /*implements View.OnClickListener*/ {
     protected List<Shape> shapes = new ArrayList<>();
     private int shapeCounter = 0;
     private Shape selectedShape;
-    private int prevX,prevY, pX, pY;
     private boolean visibility;
-    private boolean dragging;
-    private int starterPage;
+    private boolean playMode = false;
+    private boolean starterPage = false;
 
     private String pageName = "";
 
@@ -84,7 +84,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
     public Page(Context context) {
         super(context);
         init(null, 0);
-        LinearLayout.LayoutParams lpPages = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0, 0.7f);
+        LinearLayout.LayoutParams lpPages = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0, 4.0f);
         this.setLayoutParams(lpPages);
         mDetector = new GestureDetectorCompat(context, new TapGestureListener());
     }
@@ -94,7 +94,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
         init(attrs, 0);
     }
 
-    public Page(Context context, Boolean visibility) {
+    public Page(Context context, boolean visibility) {
         super(context);
         this.visibility = visibility;
     }
@@ -123,64 +123,39 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 if(!shapes.isEmpty()){
                     for (Shape sh : shapes) {
                         if (sh.contains(x,y)) {
-                            selectedShape = sh;  //select last added shape to the page
-                            //DragShadowBuilder shapeShadowBuilder = new ShapeDragShadowBuilder();
-                            //this.startDrag(null, shapeShadowBuilder, null, 0);
-                            //selectedShape.setVisible(false);
-                            //invalidate();
-                        }                    }
+                            if(sh.isVisible())selectedShape = sh;  //select last added shape to the page
+
+                	}                    
+                    }
                     //if the clicked shape has an on click action scripts execute it
                     if(selectedShape != null) selectedShape.execOnClickScript(getContext(),(ViewGroup)this.getParent(),this);
                 }
-                //prevX = x;
-                //prevY = y;
                 invalidate();
                 break;
             case MotionEvent.ACTION_MOVE:
                 if(selectedShape != null) {
                     DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(),selectedShape.imageIdentifier);
-                    ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.imageName);
+                    ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.getName());
                     ClipData.Item item2_imageId = new ClipData.Item(selectedShape.imageName);
                     String mimeTypes[] = {ClipDescription.MIMETYPE_TEXT_PLAIN};
                     ClipData draggedShape = new ClipData(selectedShape.getName(), mimeTypes, item1_shapeName);
                     draggedShape.addItem(item2_imageId);
                     this.startDrag(draggedShape, shapeShadowBuilder, null, 0);
-                    //selectedShape.setVisible(false);
-                    //invalidate();
-                    /*currX = (int) event.getX();
-                    currY = (int) event.getY();
-                    xOffset = currX - prevX;
-                    yOffset = currY - prevY;
-                    prevX = currX;
-                    prevY = currY;
-                    selectedShape.setX1(selectedShape.getX1() + xOffset);
-                    selectedShape.setY1(selectedShape.getY1() + yOffset);
-                    selectedShape.setX2(selectedShape.getX1() + selectedShape.getWidth());
-                    selectedShape.setY2(selectedShape.getY1() + selectedShape.getHeight());
+                    selectedShape.setVisible(false);
+                    invalidate();
+
+                }
                     invalidate();*/
                 }
 
                 break;
             case MotionEvent.ACTION_UP:
-                /*int relX, relY;
-                relX = (int) event.getX();
-                relY = (int) event.getY();
-                if(selectedShape != null) {
-                    if (!shapes.isEmpty()) {
-                        for (Shape sh : shapes) {
-                            if (sh.contains(relX, relY)) {
-                                sh.execOnDropScript(getContext(), (ViewGroup) this.getParent(), this, selectedShape.getName());
-                            }
-                        }
-                    }
-                }*/
                 selectedShape = null; //nullify selected shape when the user lift his finger
-                System.out.println("ACTION_UP called !!!!!!!!");
-                //invalidate();
+                invalidate();
                 break;
 
         }
-//        mDetector.onTouchEvent(event);
+        mDetector.onTouchEvent(event);
 
         return true;
     }
@@ -189,11 +164,6 @@ public class Page extends View /*implements View.OnClickListener*/ {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         this.setBackgroundColor(Color.WHITE);
-        System.out.println("#1 in onDraw, dragging = " + dragging);
-        if(dragging) {
-            flicker(canvas, selectedShape);
-        }
-
         if(!shapes.isEmpty()){
             Iterator<Shape> it = shapes.iterator();
             while (it.hasNext()) {
@@ -211,11 +181,9 @@ public class Page extends View /*implements View.OnClickListener*/ {
     @Override
     protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
-        System.out.println("VIS CHANGED  " + this.getPageName() + "  "+ this.visibility+"  "+View.VISIBLE);
-        if(this.visibility == true){
-            System.out.println("ITES VIEWABLE");
+        if(visibility == View.VISIBLE){
             for (Shape sh : shapes) {
-                sh.execOnEnterScript(getContext(),(ViewGroup)this.getParent(),this);
+                 sh.execOnEnterScript(getContext(),(ViewGroup)this.getParent(),this);
             }
         }
     }
@@ -226,6 +194,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
         shapes.add(shape);
         invalidate();
     }
+
 
     public void setVis(boolean vis) {
         this.visibility = vis;
@@ -247,16 +216,11 @@ public class Page extends View /*implements View.OnClickListener*/ {
         switch(action) {
             case DragEvent.ACTION_DRAG_STARTED:
                 System.out.println("ACTION_DRAG_STARTED In page");
-                dragging = true;
-                if(selectedShape != null) {
-                    selectedShape.setVisible(false);
-                    invalidate();
-                }
-                return true;
+                //Check for onDrag events on the page
+                    return true;
 
             case DragEvent.ACTION_DRAG_ENTERED:
                 System.out.println("ACTION_DRAG_ENTERED In page");
-                dragging = true;
                 if(selectedShape != null) selectedShape.setInPossession(false);
                 return true;
 
@@ -266,51 +230,116 @@ public class Page extends View /*implements View.OnClickListener*/ {
 
             case DragEvent.ACTION_DRAG_EXITED:
                 System.out.println("ACTION_DRAG_EXITED In page");
-                dragging = true;
                 if(selectedShape != null) selectedShape.setInPossession(true);
                 return true;
 
             case DragEvent.ACTION_DROP:
                 System.out.println("ACTION_DRAG_DROP In page");
-                dragging = false;
-                //if()
-                selectedShape = new Shape(event.getClipData().getItemAt(1).getText().toString(), this.getContext());
-                selectedShape.setName(event.getClipData().getItemAt(0).getText().toString());
-                this.addShape(selectedShape);
+                int currX, currY;
+                currX = (int) event.getX();
+                currY = (int) event.getY();
+                if(selectedShape == null) {
+                    if (!playMode) {
+                        selectedShape = new Shape(event.getClipData().getItemAt(1).getText().toString(), this.getContext());
+                        selectedShape.setName(event.getClipData().getItemAt(0).getText().toString());
+                        this.addShape(selectedShape);
+                        selectedShape.setX1(currX - (selectedShape.getWidth() / 2));
+                        selectedShape.setY1(currY - (selectedShape.getHeight() / 2));
+                        selectedShape.setX2(currX + (selectedShape.getWidth() / 2));
+                        selectedShape.setY2(currY + (selectedShape.getHeight() / 2));
+                        selectedShape.setVisible(true);
+                        invalidate();
+                        selectedShape = null;
+                        return true;
+                    }
+                    if (playMode) {
+                        //Play Mode while user is playing
+                        selectedShape = new Shape(event.getClipData().getItemAt(1).getText().toString(), this.getContext());
+                        selectedShape.setName(event.getClipData().getItemAt(0).getText().toString());
+                        if (!shapes.isEmpty()) {
+                            for (Shape sh : shapes) {
+                                if (sh.contains(currX, currY)) {
+                                    if (sh.wouldRespondToDrop(selectedShape.getName())) {
+                                        this.addShape(selectedShape);
+                                        selectedShape.setX1(currX - (selectedShape.getWidth() / 2));
+                                        selectedShape.setY1(currY - (selectedShape.getHeight() / 2));
+                                        selectedShape.setX2(currX + (selectedShape.getWidth() / 2));
+                                        selectedShape.setY2(currY + (selectedShape.getHeight() / 2));
+                                        selectedShape.setVisible(true);
+                                        invalidate();
+                                        sh.execOnDropScript(getContext(), (ViewGroup) this.getParent(), this, selectedShape.getName());
+                                        selectedShape = null;
+                                        return true;
+                                    }
+                                }
+
+                            }
+                        }
+                        selectedShape = null;
+                        invalidate();
+                        return false;
+                    }
+
+                }
+
                 if(selectedShape != null) {
-                    int currX, currY;
-                    currX = (int) event.getX();
-                    currY = (int) event.getY();
-                    selectedShape.setX1(currX - (selectedShape.getWidth()/2));
-                    selectedShape.setY1(currY -(selectedShape.getHeight()/2));
-                    selectedShape.setX2(currX + (selectedShape.getWidth()/2));
-                    selectedShape.setY2(currY + (selectedShape.getHeight()/2));
-                    selectedShape.setVisible(true);
-                    invalidate();
-                    selectedShape = null;
-                    return true;
+                    if (!playMode) {
+                        selectedShape.setX1(currX - (selectedShape.getWidth() / 2));
+                        selectedShape.setY1(currY - (selectedShape.getHeight() / 2));
+                        selectedShape.setX2(currX + (selectedShape.getWidth() / 2));
+                        selectedShape.setY2(currY + (selectedShape.getHeight() / 2));
+                        selectedShape.setVisible(true);
+                        invalidate();
+                        selectedShape = null;
+                        return true;
+                    }
+                    if (playMode) {
+                        if (!shapes.isEmpty()) {
+                            for (Shape sh : shapes) {
+                                if (sh.contains(currX, currY)) {
+                                    if (sh.wouldRespondToDrop(selectedShape.getName())) {
+                                        selectedShape.setX1(currX - (selectedShape.getWidth() / 2));
+                                        selectedShape.setY1(currY - (selectedShape.getHeight() / 2));
+                                        selectedShape.setX2(currX + (selectedShape.getWidth() / 2));
+                                        selectedShape.setY2(currY + (selectedShape.getHeight() / 2));
+                                        selectedShape.setVisible(true);
+                                        invalidate();
+                                        sh.execOnDropScript(getContext(), (ViewGroup) this.getParent(), this, selectedShape.getName());
+                                        selectedShape = null;
+                                        return true;
+                                    }
+                                }
+
+                            }
+                        }
+                        selectedShape.setVisible(true);
+                        invalidate();
+                        selectedShape = null;
+                        return false;
+                    }
                 }
                 return false;
 
             case DragEvent.ACTION_DRAG_ENDED:
                 System.out.println("ACTION_DRAG_ENDED In page");
-                dragging = false;
                 if(event.getResult()){
+                    System.out.println("Drop is True In Page");
                     invalidate();
+                    selectedShape = null;
                     return true;
                 }
-                selectedShape.setVisible(true);
+                System.out.println("Drop is false In Page");
                 invalidate();
+                selectedShape = null;
                 return true;
 
             // An unknown action type was received.
             default:
-                return true;
+                break;
         }
-
-
-        //return false;
+        return false;
     }
+    
 
     void flicker(Canvas canvas, Shape sh) {
         System.out.println("Called FLICKER method");
@@ -367,6 +396,23 @@ public class Page extends View /*implements View.OnClickListener*/ {
 
     public void setPFirstPageFlag(int firstPageFlag) {
         this.starterPage = firstPageFlag;
+    }
+    /***** Setters and Getters *******/
+
+    public boolean isPlayMode() {
+        return playMode;
+    }
+
+    public void setPlayMode(boolean playMode) {
+        this.playMode = playMode;
+    }
+
+    public boolean isStarterPage() {
+        return starterPage;
+    }
+
+    public void setStarterPage(boolean starterPage) {
+        this.starterPage = starterPage;
     }
 
 }

@@ -16,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.SubMenu;
+import android.widget.CheckBox;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -34,6 +35,9 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
     AddShapeDialogFragment addShapeDialogFragment;
     private SubMenu savedPagesSubMenu;  //user can move between already created pages and Edit them.
     int pageCounter=0; //this for testing only it should be deleted when the code is ready
+    boolean gameInflated = false;
+    private Possessions possessions;
+    private boolean editingPage = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +52,10 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         String gameIcon = intent.getStringExtra("game_icon");
         mLayout = (LinearLayout)findViewById(R.id.add_page);
         mLayout.setOrientation(LinearLayout.VERTICAL);
-        mLayout.setWeightSum(1.0f);
+        mLayout.setWeightSum(5.0f);
         mLayout.setVerticalGravity(Gravity.BOTTOM);
         newGame = new Document(this.getApplicationContext(), gameName, gameType, gameIcon);
-        Possessions possessions = new Possessions(this.getApplicationContext());
+        possessions = new Possessions(this.getApplicationContext());
         mLayout.addView(possessions);
 
     }
@@ -71,8 +75,10 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
                 savedPagesSubMenu.clear();
                 if(newGame.getChildCount()>0){
                     for(int i=0; i< newGame.getChildCount(); i++){
-                        final Page page = (Page)newGame.getChildAt(i);
-                        savedPagesSubMenu.add(page.getPageName());
+	                    	if (newGame.getChildAt(i) instanceof Page) {
+	                        final Page page = (Page)newGame.getChildAt(i);
+	                        savedPagesSubMenu.add(page.getPageName());
+                        }
                     }
                 }
                 break;
@@ -81,12 +87,13 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
                 break;
             case R.id.add_shape:
                 showAddShapeDialog();
-                //Toast toast = Toast.makeText(getApplicationContext(), "Added", Toast.LENGTH_SHORT);
-                //toast.show();
                 break;
             case R.id.save_page:
                 savePage();
                 break;
+            case R.id.edit_page:
+            	editPage();
+            	break;
             case R.id.delete_page:
                 deletePage();
                 break;
@@ -137,6 +144,13 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         super.onPrepareOptionsMenu(menu);
         MenuItem addShapeItem = menu.findItem(R.id.add_shape);
         MenuItem addPagetItem = menu.findItem(R.id.create_page);
+        MenuItem exitGameItem = menu.findItem(R.id.exit_game);
+	MenuItem createdPagesItem = menu.findItem(R.id.created_pages);
+	MenuItem savePagetItem = menu.findItem(R.id.save_page);
+	MenuItem editPageItem = menu.findItem(R.id.edit_page);
+	MenuItem saveGametItem = menu.findItem(R.id.save_game);
+	MenuItem deletePageItem = menu.findItem(R.id.delete_page);
+	MenuItem playGameItem = menu.findItem(R.id.play_game);
         if(!isPageCreated){
             addShapeItem.setEnabled(false);
             addShapeItem.getIcon().setAlpha(70);
@@ -151,6 +165,24 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
             addPagetItem.setEnabled(true);
             addPagetItem.getIcon().setAlpha(255);
         }
+        if(gameInflated) {
+    		addShapeItem.setEnabled(false);
+    		addShapeItem.getIcon().setAlpha(70);
+    		addPagetItem.setEnabled(false);
+    		addPagetItem.getIcon().setAlpha(70);
+    		exitGameItem.setEnabled(true);
+    		playGameItem.setEnabled(false);
+    		createdPagesItem.setEnabled(false);
+    		createdPagesItem.getIcon().setAlpha(70);
+    		savePagetItem.setEnabled(false);
+    		editPageItem.setEnabled(false);
+    		saveGametItem.setEnabled(false);
+    		deletePageItem.setEnabled(false);
+	}else{
+    		createdPagesItem.setEnabled(true);
+    		createdPagesItem.getIcon().setAlpha(255);
+
+	}
 
         return true;
     }
@@ -188,20 +220,58 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         invalidateOptionsMenu();
         Dialog dialogView = dialog.getDialog();
         EditText pageName = (EditText)dialogView.findViewById(R.id.page_name);
+        CheckBox starterPage = (CheckBox)dialogView.findViewById(R.id.starter_page);
+	if(editingPage){
+    		if(pageName.getText().toString().trim().isEmpty()){
+        		newPage.setPageName("page " + (newGame.getChildCount()));
+    		}else{
+        		newPage.setPageName(pageName.getText().toString());
+    		}
+    		adjustStarterPage(starterPage.isChecked());
+    		newPage.setStarterPage(starterPage.isChecked());
+    		editingPage = false;
+    		return;
+	}
         newPage = new Page(this.getApplicationContext()); //add logic if the user leaves pageName blank
         if(pageName.getText().toString().trim().isEmpty()) newPage.setPageName("page " + (newGame.getChildCount()+1));
         else newPage.setPageName(pageName.getText().toString());
+        adjustStarterPage(starterPage.isChecked());
+	newPage.setStarterPage(starterPage.isChecked());
         newPage.setVisibility(View.VISIBLE);
         mLayout.addView(newPage, 0);
     }
 
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
+    	if(editingPage){
+    		editingPage = false;
+    		return;
+	}
         isPageCreated = false;
         isCurrPageSaved = true;
         invalidateOptionsMenu();
         dialog.getDialog().cancel();
     }
+    //Helper method to make sure there is only one Starter Page
+	private void adjustStarterPage(boolean starterPageIsChecked){
+	    if(starterPageIsChecked){
+	        if(mLayout != null){
+	            for (int j = 0; j < mLayout.getChildCount(); j++) {
+	                if (mLayout.getChildAt(j) instanceof Page) {
+	                    ((Page) mLayout.getChildAt(j)).setStarterPage(false);
+	                }
+	            }
+	        }
+	        if(newGame != null){
+	            for (int i = 0; i < newGame.getChildCount(); i++) {
+	                if (newGame.getChildAt(i) instanceof Page) {
+	                    ((Page) newGame.getChildAt(i)).setStarterPage(false);
+	                }
+	            }
+	        }
+	
+	    }
+	}
 
     /*** This a helper method to make the process of
      constructing a shape easier
@@ -234,6 +304,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         shape.setOnEnter(scriptsActions[1]);
         shape.setOnDrop(scriptsActions[2]);
         shape.setMovable(scriptsActions[3]);
+        shape.setVisible(!scriptsActions[4]);
 
     }
     //Shape dialog listener interface methods
@@ -242,7 +313,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         Shape shape = new Shape();
         createShape(shapeStringValues, checkBoxValues, shape);
         //mLayout.removeView(newPage);
-        newPage.addShape(shape);
+        if(newPage!= null)newPage.addShape(shape);
         //mLayout.addView(newPage);
         addShapeDialogFragment.dismiss();
     }
@@ -260,6 +331,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         }
         //pageCounter += 1;
         mLayout.removeView(newPage);
+        newPage.setLayoutParams(newGame.getLpPages());
         //if(pageCounter!=1)newPage.setVisibility(View.GONE); // changes here when you add starter page option
         newGame.addView(newPage);
         if(mLayout.getChildCount()>1) {
@@ -286,6 +358,11 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         isCurrPageSaved = true;
         isPageCreated = false;
         invalidateOptionsMenu();
+        if(newPage == null){
+    		Toast toast = Toast.makeText(getApplicationContext(), "No page to delete in Layout", Toast.LENGTH_SHORT);
+    		toast.show();
+    		return;
+	}
         mLayout.removeView(newPage);
         if(mLayout.getChildCount()>1) {
             for (int j = 0; j < mLayout.getChildCount(); j++) {
@@ -304,20 +381,139 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
 
         newPage = null;
     }
+    private void editPage() {
+        if(newPage == null){
+            Toast toast = Toast.makeText(getApplicationContext(), "No page in the Layout", Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
+        editingPage = true;
+        showAlertDialog();
+
+    }
+
+    //helper method to insure there is a starter page and order in the game pages
+    private boolean starterPageExists(Document game){
+        if(game == null) return false;
+        for (int i = 0; i < game.getChildCount(); i++) {
+            if (game.getChildAt(i) instanceof Page) {
+                if(((Page) game.getChildAt(i)).isStarterPage()){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    private void organizeGamePages(Document game){
+        if(game == null) return;
+        boolean foundStarterPage = false;
+        for (int i = 0; i < game.getChildCount(); i++) {
+            if (game.getChildAt(i) instanceof Page) {
+                game.getChildAt(i).setVisibility(View.GONE);
+                if(((Page) game.getChildAt(i)).isStarterPage()){
+                    foundStarterPage = true;
+                    Page page = (Page) game.getChildAt(i);
+                    game.removeView(game.getChildAt(i));
+                    page.setVisibility(View.VISIBLE);
+                    game.addView(page, 0);
+                }
+            }
+        }
+        if(!foundStarterPage){
+            for (int i = game.getChildCount()-1 ; i >=0 ; i--) {
+                if (game.getChildAt(i) instanceof Page) {
+                    Page page = (Page) game.getChildAt(i);
+                    game.removeView(game.getChildAt(i));
+                    page.setVisibility(View.VISIBLE);
+                    game.addView(page, 0);
+
+                }
+            }
+
+        }
+
+    }
+
+    /*** The below to methods are the same code but they do opposite of
+     * each other toggling between Edit Mode and Play Mode. The can be
+     * composed as one method and avoid code repetition however for readability
+     * sake we will keep them as to different methods with 2 different meaningful
+     * names
+     */
+    //helper method to put the game in play mode before saving it
+    private void putInPlayMode(Document game){
+        if(game == null) return;
+        for (int i = 0; i < game.getChildCount(); i++) {
+            if (game.getChildAt(i) instanceof Page) {
+                ((Page) game.getChildAt(i)).setPlayMode(true);
+            }
+        }
+
+    }
+
+    //helper method to put the game in Edit mode to allow the user to Edit the game
+    private void putInEditMode(Document game){
+        if(game == null) return;
+        for (int i = 0; i < game.getChildCount(); i++) {
+            if (game.getChildAt(i) instanceof Page) {
+                ((Page) game.getChildAt(i)).setPlayMode(false);
+            }
+        }
+
+    }
+
 
     private void playGame(){
         //My code to help designer play the game he just finished creating
         // before it goes into the database
+        if(gameInflated) return;;
+        if(newGame.getChildCount()< 1){
+            Toast toast = Toast.makeText(getApplicationContext(), "Save at least one Page to play a game", Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
+        mLayout.removeView(possessions);
+        possessions.setLayoutParams(newGame.getLpPossessions());
+        newGame.addView(possessions);
+        putInPlayMode(newGame);
+        organizeGamePages(newGame);
+        //newGame.setLayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        mLayout.addView(newGame, 0);
+        gameInflated = true;
+        invalidateOptionsMenu();
     }
     private void exitGame(){
         //My code to help designer exit the game he just finished creating
         // can continue editing before it goes into the database
+        if(!gameInflated) return;
+        mLayout.removeView(newGame);
+        organizeGamePages(newGame);
+        putInEditMode(newGame);
+        newGame.removeView(possessions);
+        possessions.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1.0f));
+        mLayout.addView(possessions);
+        for (int i = 0; i < newGame.getChildCount(); i++) {
+            if (newGame.getChildAt(i) instanceof Page) {
+                (newGame.getChildAt(i)).setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 4.0f));
+            }
+        }
+        gameInflated = false;
+        invalidateOptionsMenu();
     }
     //saves the current game in the database
     private void saveGame(){
-        this.saveGameInDataBase(newGame);
+        if(newGame.getChildCount()< 1){
+            Toast toast = Toast.makeText(getApplicationContext(), "Create at least one Page to save a game", Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
+        mLayout.removeView(possessions);
+        newGame.addView(possessions);
+        putInPlayMode(newGame);
+        organizeGamePages(newGame);
+        saveGameInDataBase(newGame);
+        finish();
     }
-
 
     /*** This method saves the game into the Database. The game
      * is the newGame object instantiated here in this activity
