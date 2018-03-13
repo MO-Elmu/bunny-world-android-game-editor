@@ -506,13 +506,6 @@ public class Shape{
     public void setPossessable(int possessable) {
         this.possessable = possessable;
     }
-    public boolean isInPossession() {return inPossession;}
-
-    public void setInPossession(boolean inPossession) {this.inPossession = inPossession;}
-
-    public boolean isVisible() {return visible;}
-
-    public void setVisible(boolean visible) {this.visible = visible;}
 
     public int getX1() {
         return x1;

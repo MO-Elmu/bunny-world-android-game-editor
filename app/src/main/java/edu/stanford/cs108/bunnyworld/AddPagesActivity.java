@@ -121,6 +121,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
                                 }
                             }
                         }
+                        newPage.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 4.0f));
                         mLayout.addView(newPage, 0);
                         isPageCreated = true;
                         isCurrPageSaved = false;
@@ -145,12 +146,12 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         MenuItem addShapeItem = menu.findItem(R.id.add_shape);
         MenuItem addPagetItem = menu.findItem(R.id.create_page);
         MenuItem exitGameItem = menu.findItem(R.id.exit_game);
-	MenuItem createdPagesItem = menu.findItem(R.id.created_pages);
-	MenuItem savePagetItem = menu.findItem(R.id.save_page);
-	MenuItem editPageItem = menu.findItem(R.id.edit_page);
-	MenuItem saveGametItem = menu.findItem(R.id.save_game);
-	MenuItem deletePageItem = menu.findItem(R.id.delete_page);
-	MenuItem playGameItem = menu.findItem(R.id.play_game);
+        MenuItem createdPagesItem = menu.findItem(R.id.created_pages);
+        MenuItem savePagetItem = menu.findItem(R.id.save_page);
+        MenuItem editPageItem = menu.findItem(R.id.edit_page);
+        MenuItem saveGametItem = menu.findItem(R.id.save_game);
+        MenuItem deletePageItem = menu.findItem(R.id.delete_page);
+        MenuItem playGameItem = menu.findItem(R.id.play_game);
         if(!isPageCreated){
             addShapeItem.setEnabled(false);
             addShapeItem.getIcon().setAlpha(70);
@@ -508,6 +509,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
             return;
         }
         mLayout.removeView(possessions);
+        possessions.setLayoutParams(newGame.getLpPossessions());
         newGame.addView(possessions);
         putInPlayMode(newGame);
         organizeGamePages(newGame);

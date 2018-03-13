@@ -143,9 +143,6 @@ public class Page extends View /*implements View.OnClickListener*/ {
                     this.startDrag(draggedShape, shapeShadowBuilder, null, 0);
                     selectedShape.setVisible(false);
                     invalidate();
-
-                }
-                    invalidate();*/
                 }
 
                 break;
@@ -267,7 +264,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
                                         selectedShape.setY2(currY + (selectedShape.getHeight() / 2));
                                         selectedShape.setVisible(true);
                                         invalidate();
-                                        sh.execOnDropScript(getContext(), (ViewGroup) this.getParent(), this, selectedShape.getName());
+                                        sh.execOnDropScript(getContext(), (ViewGroup) this.getParent(), this, selectedShape.getName(),selectedShape.getX1(), selectedShape.getX2(),selectedShape.getY1(),selectedShape.getY2());
                                         selectedShape = null;
                                         return true;
                                     }
@@ -304,7 +301,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
                                         selectedShape.setY2(currY + (selectedShape.getHeight() / 2));
                                         selectedShape.setVisible(true);
                                         invalidate();
-                                        sh.execOnDropScript(getContext(), (ViewGroup) this.getParent(), this, selectedShape.getName());
+                                        sh.execOnDropScript(getContext(), (ViewGroup) this.getParent(), this, selectedShape.getName(),selectedShape.getX1(), selectedShape.getX2(),selectedShape.getY1(),selectedShape.getY2());
                                         selectedShape = null;
                                         return true;
                                     }
@@ -391,11 +388,11 @@ public class Page extends View /*implements View.OnClickListener*/ {
     }
 
     public int getFirstPageFlag() {
-        return starterPage;
+        return (starterPage) ? 1 : 0 ;
     }
 
     public void setPFirstPageFlag(int firstPageFlag) {
-        this.starterPage = firstPageFlag;
+        this.starterPage = (firstPageFlag == 0) ? false : true;
     }
     /***** Setters and Getters *******/
 
