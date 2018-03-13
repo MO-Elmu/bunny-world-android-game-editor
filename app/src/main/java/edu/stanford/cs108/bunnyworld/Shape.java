@@ -30,6 +30,7 @@ public class Shape /* implements View.OnDragListener, View.OnLongClickListener*/
     private boolean movable = true;
     private boolean visible = true;
     private boolean inPossession = false;
+    private int possessable = 0;
     protected String imageName = "";
     protected int imageIdentifier;
     private String text = "";
@@ -58,7 +59,11 @@ public class Shape /* implements View.OnDragListener, View.OnLongClickListener*/
     //container for the onDrop shapes
     List<String> onDropShapes = new ArrayList<>();
 
-
+    // constants
+    public static final String GOTO = "GOTO";
+    public static final String PLAY = "PLAY";
+    public static final String HIDE = "HIDE";
+    public static final String SHOW = "SHOW";
 
     // initialize all needed Paints
     private void init(){   //create and set all Paints
@@ -476,6 +481,14 @@ public class Shape /* implements View.OnDragListener, View.OnLongClickListener*/
         this.inPossession = inPossession;
     }
 
+    public int getPossessable() {
+        return possessable;
+    }
+
+    public void setPossessable(int possessable) {
+        this.possessable = possessable;
+    }
+
     public int getX1() {
         return x1;
     }
@@ -512,19 +525,19 @@ public class Shape /* implements View.OnDragListener, View.OnLongClickListener*/
         return width;
     }
 
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
     public int getHeight() {
         return height;
     }
 
-    public void setHeight(int height) {
-        this.height = height;
+    public String getText() {
+        return text;
     }
 
-/*
+    public String getImageName() {
+        return imageName;
+    }
+
+    /*
     @Override
     public boolean onDrag(View view, DragEvent dragEvent) {
         return false;

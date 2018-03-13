@@ -55,7 +55,6 @@ public class Document extends LinearLayout {
         this.gameName = name;
         this.iconName = iconName;
         //this.gameType = gameType;
-
     }
 
     public Document(Context context, AttributeSet attrs) {
@@ -66,6 +65,18 @@ public class Document extends LinearLayout {
         super(context, attrs, defStyleAttr);
     }
 
+    // add getters
+    public String getGameName() {
+        return gameName;
+    }
+
+    public String getIconName() {
+        return iconName;
+    }
+
+    public String getGameType() {
+        return gameType;
+    }
 
     //retrieve page and possessions layout
     public LinearLayout.LayoutParams getLpPages() {

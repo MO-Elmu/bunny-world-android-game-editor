@@ -5,6 +5,8 @@ import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.GestureDetector;
@@ -22,6 +24,8 @@ import android.widget.Toast;
 
 public class AddPagesActivity extends AppCompatActivity implements AlertDialogFragment.AlertDialogListener, AddShapeDialogFragment.addShapeDialogFragmentListener {
 
+    SQLiteDatabase db;
+
     private Document newGame;
     boolean isPageCreated;  //control active/inactive for add shape menu item
     boolean isCurrPageSaved; //control active/inactive for add page menu item
@@ -30,8 +34,10 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
     AddShapeDialogFragment addShapeDialogFragment;
     private SubMenu savedPagesSubMenu;  //user can move between already created pages and Edit them.
     int pageCounter=0; //this for testing only it should be deleted when the code is ready
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_pages);
         isPageCreated = false;  //make sure addShape menu starts inactive till user adds a page
@@ -121,10 +127,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
                     }
                 }
                 break;
-
         }
-
-
         return true;
     }
 
@@ -198,7 +201,6 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         isCurrPageSaved = true;
         invalidateOptionsMenu();
         dialog.getDialog().cancel();
-
     }
 
     /*** This a helper method to make the process of
@@ -325,16 +327,279 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
      */
     private void saveGameInDataBase(Document game){
 
+        db = openOrCreateDatabase("BunnyDB",MODE_PRIVATE,null);
+
+        //if (!checkTableExist("games"))
+            setupGameTable();
+
+        //if (!checkTableExist("pages"))
+            setupPageTable();
+
+        //if (!checkTableExist("shapes"))
+            setupShapeTable();
+
+        //if (!checkTableExist("triggers"))
+            setupTriggerTable();
+
+        //if (!checkTableExist("actions"))
+            setupActionTable();
+
+        //if (!checkTableExist("scripts"))
+            setupScriptTable();
+
+        // save game in db
+        String gameName = game.getGameName();
+        String gameIcon = game.getIconName();
+        String addStr = "INSERT INTO games VALUES "
+                + String.format("('%s', '%s', NULL)", gameName, gameIcon)
+                + ";";
+        db.execSQL(addStr);
+
+        // save page in db
+        for (int i = 0; i < game.getChildCount(); i++) {
+            if (game.getChildAt(i) instanceof Page) {
+                Page page = (Page) game.getChildAt(i);
+                String pageName = page.getPageName();
+                int starterPageFlag = page.getFirstPageFlag();
+                addStr = "INSERT INTO pages VALUES "
+                        + String.format("('%s', '%s', %d, NULL)", pageName, gameName, starterPageFlag)
+                        + ";";
+                db.execSQL(addStr);
+
+                for (Shape shape : page.shapes) {
+                    String shapeName = shape.getName();
+                    String imageName = shape.getImageName();
+                    String caption = shape.getText();
+                    int inPossession = shape.isInPossession() ? 1 : 0;
+                    int possessable = shape.getPossessable();
+                    int visible = shape.isVisible() ? 1: 0;
+                    int movable = shape.isMovable() ? 1: 0;
+                    int xPos = shape.getX1();
+                    int yPos = shape.getY1();
+                    int width = shape.getWidth();
+                    int height = shape.getHeight();
+
+                    addStr = "INSERT INTO shapes VALUES "
+                            + String.format("('%s', '%s', '%s', '%s', '%s', %d, %d, %d, %d, %d, %d, %d, %d, NULL)",
+                            shapeName, pageName, gameName, imageName, caption,
+                            inPossession, possessable, visible, movable, xPos, yPos, width, height)
+                            + ";";
+                    db.execSQL(addStr);
+
+                    boolean onClick = shape.isOnClick();
+                    boolean onEnter = shape.isOnEnter();
+                    boolean onDrop = shape.isOnDrop();
+
+                    if (shape.isOnClick())
+                        saveScript(gameName, shapeName,"CLICK", shape.getOnClickScript(), 0);
+                    if (shape.isOnEnter())
+                        saveScript(gameName, shapeName,"ENTER", shape.getOnEnterScript(), 0);
+                    if (shape.isOnDrop())
+                        saveScript(gameName, shapeName,"DROP", shape.getOnDropScript(), 1);
+                }
+            }
+        }
+
+        // print tables
+        System.out.println(tableToString("games"));
+        System.out.println(tableToString("pages"));
+        System.out.println(tableToString("shapes"));
+        System.out.println(tableToString("scripts"));
+
     }
 
+    void saveScript(String gameName, String shapeName, String triggerName, String script,
+                    int isOnDrop){
+        String[] parts = script.trim().split(";");
+        String triggerRecipient = "";
+        System.out.println(script);
 
+        for (int i = 0; i < parts.length; i++) {
+            String[] words = parts[i].trim().split(" ");
+            int start;
+
+            if ((isOnDrop == 1) && (i == 0)) {
+                triggerRecipient = words[0];
+                start = 1;
+            } else {
+                start = 0;
+            }
+
+            String addStr = "";
+            for (int j = start; j < words.length; j += 2) {
+                String actionName = words[j].toUpperCase();
+                String actionRecipient = words[j + 1];
+
+                if (isOnDrop == 1) {
+                    if (actionName.equals(Shape.SHOW) || actionName.equals(Shape.HIDE))
+                        addStr = "INSERT INTO scripts VALUES "
+                                + String.format("('%s', '%s', '%s', '%s', '%s', '%s', NULL, NULL, NULL)",
+                                gameName, shapeName, triggerName, triggerRecipient, actionName, actionRecipient)
+                                + ";";
+                    if (actionName.equals(Shape.PLAY))
+                        addStr = "INSERT INTO scripts VALUES "
+                                + String.format("('%s', '%s', '%s', '%s', '%s', NULL,'%s', NULL, NULL)",
+                                gameName, shapeName, triggerName, triggerRecipient, actionName, actionRecipient)
+                                + ";";
+                    if (actionName.equals(Shape.GOTO))
+                        addStr = "INSERT INTO scripts VALUES "
+                                + String.format("('%s', '%s', '%s', '%s', '%s', NULL, NULL, '%s', NULL)",
+                                gameName, shapeName, triggerName, triggerRecipient, actionName, actionRecipient)
+                                + ";";
+                } else {
+                    if (actionName.equals(Shape.SHOW) || actionName.equals(Shape.HIDE))
+                        addStr = "INSERT INTO scripts VALUES "
+                                + String.format("('%s', '%s', '%s', NULL, '%s', '%s',  NULL, NULL, NULL)",
+                                gameName, shapeName, triggerName, actionName, actionRecipient)
+                                + ";";
+                    if (actionName.equals(Shape.PLAY))
+                        addStr = "INSERT INTO scripts VALUES "
+                                + String.format("('%s', '%s', '%s', NULL, '%s', NULL,'%s', NULL, NULL)",
+                                gameName, shapeName, triggerName, actionName, actionRecipient)
+                                + ";";
+                    if (actionName.equals(Shape.GOTO))
+                        addStr = "INSERT INTO scripts VALUES "
+                                + String.format("('%s', '%s', '%s', NULL, '%s', NULL, NULL, '%s', NULL)",
+                                gameName, shapeName, triggerName, actionName, actionRecipient)
+                                + ";";
+                }
+                db.execSQL(addStr);
+            }
+        }
+    }
+    // helper function to print table, shoudl be removed after debugging
+    // https://stackoverflow.com/questions/27003486/printing-all-rows-of-a-sqlite-database-in-android
+    private String tableToString(String tableName) {
+
+        String tableString = String.format("Table %s:\n", tableName);
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + tableName, null);
+
+        tableString += cursorToString(cursor);
+        return tableString;
+    }
+
+    private String cursorToString(Cursor cursor) {
+        String cursorString = "";
+        if (cursor.moveToFirst() ){
+            String[] columnNames = cursor.getColumnNames();
+            for (String name: columnNames)
+                cursorString += String.format("%s ", name);
+            cursorString += "\n";
+            do {
+                for (String name: columnNames) {
+                    cursorString += String.format("%s  ",
+                            cursor.getString(cursor.getColumnIndex(name)));
+                }
+                cursorString += "\n";
+            } while (cursor.moveToNext());
+        }
+        cursorString += "\n";
+        return cursorString;
+    }
+    // end of helper function to print tables
+
+    private boolean checkTableExist(String tableName) {
+        String[] queryParameters = {tableName};
+        Cursor tablesCursor = db.rawQuery("SELECT * FROM sqlite_master WHERE type='table' AND name LIKE ?;",
+                queryParameters);
+        return tablesCursor.getCount() != 0;
+    }
+
+    private void setupGameTable() {
+        String clearStr = "DROP TABLE IF EXISTS games;";
+        db.execSQL(clearStr);
+        String setupStr = "CREATE TABLE games ("
+                + "game_name TEXT,"
+                + "game_icon TEXT,"
+                + "_id INTEGER PRIMARY KEY AUTOINCREMENT"
+                + ");";
+        db.execSQL(setupStr);
+    }
+
+    private void setupPageTable() {
+        String clearStr = "DROP TABLE IF EXISTS pages;";
+        db.execSQL(clearStr);
+        String setupStr = "CREATE TABLE pages ("
+                + "page_name TEXT,"
+                + "game_name TEXT,"
+                + "visible INTEGER,"
+                + "_id INTEGER PRIMARY KEY AUTOINCREMENT"
+                + ");";
+        db.execSQL(setupStr);
+    }
+
+    private void setupShapeTable() {
+        String clearStr = "DROP TABLE IF EXISTS shapes;";
+        db.execSQL(clearStr);
+        String setupStr = "CREATE TABLE shapes ("
+                + "shape_name TEXT,"
+                + "page_name TEXT,"
+                + "game_name TEXT,"
+                + "caption TEXT,"
+                + "image_file TEXT,"
+                + "in_possession INTEGER,"
+                + "possessable INTEGER,"
+                + "visible INTEGER,"
+                + "movable INTEGER,"
+                + "x_position INTEGER,"
+                + "y_position INTEGER,"
+                + "width INTEGER,"
+                + "height INTEGER,"
+                + "_id INTEGER PRIMARY KEY AUTOINCREMENT"
+                + ");";
+        db.execSQL(setupStr);
+    }
+
+    private void setupTriggerTable() {
+        String clearStr = "DROP TABLE IF EXISTS triggers;";
+        db.execSQL(clearStr);
+        String setupStr = "CREATE TABLE triggers ("
+                + "trigger_name TEXT,"
+                + "shape_name TEXT,"
+                + "game_name TEXT,"
+                + "trigger_recipient TEXT,"
+                + "_id INTEGER PRIMARY KEY AUTOINCREMENT"
+                + ");";
+        db.execSQL(setupStr);
+    }
+
+    private void setupActionTable() {
+        String clearStr = "DROP TABLE IF EXISTS actions;";
+        db.execSQL(clearStr);
+        String setupStr = "CREATE TABLE actions ("
+                + "action_name TEXT,"
+                + "trigger_name TEXT,"
+                + "shape_name TEXT,"
+                + "game_name TEXT,"
+                + "action_recipient TEXT,"
+                + "_id INTEGER PRIMARY KEY AUTOINCREMENT"
+                + ");";
+        db.execSQL(setupStr);
+    }
+
+    private void setupScriptTable() {
+        String clearStr = "DROP TABLE IF EXISTS scripts;";
+        db.execSQL(clearStr);
+        String setupStr = "CREATE TABLE scripts ("
+                + "game_name TEXT,"
+                + "shape_name TEXT,"
+                + "trigger_name TEXT," // CLICK, ENTER, DROP
+                + "trigger_recipient TEXT," // Drop recipient
+                + "action_name TEXT,"
+                + "show_hide_recipient TEXT,"
+                + "play_recipient TEXT,"
+                + "goto_recipient TEXT,"
+                + "_id INTEGER PRIMARY KEY AUTOINCREMENT"
+                + ");";
+        db.execSQL(setupStr);
+    }
 
     @Override
     public void onCancelShapeClick(View view) {
         //Toast toast = Toast.makeText(getApplicationContext(), "Cancel Clicked", Toast.LENGTH_SHORT);
         //toast.show();
         addShapeDialogFragment.dismiss();
-
     }
 
 }
