@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -15,6 +16,8 @@ public class PlayGameActivity extends AppCompatActivity {
     SQLiteDatabase db;
     private Document doc;
     private LinearLayout mLayout;
+    private Possessions possessions;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +25,15 @@ public class PlayGameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_play_game);
         mLayout = (LinearLayout)findViewById(R.id.loadGame);
         db = openOrCreateDatabase("GamesDB",MODE_PRIVATE,null);
+
+        mLayout.setOrientation(LinearLayout.VERTICAL);
+        mLayout.setWeightSum(1.0f);
+        mLayout.setVerticalGravity(Gravity.BOTTOM);
+        possessions = new Possessions(this.getApplicationContext());
+
+
+
+
 
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
@@ -128,7 +140,9 @@ public class PlayGameActivity extends AppCompatActivity {
         cursorG.moveToFirst();
         for(int i = 0; i < cursorG.getCount(); i++){
             doc = new Document(this.getApplicationContext(), cursorG.getString(0), "", "");
+
         }
+
 
 
         //setup Pages
@@ -150,6 +164,8 @@ public class PlayGameActivity extends AppCompatActivity {
                 vis = true;
             }
             Page p = new Page(this.getApplicationContext(), vis); //might want to add more information about a page to a page setting itself up
+            p.setLayoutParams(doc.getLpPossessions());
+
             pages[i] = p;
             int pageId = cursor.getInt(3);
             p.setPageName(cursor.getString(0));
@@ -210,13 +226,15 @@ public class PlayGameActivity extends AppCompatActivity {
                 cursorS.moveToNext();
             }
             //mLayout.removeView(p);
-            doc.addView(p);
+            doc.addView(p, 0);
             if (doc.getParent() != null) {
                 ((ViewGroup)doc.getParent()).removeView(doc);
             }
             //mLayout.addView(doc);
             cursor.moveToNext();
         }
+//        possessions.setLayoutParams(doc.getLpPossessions());
+//        doc.addView(possessions);
         mLayout.addView(doc);
 
     }
