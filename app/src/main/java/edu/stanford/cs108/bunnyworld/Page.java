@@ -194,7 +194,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         this.setBackgroundColor(Color.WHITE);
-
+        System.out.println("#1 in onDraw, dragging = " + dragging);
         if(dragging) {
             flicker(canvas, selectedShape);
         }
@@ -252,6 +252,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
         switch(action) {
             case DragEvent.ACTION_DRAG_STARTED:
                 System.out.println("ACTION_DRAG_STARTED In page");
+                dragging = true;
                 if(selectedShape != null) {
                     selectedShape.setVisible(false);
                     invalidate();
@@ -260,6 +261,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
 
             case DragEvent.ACTION_DRAG_ENTERED:
                 System.out.println("ACTION_DRAG_ENTERED In page");
+                dragging = true;
                 if(selectedShape != null) selectedShape.setInPossession(false);
                 return true;
 
@@ -269,11 +271,13 @@ public class Page extends View /*implements View.OnClickListener*/ {
 
             case DragEvent.ACTION_DRAG_EXITED:
                 System.out.println("ACTION_DRAG_EXITED In page");
+                dragging = true;
                 if(selectedShape != null) selectedShape.setInPossession(true);
                 return true;
 
             case DragEvent.ACTION_DROP:
                 System.out.println("ACTION_DRAG_DROP In page");
+                dragging = false;
                 //if()
                 selectedShape = new Shape(event.getClipData().getItemAt(1).getText().toString(), this.getContext());
                 selectedShape.setName(event.getClipData().getItemAt(0).getText().toString());
@@ -295,6 +299,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
 
             case DragEvent.ACTION_DRAG_ENDED:
                 System.out.println("ACTION_DRAG_ENDED In page");
+                dragging = false;
                 if(event.getResult()){
                     invalidate();
                     return true;
@@ -313,12 +318,22 @@ public class Page extends View /*implements View.OnClickListener*/ {
     }
 
     void flicker(Canvas canvas, Shape sh) {
-        System.out.println("Called FLICKER");
+        System.out.println("Called FLICKER method");
+
         for (Shape shape2 : shapes) {
-            System.out.println("Called FLICKER");
-            if(shape2.getOnDropShapes().contains(sh.getName())) {
+//            System.out.println("In FLICKER For loop, current shape: " + shape2.getName());
+            if(shape2.isVisible()) {
+                System.out.println("In FLICKER For loop, current shape is visible: " + shape2.getName());
+                System.out.println("FLICKER this shape's getOnDropShapes: ");
+                List<String> getOnDropNames = shape2.getOnDropShapes();
+                for(String shape3 : getOnDropNames) {
+                    System.out.println("FLICKER    " + shape3);
+                }
+            }
+
+  /*            if(shape2.getOnDropShapes().contains(sh.getName())) {
                 System.out.println("FLICKER this one is dragging" + sh.getName() + " this one is flickering " + shape2.getName());
- /*               int rectX1 = sh.getX1();
+                int rectX1 = sh.getX1();
                 int rectY1 = sh.getY1();
                 int rectX2 = sh.getX2();
                 int rectY2 = sh.getY2();
@@ -328,8 +343,9 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 boundaryPaint.setStrokeWidth(5.0f);
                 boundaryPaint.setColor(Color.rgb(0,255,0));
                 canvas.drawRect(rectX1-10, rectY1+10, rectX2+10, rectY2-10, boundaryPaint);
+                }
                 */
-            }
+
         }
 
     }

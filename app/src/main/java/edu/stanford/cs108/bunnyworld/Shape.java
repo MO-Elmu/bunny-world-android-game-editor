@@ -334,33 +334,33 @@ public class Shape /* implements View.OnDragListener, View.OnLongClickListener*/
     }
 
     public void execOnDropScript(Context context, ViewGroup game, Page parentPage, String shapeName, int x1, int x2, int y1, int y2){
-        System.out.println("#1 PAGE SHAPE " +parentPage.getPageName()+shapeName);
-        System.out.println("#1 drop script " +onDropScript);
-        System.out.println("#1 EXEC drop script  "+onDrop + " "+onDropScript.trim().isEmpty()+isValidScript(onDropScript));
+        System.out.println("PAGE SHAPE " +parentPage.getPageName()+shapeName);
+        System.out.println("drop script " +onDropScript);
+        System.out.println("EXEC drop script  "+onDrop + " "+onDropScript.trim().isEmpty()+isValidScript(onDropScript));
         if(!onDrop || onDropScript.trim().isEmpty() || !isValidScript(onDropScript)) return;
         populateOnDropShapesArray(onDropScript);
-        System.out.println("#1 about to iter drop shapes");
+        System.out.println("about to iter drop shapes");
         for(int i=0; i<onDropShapes.size(); i++){
 
-            System.out.println("#1 iter drop shapes");
+            System.out.println("iter drop shapes");
             System.out.println(onDropShapes.get(i));
 
             System.out.println(shapeName);
-            System.out.println("#1 parent page "+parentPage.getPageName());
+            System.out.println("parent page "+parentPage.getPageName());
             /**if(onDropShapes.get(i).equals(shapeName)) {
 
              execScripts(parseOnDropScript(onDropScript).get(i), context, game, parentPage);
              }*/
             System.out.println(parentPage.shapes);
             for (Shape sh : parentPage.shapes){
-                System.out.println("#1 finding the drop shape in the page");
-                System.out.println("#1 SHAPE " + sh.getName());
+                System.out.println("finding the drop shape in the page");
+                System.out.println("SHAPE " + sh.getName());
 
-                System.out.println("#1 DROP SHAPE " + onDropShapes.get(i));
+                System.out.println("DROP SHAPE " + onDropShapes.get(i));
                 if(onDropShapes.get(i).equals(sh.getName())){
-                    System.out.println("#1 DROP SHAPE " + sh.getName());
+                    System.out.println("DROP SHAPE " + sh.getName());
                     if( x1 < sh.getX2() && x2 > sh.getX1() && y1 < sh.getY2() && y2>sh.getY1()) {
-                        System.out.println("#1 OVERLAP");
+                        System.out.println("OVERLAP");
                         execScripts(parseOnDropScript(onDropScript).get(i), context, game, parentPage);
                     }
                 }
