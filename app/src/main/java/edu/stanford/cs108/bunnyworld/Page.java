@@ -31,14 +31,13 @@ import java.util.List;
 public class Page extends View /*implements View.OnClickListener*/ {
     protected List<Shape> shapes = new ArrayList<>();
     private int shapeCounter = 0;
-
     private Shape selectedShape;
     private int prevX,prevY, pX, pY;
     private boolean visibility;
     private boolean dragging;
+    private int starterPage;
 
     private String pageName = "";
-
 
     private class TapGestureListener extends
             GestureDetector.SimpleOnGestureListener {
@@ -49,11 +48,9 @@ public class Page extends View /*implements View.OnClickListener*/ {
             toast.show();
             return true;
         }
-
     }
 
     private GestureDetectorCompat mDetector;
-
 
 
     /****** View.DragShadowBuilder methods overridden by the our ShapeDragShadowBuilder Class ******/
@@ -72,7 +69,6 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 outShadowSize.set(400, 400);
                 outShadowTouchPoint.set(selectedShape.getWidth()/2, selectedShape.getHeight()/2);
             }
-
         }
 
         @Override
@@ -82,7 +78,6 @@ public class Page extends View /*implements View.OnClickListener*/ {
             selectedShape.drawSelf(canvas, Page.this.getContext());
             //}
         }
-
     }
 
 
@@ -350,8 +345,6 @@ public class Page extends View /*implements View.OnClickListener*/ {
 
     }
 
-
-
     public String getPageName() {
         return pageName;
     }
@@ -360,6 +353,20 @@ public class Page extends View /*implements View.OnClickListener*/ {
         this.pageName = pageName;
     }
 
+    public boolean getPageVisibility() {
+        return visibility;
+    }
 
+    public void setPageVisibility(boolean visibility) {
+        this.visibility = visibility;
+    }
+
+    public int getFirstPageFlag() {
+        return starterPage;
+    }
+
+    public void setPFirstPageFlag(int firstPageFlag) {
+        this.starterPage = firstPageFlag;
+    }
 
 }
