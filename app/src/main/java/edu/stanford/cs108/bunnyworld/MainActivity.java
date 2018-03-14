@@ -47,8 +47,17 @@ public class MainActivity extends AppCompatActivity {
         populateDatabase();
         checkDB();
 
-        loadGames();
+        //loadGames();
 
+
+    }
+
+    @Override
+    public void onResume()
+    {  // After a pause OR at startup
+        super.onResume();
+        //Refresh your stuff here
+        loadGames();
         GridView gridView = (GridView) findViewById(R.id.grid_view);
         gridView.setAdapter(new ImageAdapter(this, mThumbIds, text));
         final Button playButton = (Button) findViewById(R.id.playGame);
@@ -77,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadGames() {
+        text.clear();
+        mThumbIds.clear();
 
         String sql = "SELECT * FROM games;";
         Cursor cursor = db.rawQuery(sql,null);
