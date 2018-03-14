@@ -3,6 +3,8 @@ package edu.stanford.cs108.bunnyworld;
 import android.animation.LayoutTransition;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
@@ -13,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import java.io.Serializable;
+import java.util.List;
 
 // test test test
 
@@ -80,6 +83,43 @@ public class Document extends LinearLayout {
     public LinearLayout.LayoutParams getLpPossessions() {
         return lpPossessions;
     }
+
+    public void getChildren() {
+        System.out.println("DOCCHILDREN " + this.getChildCount());
+    }
+
+    /*
+    public void flicker(Canvas canvas, Shape sh) {
+        //    if(sh == null) sh =
+        System.out.println("FLICKER called while dragging shape: " + sh.getName());
+
+        for (Shape shape2 : shapes) {
+
+            if(shape2.isVisible()) {
+                List<String> getOnDropNames = shape2.getOnDropShapes();
+                System.out.println("FLICKER "  + shape2.getName() + " is visible");
+
+                for(String shape3 : getOnDropNames) {
+                    System.out.println("FLICKER "  + shape2.getName() + " has onDrop for " + shape3);
+                    if(shape3.equals(sh.getName())) {
+                        System.out.println("FLICKER DRAW RECTANGLE!!!");
+
+                        int rectX1 = shape2.getX1();
+                        int rectY1 = shape2.getY1();
+                        int rectX2 = shape2.getX2();
+                        int rectY2 = shape2.getY2();
+
+                        Paint boundaryPaint =  new Paint();
+                        boundaryPaint.setStyle(Paint.Style.STROKE);
+                        boundaryPaint.setStrokeWidth(10.0f);
+                        boundaryPaint.setColor(Color.rgb(0,255,0));
+                        canvas.drawRect(rectX1-10, rectY1+10, rectX2+10, rectY2-10, boundaryPaint);
+                    }
+                }
+                shape2.onDropShapes.clear();
+            }
+        }
+        */
 
 
 }

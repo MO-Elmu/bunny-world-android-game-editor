@@ -18,6 +18,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.content.Intent;
@@ -109,10 +110,6 @@ public class Page extends View /*implements View.OnClickListener*/ {
         // this.setBackgroundColor(Color.WHITE);  //Page background is white (specs)
     }
 
-    public List<Shape> getShapes() {
-        return shapes;
-    }
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int x, y;
@@ -176,7 +173,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 sh.drawSelf(canvas, this.getContext());
             }
         }
-//        if(isDragging) flicker(canvas, selectedShape);
+        if(isDragging) flicker(canvas, selectedShape);
     }
 
     //overridden to count for onEnter Scripts if it exists for any of the page's shapes
@@ -245,7 +242,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
 
             case DragEvent.ACTION_DROP:
                 isDragging = false;
-                System.out.println("ACTION_DRAG_DROP In page");
+                System.out.println("ACTION_DROP In page");
                 int currX, currY;
                 currX = (int) event.getX();
                 currY = (int) event.getY();
@@ -354,7 +351,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
     
 
     void flicker(Canvas canvas, Shape sh) {
-    //    if(sh == null) sh =
+        if(sh == null) return;
         System.out.println("FLICKER called while dragging shape: " + sh.getName());
 
         for (Shape shape2 : shapes) {
@@ -383,25 +380,10 @@ public class Page extends View /*implements View.OnClickListener*/ {
 
                 shape2.onDropShapes.clear();
             }
-
-  /*            if(shape2.getOnDropShapes().contains(sh.getName())) {
-                System.out.println("FLICKER this one is dragging" + sh.getName() + " this one is flickering " + shape2.getName());
-                int rectX1 = sh.getX1();
-                int rectY1 = sh.getY1();
-                int rectX2 = sh.getX2();
-                int rectY2 = sh.getY2();
-                System.out.println("trying to draw a rectangle FLICKER");
-                Paint boundaryPaint =  new Paint();
-                boundaryPaint.setStyle(Paint.Style.STROKE);
-                boundaryPaint.setStrokeWidth(5.0f);
-                boundaryPaint.setColor(Color.rgb(0,255,0));
-                canvas.drawRect(rectX1-10, rectY1+10, rectX2+10, rectY2-10, boundaryPaint);
-                }
-                */
-
         }
-
     }
+
+
 
     public String getPageName() {
         return pageName;
@@ -427,6 +409,10 @@ public class Page extends View /*implements View.OnClickListener*/ {
         this.starterPage = (firstPageFlag == 0) ? false : true;
     }
     /***** Setters and Getters *******/
+
+    public List<Shape> getShapes() {
+        return shapes;
+    }
 
     public boolean isPlayMode() {
         return playMode;
