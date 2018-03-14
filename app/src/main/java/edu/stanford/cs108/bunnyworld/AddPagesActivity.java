@@ -7,6 +7,8 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.GestureDetector;
@@ -233,7 +235,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
     		editingPage = false;
     		return;
 	}
-        newPage = new Page(this.getApplicationContext()); //add logic if the user leaves pageName blank
+        newPage = new Page(this); //add logic if the user leaves pageName blank
         if(pageName.getText().toString().trim().isEmpty()) newPage.setPageName("page " + (newGame.getChildCount()+1));
         else newPage.setPageName(pageName.getText().toString());
         adjustStarterPage(starterPage.isChecked());
@@ -307,6 +309,23 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         shape.setMovable(scriptsActions[3]);
         shape.setVisible(!scriptsActions[4]);
 
+        //For text dragging
+        if (  !shape.getText().trim().isEmpty() )  {
+            Rect rect = new Rect();
+            String s = shape.getText();
+            Paint p= new Paint();
+            p.setTextSize(shape.getTxtFontSize());
+            p.getTextBounds(shape.getText(), 0, shape.getText().length(), rect);
+            int w = rect.width();
+            int h = rect.height();
+
+            shape.setX2_absolute(shape.getX1() + w);
+            shape.setY2_absolute( shape.getY1() );
+            shape.setY1_absolute(shape.getY1() - h);
+            shape.setWidth(shape.getX2() - shape.getX1());
+            shape.setHeight(shape.getY2() - shape.getY1());
+        }
+        // XT Implemented end
     }
     //Shape dialog listener interface methods
     @Override
