@@ -394,6 +394,7 @@ public class Shape{
     
     
     public List<String> getOnDropShapes() {
+        populateOnDropShapesArray(getOnDropScript());
         return onDropShapes;
     }
     

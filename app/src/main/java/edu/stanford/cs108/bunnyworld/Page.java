@@ -36,6 +36,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
     private boolean visibility;
     private boolean playMode = false;
     private boolean starterPage = false;
+    private boolean isDragging = false;
 
     private String pageName = "";
 
@@ -163,6 +164,9 @@ public class Page extends View /*implements View.OnClickListener*/ {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         this.setBackgroundColor(Color.WHITE);
+
+        if(isDragging) System.out.println("DRAGGGGINNNGGG");
+
         if(!shapes.isEmpty()){
             Iterator<Shape> it = shapes.iterator();
             while (it.hasNext()) {
@@ -174,6 +178,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 sh.drawSelf(canvas, this.getContext());
             }
         }
+        if(isDragging) flicker(canvas, selectedShape);
     }
 
     //overridden to count for onEnter Scripts if it exists for any of the page's shapes
@@ -214,25 +219,34 @@ public class Page extends View /*implements View.OnClickListener*/ {
         // Handles all the expected events
         switch(action) {
             case DragEvent.ACTION_DRAG_STARTED:
+                this.isDragging = true;
                 System.out.println("ACTION_DRAG_STARTED In page");
                 //Check for onDrag events on the page
-                    return true;
+                invalidate();
+                return true;
 
             case DragEvent.ACTION_DRAG_ENTERED:
+                this.isDragging = true;
                 System.out.println("ACTION_DRAG_ENTERED In page");
                 if(selectedShape != null) selectedShape.setInPossession(false);
+                invalidate();
                 return true;
 
             case DragEvent.ACTION_DRAG_LOCATION:
+                isDragging = true;
                 // Ignore the event
+                invalidate();
                 return true;
 
             case DragEvent.ACTION_DRAG_EXITED:
+                isDragging = true;
                 System.out.println("ACTION_DRAG_EXITED In page");
                 if(selectedShape != null) selectedShape.setInPossession(true);
+                invalidate();
                 return true;
 
             case DragEvent.ACTION_DROP:
+                isDragging = false;
                 System.out.println("ACTION_DRAG_DROP In page");
                 int currX, currY;
                 currX = (int) event.getX();
@@ -320,6 +334,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 return false;
 
             case DragEvent.ACTION_DRAG_ENDED:
+                isDragging = false;
                 System.out.println("ACTION_DRAG_ENDED In page");
                 if(event.getResult()){
                     System.out.println("Drop is True In Page");
@@ -341,17 +356,30 @@ public class Page extends View /*implements View.OnClickListener*/ {
     
 
     void flicker(Canvas canvas, Shape sh) {
-        System.out.println("Called FLICKER method");
 
         for (Shape shape2 : shapes) {
-//            System.out.println("In FLICKER For loop, current shape: " + shape2.getName());
+
             if(shape2.isVisible()) {
-                System.out.println("In FLICKER For loop, current shape is visible: " + shape2.getName());
-                System.out.println("FLICKER this shape's getOnDropShapes: ");
                 List<String> getOnDropNames = shape2.getOnDropShapes();
+
                 for(String shape3 : getOnDropNames) {
-                    System.out.println("FLICKER    " + shape3);
+                    if(shape3.equals(sh.getName())) {
+                        System.out.println("FLICKER DRAW RECTANGLE!!!");
+
+                        int rectX1 = shape2.getX1();
+                        int rectY1 = shape2.getY1();
+                        int rectX2 = shape2.getX2();
+                        int rectY2 = shape2.getY2();
+
+                        Paint boundaryPaint =  new Paint();
+                        boundaryPaint.setStyle(Paint.Style.STROKE);
+                        boundaryPaint.setStrokeWidth(10.0f);
+                        boundaryPaint.setColor(Color.rgb(0,255,0));
+                        canvas.drawRect(rectX1-10, rectY1+10, rectX2+10, rectY2-10, boundaryPaint);
+                    }
                 }
+
+                shape2.onDropShapes.clear();
             }
 
   /*            if(shape2.getOnDropShapes().contains(sh.getName())) {
