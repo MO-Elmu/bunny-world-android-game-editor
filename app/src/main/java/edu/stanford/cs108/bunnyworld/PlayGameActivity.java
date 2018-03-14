@@ -170,6 +170,7 @@ public class PlayGameActivity extends AppCompatActivity {
             pages[i] = p;
             String pageName = cursor.getString(0);
             p.setPageName(cursor.getString(0));
+            p.setPlayMode(true);
 
             if (cursor.getInt(2) == 0) {
                 p.setVisibility(View.GONE);
