@@ -1,6 +1,8 @@
 package edu.stanford.cs108.bunnyworld;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -27,7 +29,6 @@ public class CreateGameActivity extends AppCompatActivity {
                 R.layout.spinner_layout,R.id.txt,list);
         iconSpinner = (Spinner)findViewById(R.id.icon_spinner);
         iconSpinner.setAdapter(adapter);
-
     }
 
     public void addGame(View view) {
@@ -36,6 +37,7 @@ public class CreateGameActivity extends AppCompatActivity {
         String name = gameName.getText().toString();
         String type = gameType.getText().toString();
         String iconName = iconSpinner.getSelectedItem().toString();
+
         Intent intent = new Intent(this, AddPagesActivity.class);
         intent.putExtra("gameName", name);
         intent.putExtra("game_type", type);

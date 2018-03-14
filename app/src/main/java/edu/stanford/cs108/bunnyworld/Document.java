@@ -14,6 +14,8 @@ import android.widget.LinearLayout;
 
 import java.io.Serializable;
 
+// test test test
+
 /**
  * Created by emohelw on 2/24/2018.
  */
@@ -32,16 +34,11 @@ public class Document extends LinearLayout {
     public Document(Context context) {
         super(context);
         this.setOrientation(LinearLayout.VERTICAL);
-        this.setWeightSum(1.0f);
+        this.setWeightSum(5.0f);
         this.setGravity(Gravity.BOTTOM);
-        //this.setBaselineAligned(false);
-        lpPossessions = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 0.3f);
-        lpPages = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,0, 0.7f);
+        lpPossessions = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 4.0f);
+        lpPages = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,0, 1.0f);
         this.setLayoutTransition(new LayoutTransition());  //regular animation enforced by the layout.
-        //possessions = new Possessions(context);
-        //possessions.setLayoutParams(lpPossessions);
-        //possessions.setVisibility(VISIBLE);
-        //this.addView(possessions);
     }
     public Document(Context context, String name) {
         this(context);
@@ -53,7 +50,6 @@ public class Document extends LinearLayout {
         this.gameName = name;
         this.iconName = iconName;
         //this.gameType = gameType;
-
     }
 
     public Document(Context context, AttributeSet attrs) {
@@ -64,6 +60,18 @@ public class Document extends LinearLayout {
         super(context, attrs, defStyleAttr);
     }
 
+    // add getters
+    public String getGameName() {
+        return gameName;
+    }
+
+    public String getIconName() {
+        return iconName;
+    }
+
+    public String getGameType() {
+        return gameType;
+    }
 
     //retrieve page and possessions layout
     public LinearLayout.LayoutParams getLpPages() {

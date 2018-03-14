@@ -12,6 +12,7 @@ class SingletonDataBase extends SQLiteOpenHelper {
 
     private static SingletonDataBase ourInstance; // Singleton Instance
     private Context context;
+
     //Database Info
     private static final String DATABASE_NAME = "GameDB";
     private static final int VERSION = 1;

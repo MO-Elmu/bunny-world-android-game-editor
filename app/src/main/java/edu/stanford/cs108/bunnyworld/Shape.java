@@ -24,12 +24,13 @@ import java.util.StringTokenizer;
  * Created by emohelw on 2/23/2018.
  */
 
-public class Shape /* implements View.OnDragListener, View.OnLongClickListener*/  {
+public class Shape{
 
     private String name = "";       // Shape name
     private boolean movable = true;
     private boolean visible = true;
     private boolean inPossession = false;
+    private int possessable = 0;
     protected String imageName = "";
     protected int imageIdentifier;
     private String text = "";
@@ -58,7 +59,11 @@ public class Shape /* implements View.OnDragListener, View.OnLongClickListener*/
     //container for the onDrop shapes
     List<String> onDropShapes = new ArrayList<>();
 
-
+    // constants
+    public static final String GOTO = "GOTO";
+    public static final String PLAY = "PLAY";
+    public static final String HIDE = "HIDE";
+    public static final String SHOW = "SHOW";
 
     // initialize all needed Paints
     private void init(){   //create and set all Paints
@@ -251,6 +256,7 @@ public class Shape /* implements View.OnDragListener, View.OnLongClickListener*/
                     System.out.println("PLAYING SOUND");
                     String soundFileName = entry.getValue();
                     int soundFileId = context.getResources().getIdentifier(soundFileName, "raw",context.getPackageName());
+                    if(soundFileId == 0) break;
                     MediaPlayer mp = MediaPlayer.create(context,soundFileId);
                     mp.start();
                     break;
@@ -258,37 +264,40 @@ public class Shape /* implements View.OnDragListener, View.OnLongClickListener*/
                     String pageName = entry.getValue();
                     System.out.println("GOTO SCRIPT!!! " + pageName  + " c: "+pageCount);
                     for(int i=0; i<pageCount; i++){
-                        final Page page = (Page)game.getChildAt(i);
-                        System.out.println("pagename " + pageName  + " pageItr: "+page.getPageName());
-                        if(pageName.equals(page.getPageName())){
-
-                            System.out.println("pn " + page.getPageName() );
-                            //parentPage.animate().translationY(parentPage.getHeight());
-
-                            page.setVis(true);
-                            parentPage.setVis(false);
-                            parentPage.setVisibility(View.GONE);
-                            //page.animate().translationY(parentPage.getHeight());
-                            page.setVisibility(View.VISIBLE);
-                            System.out.println("goto PAGE shapes:  "+page.getShapes());
-                            //page.clearAnimation();
-                        } else {
-                            page.setVis(false);
-                            page.setVisibility(View.GONE);
+                    	if(game.getChildAt(i) instanceof Page) {
+                        	final Page page = (Page)game.getChildAt(i);
+                        	System.out.println("pagename " + pageName  + " pageItr: "+page.getPageName());
+                        	if(pageName.equals(page.getPageName())){
+                        	
+                        	    System.out.println("pn " + page.getPageName() );
+                        	    //parentPage.animate().translationY(parentPage.getHeight());
+                        	
+                        	    page.setVis(true);
+                        	    parentPage.setVis(false);
+                        	    parentPage.setVisibility(View.GONE);
+                        	    //page.animate().translationY(parentPage.getHeight());
+                        	    page.setVisibility(View.VISIBLE);
+                        	    System.out.println("goto PAGE shapes:  "+page.getShapes());
+                        	    //page.clearAnimation();
+                        	} else {
+                        	    page.setVis(false);
+                        	    page.setVisibility(View.GONE);
+                        	}
                         }
                     }
                     break;
                 case "hide":
                     String shapeName = entry.getValue();
                     for(int i=0; i<pageCount; i++){
-                        final Page page = (Page)game.getChildAt(i);
-
-                        System.out.println( "#1 pageItr: "+page.getPageName());
-                        for (Shape sh : page.shapes){
-                            if(shapeName.equals(sh.getName())){
-                                sh.visible = false;
-                                page.invalidate();
-                            }
+                    	if(game.getChildAt(i) instanceof Page) { 
+                        	final Page page = (Page)game.getChildAt(i);
+                        	System.out.println( "#1 pageItr: "+page.getPageName());
+                        	for (Shape sh : page.shapes){
+                        	    if(shapeName.equals(sh.getName())){
+                        	        sh.visible = false;
+                        	        page.invalidate();
+                        	    }
+                        	}
                         }
                     }
                     break;
@@ -296,16 +305,17 @@ public class Shape /* implements View.OnDragListener, View.OnLongClickListener*/
                     String name = entry.getValue();
                     System.out.println("SHOWING! "+name);
                     for(int i=0; i<pageCount; i++){
-                        final Page page = (Page)game.getChildAt(i);
-
-                        System.out.println( "showing pageItr on enter : "+page.getPageName());
-                        for (Shape sh : page.shapes){
-                            System.out.println( "showing shape name : "+sh.getName());
-                            if(name.equals(sh.getName())){
-                                System.out.println("SHOWING2 "+ sh.getName());
-                                sh.visible = true;
-                                page.invalidate();
-                            }
+                    	if(game.getChildAt(i) instanceof Page) {
+                        	final Page page = (Page)game.getChildAt(i);
+                        	System.out.println( "showing pageItr on enter : "+page.getPageName());
+                        	for (Shape sh : page.shapes){
+                        	    System.out.println( "showing shape name : "+sh.getName());
+                        	    if(name.equals(sh.getName())){
+                        	        System.out.println("SHOWING2 "+ sh.getName());
+                        	        sh.visible = true;
+                        	        page.invalidate();
+                        	    }
+                        	}
                         }
                     }
                     break;
@@ -368,16 +378,29 @@ public class Shape /* implements View.OnDragListener, View.OnLongClickListener*/
         }
         onDropShapes.clear();
     }
-
-
+    
+    public boolean wouldRespondToDrop(String droppedShape){
+        boolean result = false;
+        populateOnDropShapesArray(onDropScript);
+        for(int i=0; i<onDropShapes.size(); i++){
+            if(onDropShapes.get(i).equals(droppedShape)) {
+                result = true;
+                break;
+            }
+        }
+        onDropShapes.clear();
+        return result;
+    }
+    
+    
     public List<String> getOnDropShapes() {
         return onDropShapes;
     }
-
+    
     /*** Setters and Getters ***/
-
-
-
+    
+    
+    
     //Shape name setters and getters
     public String getName() {
         return name;
@@ -476,6 +499,14 @@ public class Shape /* implements View.OnDragListener, View.OnLongClickListener*/
         this.inPossession = inPossession;
     }
 
+    public int getPossessable() {
+        return possessable;
+    }
+
+    public void setPossessable(int possessable) {
+        this.possessable = possessable;
+    }
+
     public int getX1() {
         return x1;
     }
@@ -512,27 +543,17 @@ public class Shape /* implements View.OnDragListener, View.OnLongClickListener*/
         return width;
     }
 
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
     public int getHeight() {
         return height;
     }
 
-    public void setHeight(int height) {
-        this.height = height;
+    public String getText() {
+        return text;
     }
 
-/*
-    @Override
-    public boolean onDrag(View view, DragEvent dragEvent) {
-        return false;
+    public String getImageName() {
+        return imageName;
     }
 
-    @Override
-    public boolean onLongClick(View view) {
-        return false;
-    }
-    */
+
 }
