@@ -6,14 +6,14 @@
     android:padding="3dp">
 
     <ImageView
-        android:id="@+id/os_images"
+        android:id="@+id/images"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:src="@mipmap/ic_launcher" />
 
     <TextView
-        android:layout_below="@+id/os_images"
-        android:id="@+id/os_texts"
+        android:layout_below="@+id/images"
+        android:id="@+id/texts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"

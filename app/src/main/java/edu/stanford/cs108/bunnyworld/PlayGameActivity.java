@@ -24,7 +24,7 @@ public class PlayGameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_game);
         mLayout = (LinearLayout)findViewById(R.id.loadGame);
-        db = openOrCreateDatabase("GamesDB",MODE_PRIVATE,null);
+        db = openOrCreateDatabase("BunnyDB",MODE_PRIVATE,null);
 
         mLayout.setOrientation(LinearLayout.VERTICAL);
         mLayout.setWeightSum(1.0f);
@@ -48,7 +48,7 @@ public class PlayGameActivity extends AppCompatActivity {
      * Load the games someone can play
      */
     public void loadGames() {
-        String loadGames = "SELECT name from games;";
+        String loadGames = "SELECT game_name from games;";
 
         System.err.println(loadGames);
         Cursor cursor = db.rawQuery(loadGames,null);
@@ -62,61 +62,62 @@ public class PlayGameActivity extends AppCompatActivity {
 
     }
 
-    private void setupShapeScript(Shape shape, int id) {
-        String loadScripts = "SELECT * from scripts where shape_id = "+id+";";
+    private void setupShapeScript(Shape shape, String name) {
+        String loadScripts = "SELECT * from scripts where shape_name = '"+name+"';";
 
         System.err.println(loadScripts);
         Cursor cursor = db.rawQuery(loadScripts,null);
 
         //iterate and add the checkmarks to the shape to the document
         cursor.moveToFirst();
-        int trigger, action, dropCount = 0;
+        String trigger, action;
+        int dropCount = 0;
         String clickScript = "", enterScript = "", dropScript = "";
         for(int i = 0; i < cursor.getCount(); i++){
             System.out.println(cursor.getInt(0));
-            trigger = cursor.getInt(0);
-            action = cursor.getInt(1);
-            System.out.println(trigger == 1);
+            trigger = cursor.getString(2);
+            action = cursor.getString(4);
+            //System.out.println(trigger == 1);
 
-            if (trigger == 1){
+            if (trigger.equals("CLICK")){
                 System.out.println("CLICK");
-                if (action == 1){
-                    clickScript += "hide " + cursor.getString(2) + " ";
-                } else if (action == 2){
-                    clickScript += "show " + cursor.getString(2) + " ";
-                } else if (action == 3){
-                    clickScript += "play " + cursor.getString(3) + " ";
-                } else if (action == 4){
-                    clickScript += "goto " + cursor.getString(4) + " ";
+                if (action.equals("HIDE")){
+                    clickScript += "hide " + cursor.getString(5) + " ";
+                } else if (action.equals("SHOW")){
+                    clickScript += "show " + cursor.getString(5) + " ";
+                } else if (action.equals("PLAY")){
+                    clickScript += "play " + cursor.getString(6) + " ";
+                } else if (action.equals("GOTO")){
+                    clickScript += "goto " + cursor.getString(7) + " ";
                 }
                 System.out.println(clickScript);
                 shape.setOnClick(TRUE);
-            } else if (trigger == 2){
+            } else if (trigger.equals("ENTER")){
                 System.out.println("ENTER");
-                if (action == 1){
-                    enterScript += "hide " + cursor.getString(2) + " ";
-                } else if (action == 2){
-                    enterScript += "show " + cursor.getString(2) + " ";
-                } else if (action == 3){
-                    enterScript += "play " + cursor.getString(3) + " ";
-                } else if (action == 4){
-                    enterScript += "goto " + cursor.getString(4) + " ";
+                if (action.equals("HIDE")){
+                    enterScript += "hide " + cursor.getString(5) + " ";
+                } else if (action.equals("SHOW")){
+                    enterScript += "show " + cursor.getString(5) + " ";
+                } else if (action.equals("PLAY")){
+                    enterScript += "play " + cursor.getString(6) + " ";
+                } else if (action.equals("GOTO")){
+                    enterScript += "goto " + cursor.getString(7) + " ";
                 }
                 System.out.println(enterScript);
                 shape.setOnEnter(TRUE);
-            } else if (trigger == 3){
+            } else if (trigger.equals("DROP")){
                 System.out.println("DROP");
                 if( dropCount == 0) {
-                    dropScript += cursor.getString(5) + " ";
+                    dropScript += cursor.getString(3) + " ";
                 }
-                if (action == 1){
-                    dropScript += "hide " + cursor.getString(2) + " ";
-                } else if (action == 2){
-                    dropScript += "show " + cursor.getString(2) + " ";
-                } else if (action == 3){
-                    dropScript += "play " + cursor.getString(3) + " ";
-                } else if (action == 4){
-                    dropScript += "goto " + cursor.getString(4) + " ";
+                if (action.equals("HIDE")){
+                    dropScript += "hide " + cursor.getString(5) + " ";
+                } else if (action.equals("SHOW")){
+                    dropScript += "show " + cursor.getString(5) + " ";
+                } else if (action.equals("PLAY")){
+                    dropScript += "play " + cursor.getString(6) + " ";
+                } else if (action.equals("GOTO")){
+                    dropScript += "goto " + cursor.getString(7) + " ";
                 }
                 System.out.println(dropScript);
                 shape.setOnDrop(TRUE);
@@ -133,7 +134,7 @@ public class PlayGameActivity extends AppCompatActivity {
     public void setupGame(String name) {
         //create the doc
 
-        String loadGame = "SELECT * from games where name = '"+name+"';";
+        String loadGame = "SELECT * from games where game_name = '"+name+"';";
         System.err.println(loadGame);
         Cursor cursorG = db.rawQuery(loadGame,null);
 
@@ -167,7 +168,7 @@ public class PlayGameActivity extends AppCompatActivity {
             p.setLayoutParams(doc.getLpPossessions());
 
             pages[i] = p;
-            int pageId = cursor.getInt(3);
+            String pageName = cursor.getString(0);
             p.setPageName(cursor.getString(0));
 
             if (cursor.getInt(2) == 0) {
@@ -178,7 +179,7 @@ public class PlayGameActivity extends AppCompatActivity {
 
 
             //add the shapes
-            String loadShapes = "SELECT * from shapes where page_id = "+pageId+";";
+            String loadShapes = "SELECT * from shapes where page_name = '"+pageName+"';";
 
             System.err.println(loadShapes);
             Cursor cursorS = db.rawQuery(loadShapes,null);
@@ -186,34 +187,34 @@ public class PlayGameActivity extends AppCompatActivity {
             cursorS.moveToFirst();
             boolean movable, visible;
             for(int j = 0; j < cursorS.getCount(); j++){
-                System.out.println(cursorS.getInt(1));//x
-                System.out.println(cursorS.getInt(2));//y
-                System.out.println(cursorS.getInt(3));//w
-                System.out.println(cursorS.getInt(4));//h
-                System.out.println(cursorS.getInt(5));//movable
-                System.out.println(cursorS.getInt(6));//visible
-                System.out.println(cursorS.getString(7));//imagename
-                System.out.println("shape ID "+cursorS.getInt(11));//imagename
+                System.out.println(cursorS.getInt(9));//x
+                System.out.println(cursorS.getInt(10));//y
+                System.out.println(cursorS.getInt(11));//w
+                System.out.println(cursorS.getInt(12));//h
+                System.out.println(cursorS.getInt(8));//movable
+                System.out.println(cursorS.getInt(7));//visible
+                System.out.println(cursorS.getString(4));//imagename
+                System.out.println("shape ID "+cursorS.getInt(4));//imagename
                 System.out.println("finished listing shape stuff");
-                if(cursorS.getInt(5) == 0) {
+                if(cursorS.getInt(8) == 0) {
                     movable = false;
                 } else {
                     movable = true;
                 }
-                if(cursorS.getInt(6) == 0) {
+                if(cursorS.getInt(7) == 0) {
                     visible = false;
                 } else {
                     visible = true;
                 }
-                Shape s = new Shape(cursorS.getInt(1), cursorS.getInt(2), cursorS.getInt(3)
-                        ,cursorS.getInt(4), movable, visible, cursorS.getString(7),this.getApplicationContext());
-                if (!cursorS.getString(8).equals("")){
-                    s.setText(cursorS.getString(8));
+                Shape s = new Shape(cursorS.getInt(9), cursorS.getInt(10), cursorS.getInt(11)
+                        ,cursorS.getInt(12), movable, visible, cursorS.getString(4),this.getApplicationContext());
+                if (!cursorS.getString(3).equals("")){
+                    s.setText(cursorS.getString(3));
                     float scaledFontSize = Integer.valueOf(12) * getResources().getDisplayMetrics().scaledDensity;
                     s.setTxtFontSize((int)scaledFontSize);
                 }
                 s.setName(cursorS.getString(0));
-                setupShapeScript(s, cursorS.getInt(11));
+                setupShapeScript(s, cursorS.getString(0));
                 shapes[j] = s;
 
                 //save shape
