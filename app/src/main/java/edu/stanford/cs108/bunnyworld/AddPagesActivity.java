@@ -564,7 +564,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
                         + ";";
                 db.execSQL(addStr);
 
-                for (Shape shape : page.shapes) {
+                for (Shape shape : page.getShapes()) {
                     String shapeName = shape.getName();
                     String imageName = shape.getImageName();
                     String caption = shape.getText();

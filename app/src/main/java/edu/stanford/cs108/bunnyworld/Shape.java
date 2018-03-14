@@ -316,7 +316,7 @@ public class Shape{
                                 final Page page = (Page) game.getChildAt(i);
 
                                 System.out.println("#1 pageItr: " + page.getPageName());
-                                for (Shape sh : page.shapes) {
+                                for (Shape sh : page.getShapes()) {
                                     if (shapeName.equals(sh.getName())) {
                                         sh.visible = false;
                                         page.invalidate();
@@ -334,7 +334,7 @@ public class Shape{
                             try {
                                 final Page page = (Page) game.getChildAt(i);
                                 System.out.println("showing pageItr on enter : " + page.getPageName());
-                                for (Shape sh : page.shapes) {
+                                for (Shape sh : page.getShapes()) {
                                     System.out.println("showing shape name : " + sh.getName());
                                     if (name.equals(sh.getName())) {
                                         System.out.println("SHOWING2 " + sh.getName());
@@ -393,8 +393,8 @@ public class Shape{
 
              execScripts(parseOnDropScript(onDropScript).get(i), context, game, parentPage);
              }*/
-            System.out.println(parentPage.shapes);
-            for (Shape sh : parentPage.shapes){
+            System.out.println(parentPage.getShapes());
+            for (Shape sh : parentPage.getShapes()){
                 System.out.println("finding the drop shape in the page");
                 System.out.println("SHAPE " + sh.getName());
 

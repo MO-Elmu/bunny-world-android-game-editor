@@ -31,7 +31,7 @@ import java.util.List;
  * TODO: document your custom view class.
  */
 public class Page extends View /*implements View.OnClickListener*/ {
-    protected List<Shape> shapes = new ArrayList<>();
+    private List<Shape> shapes = new ArrayList<>();
     private int shapeCounter = 0;
     private Shape selectedShape;
     private boolean visibility;
@@ -126,24 +126,25 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 	}                    
                     }
                     //if the clicked shape has an on click action scripts execute it
-                    if(selectedShape != null) selectedShape.execOnClickScript(getContext(),(ViewGroup)this.getParent(),this);
+                    if(selectedShape != null) {
+                        selectedShape.execOnClickScript(getContext(),(ViewGroup)this.getParent(),this);
+                        if (selectedShape.imageIdentifier != 0) {
+                            DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(), selectedShape.imageIdentifier);
+                            ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.getName());
+                            ClipData.Item item2_imageId = new ClipData.Item(selectedShape.imageName);
+                            String mimeTypes[] = {ClipDescription.MIMETYPE_TEXT_PLAIN};
+                            ClipData draggedShape = new ClipData(selectedShape.getName(), mimeTypes, item1_shapeName);
+                            draggedShape.addItem(item2_imageId);
+                            this.startDrag(draggedShape, shapeShadowBuilder, null, 0);
+                            selectedShape.setVisible(false);
+                            invalidate();
+                        }
+
+                    }
                 }
                 invalidate();
                 break;
             case MotionEvent.ACTION_MOVE:
-                if(selectedShape != null) {
-                    if (selectedShape.imageIdentifier != 0) {
-                        DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(), selectedShape.imageIdentifier);
-                        ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.getName());
-                        ClipData.Item item2_imageId = new ClipData.Item(selectedShape.imageName);
-                        String mimeTypes[] = {ClipDescription.MIMETYPE_TEXT_PLAIN};
-                        ClipData draggedShape = new ClipData(selectedShape.getName(), mimeTypes, item1_shapeName);
-                        draggedShape.addItem(item2_imageId);
-                        this.startDrag(draggedShape, shapeShadowBuilder, null, 0);
-                        selectedShape.setVisible(false);
-                        invalidate();
-                    }
-                }
 
                 break;
             case MotionEvent.ACTION_UP:
@@ -332,12 +333,12 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 isDragging = false;
                 System.out.println("ACTION_DRAG_ENDED In page");
                 if(event.getResult()){
-                    System.out.println("Drop is True In Page");
+                    System.out.println("Drop Ended In Page");
                     invalidate();
                     selectedShape = null;
                     return true;
                 }
-                System.out.println("Drop is false In Page");
+                System.out.println("Drop not Ended In Page");
                 invalidate();
                 selectedShape = null;
                 return true;
