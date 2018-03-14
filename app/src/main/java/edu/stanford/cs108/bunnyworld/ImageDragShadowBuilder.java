@@ -18,7 +18,6 @@ public class ImageDragShadowBuilder extends View.DragShadowBuilder {
 
     public static View.DragShadowBuilder fromResource(Context context, int drawableId) {
         ImageDragShadowBuilder builder = new ImageDragShadowBuilder();
-
         builder.shadow = context.getResources().getDrawable(drawableId);
         if (builder.shadow == null) {
             throw new NullPointerException("Drawable from id is null");

@@ -90,12 +90,12 @@ public class Page extends View /*implements View.OnClickListener*/ {
     }
 
     public Page(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context);
         init(attrs, 0);
     }
 
     public Page(Context context, boolean visibility) {
-        super(context);
+        this(context);
         this.visibility = visibility;
     }
 
@@ -134,15 +134,17 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 break;
             case MotionEvent.ACTION_MOVE:
                 if(selectedShape != null) {
-                    DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(),selectedShape.imageIdentifier);
-                    ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.getName());
-                    ClipData.Item item2_imageId = new ClipData.Item(selectedShape.imageName);
-                    String mimeTypes[] = {ClipDescription.MIMETYPE_TEXT_PLAIN};
-                    ClipData draggedShape = new ClipData(selectedShape.getName(), mimeTypes, item1_shapeName);
-                    draggedShape.addItem(item2_imageId);
-                    this.startDrag(draggedShape, shapeShadowBuilder, null, 0);
-                    selectedShape.setVisible(false);
-                    invalidate();
+                    if (selectedShape.imageIdentifier != 0) {
+                        DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(), selectedShape.imageIdentifier);
+                        ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.getName());
+                        ClipData.Item item2_imageId = new ClipData.Item(selectedShape.imageName);
+                        String mimeTypes[] = {ClipDescription.MIMETYPE_TEXT_PLAIN};
+                        ClipData draggedShape = new ClipData(selectedShape.getName(), mimeTypes, item1_shapeName);
+                        draggedShape.addItem(item2_imageId);
+                        this.startDrag(draggedShape, shapeShadowBuilder, null, 0);
+                        selectedShape.setVisible(false);
+                        invalidate();
+                    }
                 }
 
                 break;
