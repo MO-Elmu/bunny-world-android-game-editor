@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
         String dataStr1 = "INSERT INTO games VALUES "
                 + "('Bunny World'," + bunn + ",NULL);";
         String dataStr2 = "INSERT INTO pages VALUES "
-                + "('page1', 'Bunny World', 1 ,NULL), ('page2', 'Bunny World', 0 ,NULL), ('page3', 'Bunny World', 0 ,NULL), ('page4', 'Bunny World', 0 ,NULL);";
+                + "('page1', 'Bunny World', 1 ,NULL), ('page2', 'Bunny World', 0 ,NULL), ('page3', 'Bunny World', 0 ,NULL), ('page4', 'Bunny World', 0 ,NULL), ('page5', 'Bunny World', 0 ,NULL);";
         String dataStr3 = "INSERT INTO shapes VALUES "
                 + "('shape1', 'page2', 'Bunny World', '','mystic', 0, 0,1,0, 100,100,200,200,NULL);";
         String dataStr4 = "INSERT INTO shapes VALUES "
@@ -202,7 +202,9 @@ public class MainActivity extends AppCompatActivity {
                 + "('shape5', 'page3', 'Bunny World','EEK fire room. run away!','',0,0,1,0,100,100,100,100,NULL), ('shape9', 'page3', 'Bunny World', '','carrot',0,1,1,1,100,500,100,100,NULL),"
                 + "('shape10','page1', 'Bunny World', '','',0,0,1,0,520,500,100,100,NULL), ('shape11', 'page3', 'Bunny World', '','',0,0,1,0,520,600,100,100,NULL),"
                 + "('shape12','page4', 'Bunny World', '','death',0,0,1,0,320,200,200,200,NULL), ('shape13','page4', 'Bunny World','you must appease the bunny of death', '', 0,0,1,0,120,600,100,100,NULL),"
-                + "('shape15', 'page4', 'Bunny World', '','',0,0,0,0,500,500,100,100,NULL);";
+                + "('shape15', 'page4', 'Bunny World', '','',0,0,0,0,500,600,100,100,NULL), ('shape16', 'page5', 'Bunny World', '', 'carrot', 0,0,1,0, 20,200,100,100, NULL),"
+                + "('shape17', 'page5', 'Bunny World', '', 'carrot', 0,0,1,0, 500,400,100,100, NULL),('shape18', 'page5', 'Bunny World', '', 'carrot', 0,0,1,0, 200,400,100,100, NULL),"
+                + "('shape19', 'page5', 'Bunny World', 'You Win! Yay!', '', 0,0,1,0, 300,300,100,100, NULL);";
 
         String dataStr7 = "INSERT INTO scripts VALUES "
                 + " ('Bunny World', 'shape4', 'CLICK','','GOTO','','','page2',NULL), ('Bunny World', 'shape1', 'CLICK','', 'HIDE','shape9', '', '',NULL),"
@@ -211,7 +213,8 @@ public class MainActivity extends AppCompatActivity {
                 +" ('Bunny World', 'shape1', 'ENTER', '', 'SHOW', 'shape6', '', '',NULL), ('Bunny World', 'shape7','ENTER','','PLAY', '','fire', '',NULL),"
                 +" ('Bunny World', 'shape12', 'ENTER', '', 'PLAY', '','evillaugh', '',NULL), ('Bunny World', 'shape1', 'CLICK', '', 'PLAY', '','munch', '',NULL),"
                 +" ('Bunny World', 'shape12', 'DROP', 'shape9', 'PLAY', '','munching', '',NULL), ('Bunny World', 'shape12', 'DROP', 'shape9', 'SHOW', 'shape15', '', '',NULL),"
-                +" ('Bunny World', 'shape12', 'DROP', 'shape9', 'HIDE', 'shape12', '', '' ,NULL), ('Bunny World', 'shape12', 'DROP', 'shape9','HIDE', 'shape9','','',NULL);";
+                +" ('Bunny World', 'shape12', 'DROP', 'shape9', 'HIDE', 'shape12', '', '' ,NULL), ('Bunny World', 'shape12', 'DROP', 'shape9','HIDE', 'shape9','','',NULL),"
+                +" ('Bunny World', 'shape19', 'ENTER','','PLAY','','hooray','',NULL), ('Bunny World', 'shape15', 'CLICK', '', 'GOTO', '','','page5',NULL);";
 
         //on click = 1, on enter = 2, on drop = 3
         //hide = 1, show = 2, play = 3, goto = 4
