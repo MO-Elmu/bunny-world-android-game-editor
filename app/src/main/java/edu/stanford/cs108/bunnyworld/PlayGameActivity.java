@@ -227,6 +227,7 @@ public class PlayGameActivity extends AppCompatActivity {
                 cursorS.moveToNext();
             }
             //mLayout.removeView(p);
+            p.setLayoutParams(doc.getLpPages());
             doc.addView(p, 0);
             if (doc.getParent() != null) {
                 ((ViewGroup)doc.getParent()).removeView(doc);
@@ -234,8 +235,8 @@ public class PlayGameActivity extends AppCompatActivity {
             //mLayout.addView(doc);
             cursor.moveToNext();
         }
-//        possessions.setLayoutParams(doc.getLpPossessions());
-//        doc.addView(possessions);
+        possessions.setLayoutParams(doc.getLpPossessions());
+        doc.addView(possessions);
         mLayout.addView(doc);
 
     }

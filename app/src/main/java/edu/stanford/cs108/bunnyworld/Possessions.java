@@ -227,4 +227,7 @@ public class Possessions extends View {
 
     }
 
+    public Shape getSelectedShape() {
+        return selectedShape;
+    }
 }

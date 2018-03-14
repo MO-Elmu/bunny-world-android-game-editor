@@ -165,8 +165,6 @@ public class Page extends View /*implements View.OnClickListener*/ {
         super.onDraw(canvas);
         this.setBackgroundColor(Color.WHITE);
 
-        if(isDragging) System.out.println("DRAGGGGINNNGGG");
-
         if(!shapes.isEmpty()){
             Iterator<Shape> it = shapes.iterator();
             while (it.hasNext()) {
@@ -178,7 +176,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 sh.drawSelf(canvas, this.getContext());
             }
         }
-        if(isDragging) flicker(canvas, selectedShape);
+//        if(isDragging) flicker(canvas, selectedShape);
     }
 
     //overridden to count for onEnter Scripts if it exists for any of the page's shapes
@@ -356,13 +354,17 @@ public class Page extends View /*implements View.OnClickListener*/ {
     
 
     void flicker(Canvas canvas, Shape sh) {
+    //    if(sh == null) sh =
+        System.out.println("FLICKER called while dragging shape: " + sh.getName());
 
         for (Shape shape2 : shapes) {
 
             if(shape2.isVisible()) {
                 List<String> getOnDropNames = shape2.getOnDropShapes();
+                System.out.println("FLICKER "  + shape2.getName() + " is visible");
 
                 for(String shape3 : getOnDropNames) {
+                    System.out.println("FLICKER "  + shape2.getName() + " has onDrop for " + shape3);
                     if(shape3.equals(sh.getName())) {
                         System.out.println("FLICKER DRAW RECTANGLE!!!");
 
