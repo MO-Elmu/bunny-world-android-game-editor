@@ -282,57 +282,72 @@ public class Shape{
                         mp.start();
                         break;
                     case "goto":
-                        String pageName = name;
-                        System.out.println("GOTO SCRIPT!!! " + pageName + " c: " + pageCount);
-                        for (int i = 0; i < pageCount; i++) {
-                            final Page page = (Page) game.getChildAt(i);
-                            System.out.println("pagename " + pageName + " pageItr: " + page.getPageName());
-                            if (pageName.equals(page.getPageName())) {
+                        try {
+                            String pageName = name;
+                            System.out.println("GOTO SCRIPT!!! " + pageName + " c: " + pageCount);
+                            for (int i = 0; i < pageCount; i++) {
+                                final Page page = (Page) game.getChildAt(i);
+                                System.out.println("pagename " + pageName + " pageItr: " + page.getPageName());
+                                if (pageName.equals(page.getPageName())) {
 
-                                System.out.println("pn " + page.getPageName());
-                                //parentPage.animate().translationY(parentPage.getHeight());
+                                    System.out.println("pn " + page.getPageName());
+                                    //parentPage.animate().translationY(parentPage.getHeight());
 
-                                page.setVis(true);
-                                parentPage.setVis(false);
-                                parentPage.setVisibility(View.GONE);
-                                //page.animate().translationY(parentPage.getHeight());
-                                page.setVisibility(View.VISIBLE);
-                                System.out.println("goto PAGE shapes:  " + page.getShapes());
-                                //page.clearAnimation();
-                            } else {
-                                page.setVis(false);
-                                page.setVisibility(View.GONE);
+                                    page.setVis(true);
+                                    parentPage.setVis(false);
+                                    parentPage.setVisibility(View.GONE);
+                                    //page.animate().translationY(parentPage.getHeight());
+                                    page.setVisibility(View.VISIBLE);
+                                    System.out.println("goto PAGE shapes:  " + page.getShapes());
+                                    //page.clearAnimation();
+                                } else {
+                                    page.setVis(false);
+                                    page.setVisibility(View.GONE);
+                                }
                             }
+                        } catch (ClassCastException e) {
+
                         }
                         break;
                     case "hide":
-                        String shapeName = name;
-                        for (int i = 0; i < pageCount; i++) {
-                            final Page page = (Page) game.getChildAt(i);
+                        try {
+                            String shapeName = name;
+                            for (int i = 0; i < pageCount; i++) {
+                                final Page page = (Page) game.getChildAt(i);
 
-                            System.out.println("#1 pageItr: " + page.getPageName());
-                            for (Shape sh : page.shapes) {
-                                if (shapeName.equals(sh.getName())) {
-                                    sh.visible = false;
-                                    page.invalidate();
+                                System.out.println("#1 pageItr: " + page.getPageName());
+                                for (Shape sh : page.shapes) {
+                                    if (shapeName.equals(sh.getName())) {
+                                        sh.visible = false;
+                                        page.invalidate();
+                                    }
                                 }
                             }
+                        } catch (ClassCastException e) {
+
                         }
                         break;
                     case "show":
+
                         System.out.println("SHOWING! " + name);
                         for (int i = 0; i < pageCount; i++) {
-                            final Page page = (Page) game.getChildAt(i);
-
-                            System.out.println("showing pageItr on enter : " + page.getPageName());
-                            for (Shape sh : page.shapes) {
-                                System.out.println("showing shape name : " + sh.getName());
-                                if (name.equals(sh.getName())) {
-                                    System.out.println("SHOWING2 " + sh.getName());
-                                    sh.visible = true;
-                                    page.invalidate();
+                            try {
+                                final Page page = (Page) game.getChildAt(i);
+                                System.out.println("showing pageItr on enter : " + page.getPageName());
+                                for (Shape sh : page.shapes) {
+                                    System.out.println("showing shape name : " + sh.getName());
+                                    if (name.equals(sh.getName())) {
+                                        System.out.println("SHOWING2 " + sh.getName());
+                                        sh.visible = true;
+                                        page.invalidate();
+                                    }
                                 }
+
+                            } catch (ClassCastException e) {
+
                             }
+
+
                         }
                         break;
                     default:

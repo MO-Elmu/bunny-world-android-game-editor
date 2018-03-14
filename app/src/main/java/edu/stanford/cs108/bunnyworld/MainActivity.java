@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
                 + "('shape6', 'page1', 'Bunny World','','',0,0,0,0, 320,520,100,100,NULL), ('shape7', 'page3', 'Bunny World','','fire',0,0,1,0, 320,320,100,100,NULL),"
                 + "('shape5', 'page3', 'Bunny World','EEK fire room. run away!','',0,0,1,0,100,100,100,100,NULL), ('shape9', 'page3', 'Bunny World', '','carrot',0,1,1,1,100,500,100,100,NULL),"
                 + "('shape10','page1', 'Bunny World', '','',0,0,1,0,520,500,100,100,NULL), ('shape11', 'page3', 'Bunny World', '','',0,0,1,0,520,600,100,100,NULL),"
-                + "('shape12','page4', 'Bunny World', '','death',0,0,1,0,320,200,200,200,NULL), ('shape13','page4', 'Bunny World','you must appease the bunny of death', '', 0,0,1,0,120,600,100,100,NULL),"
+                + "('shape12','page4', 'Bunny World', '','death',0,0,1,0,320,200,200,200,NULL), ('shape13','page4', 'Bunny World','you must appease the bunny of death', '', 0,0,1,0,120,500,100,100,NULL),"
                 + "('shape15', 'page4', 'Bunny World', '','',0,0,0,0,500,600,100,100,NULL), ('shape16', 'page5', 'Bunny World', '', 'carrot', 0,0,1,0, 20,200,100,100, NULL),"
                 + "('shape17', 'page5', 'Bunny World', '', 'carrot', 0,0,1,0, 500,400,100,100, NULL),('shape18', 'page5', 'Bunny World', '', 'carrot', 0,0,1,0, 200,400,100,100, NULL),"
                 + "('shape19', 'page5', 'Bunny World', 'You Win! Yay!', '', 0,0,1,0, 300,300,100,100, NULL);";
