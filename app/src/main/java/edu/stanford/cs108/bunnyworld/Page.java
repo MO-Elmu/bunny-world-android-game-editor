@@ -185,7 +185,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
     @Override
     protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
-        if(visibility == View.VISIBLE){
+        if(this.visibility == true){
             for (Shape sh : shapes) {
                  sh.execOnEnterScript(getContext(),(ViewGroup)this.getParent(),this);
             }
