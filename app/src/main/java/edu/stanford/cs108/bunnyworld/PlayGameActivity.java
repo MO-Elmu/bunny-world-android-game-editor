@@ -31,10 +31,6 @@ public class PlayGameActivity extends AppCompatActivity {
         mLayout.setVerticalGravity(Gravity.BOTTOM);
         possessions = new Possessions(this.getApplicationContext());
 
-
-
-
-
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
 

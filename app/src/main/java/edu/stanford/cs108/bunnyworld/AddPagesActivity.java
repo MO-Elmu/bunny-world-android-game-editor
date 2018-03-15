@@ -49,6 +49,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         Intent intent = getIntent();
         String gameName = intent.getStringExtra("gameName");
         String gameType = intent.getStringExtra("game_type");
+        String gameMode = intent.getStringExtra("mode");
         int gameIcon = intent.getIntExtra("game_icon", 0);
         mLayout = (LinearLayout)findViewById(R.id.add_page);
         mLayout.setOrientation(LinearLayout.VERTICAL);
@@ -59,7 +60,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         mLayout.addView(possessions);
 
         LoadGame lga = new LoadGame();
-        if(intent.getStringExtra("mode").equals("edit")){
+        if(gameMode.equals("edit")){
             db = openOrCreateDatabase("BunnyDB",MODE_PRIVATE,null);
             lga.setupGame(intent.getStringExtra("game"), this.getApplicationContext(), db, mLayout);
         }
