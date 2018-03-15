@@ -17,6 +17,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
@@ -67,7 +68,6 @@ public class Possessions extends View {
     }
 
 
-
     /****** View.DragShadowBuilder methods overridden by the our ShapeDragShadowBuilder Class ******/
 
     /*** All this is done to allow us to use the Drag and Drop frame work to move
@@ -79,16 +79,16 @@ public class Possessions extends View {
     private class ShapeDragShadowBuilder extends View.DragShadowBuilder {
         @Override
         public void onProvideShadowMetrics(Point outShadowSize, Point outShadowTouchPoint) {
-            if(selectedShape != null) {
-                outShadowSize.set(selectedShape.getWidth()*2, selectedShape.getHeight()*2);
-                outShadowTouchPoint.set(selectedShape.getWidth()/2, selectedShape.getHeight()/2);
+            if (selectedShape != null) {
+                outShadowSize.set(selectedShape.getWidth() * 2, selectedShape.getHeight() * 2);
+                outShadowTouchPoint.set(selectedShape.getWidth() / 2, selectedShape.getHeight() / 2);
             }
 
         }
 
         @Override
         public void onDrawShadow(Canvas canvas) {
-            if(selectedShape != null) {
+            if (selectedShape != null) {
                 selectedShape.drawSelf(canvas, Possessions.this.getContext());
             }
         }
@@ -99,19 +99,21 @@ public class Possessions extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int x, y;
-        switch(event.getAction()){
+        switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                x = (int)event.getX();
-                y = (int)event.getY();
+ //               this.isDragging = true;
+                x = (int) event.getX();
+                y = (int) event.getY();
                 selectedShape = null;  //nullify the previously selected shape
-                if(!shapes.isEmpty()){
+                if (!shapes.isEmpty()) {
                     for (Shape sh : shapes) {
-                        if (sh.contains(x,y)) selectedShape = sh;  //select last added shape to the page
+                        if (sh.contains(x, y))
+                            selectedShape = sh;  //select last added shape to the page
                     }
                 }
 
-                if(selectedShape != null) {
-                    DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(),selectedShape.imageIdentifier);
+                if (selectedShape != null) {
+                    DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(), selectedShape.imageIdentifier);
                     ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.getName());
                     ClipData.Item item2_imageId = new ClipData.Item(selectedShape.imageName);
                     String mimeTypes[] = {ClipDescription.MIMETYPE_TEXT_PLAIN};
@@ -124,22 +126,12 @@ public class Possessions extends View {
 
                 invalidate();
                 break;
-            case MotionEvent.ACTION_MOVE:
-/*                if(selectedShape != null) {
-                    DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(),selectedShape.imageIdentifier);
-                    ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.getName());
-                    ClipData.Item item2_imageId = new ClipData.Item(selectedShape.imageName);
-                    String mimeTypes[] = {ClipDescription.MIMETYPE_TEXT_PLAIN};
-                    ClipData draggedShape = new ClipData(selectedShape.getName(), mimeTypes, item1_shapeName);
-                    draggedShape.addItem(item2_imageId);
-                    this.startDrag(draggedShape, shapeShadowBuilder, null, 0);
-                    selectedShape.setVisible(false);
-                    invalidate();
-                }
-*/
 
+            case MotionEvent.ACTION_MOVE:
                 break;
+
             case MotionEvent.ACTION_UP:
+//                this.isDragging = false;
                 selectedShape = null; //nullify selected shape when the user lift his finger
                 invalidate();
                 break;
@@ -153,39 +145,34 @@ public class Possessions extends View {
     public boolean onDragEvent(DragEvent event) {
         final int action = event.getAction();
         // Handles all the expected events
-        switch(action) {
+        switch (action) {
 
             case DragEvent.ACTION_DRAG_STARTED:
-                this.isDragging = true;
                 System.out.println("ACTION_DRAG_STARTED In Possessions");
                 return true;
 
             case DragEvent.ACTION_DRAG_ENTERED:
-                this.isDragging = true;
-                if(selectedShape != null) selectedShape.setInPossession(true);
+                if (selectedShape != null) selectedShape.setInPossession(true);
                 System.out.println("ACTION_DRAG_ENTERED In Possessions!!!!");
                 return true;
 
             case DragEvent.ACTION_DRAG_LOCATION:
-                isDragging = true;
                 //System.out.println("ACTION_DRAG_LOCATION In Possessions");
                 // Ignore the event
                 return true;
 
             case DragEvent.ACTION_DRAG_EXITED:
-                isDragging = true;
                 System.out.println("ACTION_DRAG_Exited In Possessions");
-                if(selectedShape != null) selectedShape.setInPossession(false);
+                if (selectedShape != null) selectedShape.setInPossession(false);
                 //System.out.println("ACTION_DRAG_EXITED In Possessions");
 //                invalidate();
                 return true;
 
             case DragEvent.ACTION_DROP:
-                isDragging = false;
                 int currX, currY;
                 currX = (int) event.getX();
                 currY = (int) event.getY();
-                if(selectedShape == null) {
+                if (selectedShape == null) {
                     System.out.println("ACTION_DROP NULL In Possessions");
                     selectedShape = new Shape(event.getClipData().getItemAt(1).getText().toString(), this.getContext());
                     selectedShape.setName(event.getClipData().getItemAt(0).getText().toString());
@@ -202,12 +189,12 @@ public class Possessions extends View {
                     return true;
                 }
 
-                if(selectedShape != null) {
+                if (selectedShape != null) {
                     System.out.println("ACTION_DROP ! NULL In Possessions");
-                    selectedShape.setX1(currX - (selectedShape.getWidth()/2));
-                    selectedShape.setY1(currY -(selectedShape.getHeight()/2));
-                    selectedShape.setX2(currX + (selectedShape.getWidth()/2));
-                    selectedShape.setY2(currY + (selectedShape.getHeight()/2));
+                    selectedShape.setX1(currX - (selectedShape.getWidth() / 2));
+                    selectedShape.setY1(currY - (selectedShape.getHeight() / 2));
+                    selectedShape.setX2(currX + (selectedShape.getWidth() / 2));
+                    selectedShape.setY2(currY + (selectedShape.getHeight() / 2));
  //                   organizePossessions();
                     selectedShape.setVisible(true);
                     invalidate();
@@ -217,15 +204,15 @@ public class Possessions extends View {
                 return false;
 
             case DragEvent.ACTION_DRAG_ENDED:
-                isDragging = false;
+//                organizePossessions();
                 System.out.println("ACTION_DRAG_ENDED In Possessions");
-                if(event.getResult()){
+                if (event.getResult()) {
                     System.out.println("Drop Ended In Possessions");
                     invalidate();
                     selectedShape = null;
                     return true;
                 }
-                if(selectedShape != null ){
+                if (selectedShape != null) {
                     System.out.println("Drop not Ended In Possessions");
                     selectedShape.setInPossession(true);
                     selectedShape.setVisible(true);
@@ -249,25 +236,31 @@ public class Possessions extends View {
         System.out.println("OG Called organizePossessions");
 //        int posX = Math.round(this.getX());
 //        int posY = Math.round(this.getY());
-        int posX = 20;
-        int posY = 1700;
-        System.out.println("OG PosX " + posX + " PosY " + posY);
-        System.out.println(shapes.size());
+        int posX = 10;
+        int posY = 10;
+        int shapeSize = 100;
+        System.out.println("OG " + shapes.size());
+        int right = this.getRight();
 
-        for(int i = 0; i < shapes.size(); i++) {
+        for (int i = 0; i < shapes.size(); i++) {
             Shape shape = shapes.get(i);
-            System.out.println("OG is moveable? " + shape.isMovable());
-        //    shape.setMovable(true);
+            float aspectRatio = shape.getHeight()/shape.getWidth();
+
+            // place single possession in upper corner and resize
             if (i == 0) {
+
                 shape.setX1(posX);
                 shape.setY1(posY);
-                System.out.println("OG shapeX1 " + shape.getX1() + " shapeY1 " + shape.getY1());
-                shape.setX2(posX + 200);
-                shape.setY2(posY + 200);
-                System.out.println("OG shapeX2 " + shape.getX2() + " shapeY2 " + shape.getY2());
-            } else {
-                int shapeX1 = Math.round(shape.getX1());
-                int shapeY2 = Math.round(shape.getY1());
+
+                shape.setX2(posX + shapeSize);
+                shape.setY2(Math.round(posY + shapeSize * aspectRatio));
+
+
+            } else { // resize and place other shapes to the right
+                shape.setX1(shapes.get(i - 1).getX2() + posX);
+                shape.setY1(posY);
+                shape.setX2(shapes.get(i - 1).getX2() + posX + shapeSize);
+                shape.setY2(Math.round(posY + shapeSize * aspectRatio));
             }
 
         }
@@ -279,48 +272,33 @@ public class Possessions extends View {
         super.onDraw(canvas);
 
         this.setBackgroundColor(Color.GRAY);
-        if(!shapes.isEmpty()){
+        if (!shapes.isEmpty()) {
             Iterator<Shape> it = shapes.iterator();
             while (it.hasNext()) {
                 Shape sh = it.next();
-                if(!sh.isInPossession())  it.remove();
-//                organizePossessions();
+                if (!sh.isInPossession()) it.remove();
+                organizePossessions();
                 sh.drawSelf(canvas, this.getContext());
             }
         }
-        if(isDragging) flicker(canvas, selectedShape);
+        if (isDragging && selectedShape != null) {
+            Page myPage = findMyPage();
+            myPage.possessionsFlicker(selectedShape);
+        }
     }
-    void flicker(Canvas canvas, Shape sh) {
-        if (sh == null) return;
-        System.out.println("FLICKER called while dragging shape: " + sh.getName());
 
-        for (Shape shape2 : shapes) {
-
-            if (shape2.isVisible()) {
-                List<String> getOnDropNames = shape2.getOnDropShapes();
-                System.out.println("FLICKER " + shape2.getName() + " is visible");
-
-                for (String shape3 : getOnDropNames) {
-                    System.out.println("FLICKER " + shape2.getName() + " has onDrop for " + shape3);
-                    if (shape3.equals(sh.getName())) {
-                        System.out.println("FLICKER DRAW RECTANGLE!!!");
-
-                        int rectX1 = shape2.getX1();
-                        int rectY1 = shape2.getY1();
-                        int rectX2 = shape2.getX2();
-                        int rectY2 = shape2.getY2();
-
-                        Paint boundaryPaint = new Paint();
-                        boundaryPaint.setStyle(Paint.Style.STROKE);
-                        boundaryPaint.setStrokeWidth(10.0f);
-                        boundaryPaint.setColor(Color.rgb(0, 255, 0));
-                        canvas.drawRect(rectX1 - 10, rectY1 + 10, rectX2 + 10, rectY2 - 10, boundaryPaint);
-                    }
-                }
-
-                shape2.onDropShapes.clear();
+    private Page findMyPage() {
+        Page result = null;
+        ViewParent viewParent = this.getParent();
+        Document document = (Document) viewParent;
+        int childCount = document.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            View child = document.getChildAt(i);
+            if (child.isShown() && child.toString().contains("Page")) {
+                result = (Page) child;
             }
         }
+        return result;
     }
 
 
