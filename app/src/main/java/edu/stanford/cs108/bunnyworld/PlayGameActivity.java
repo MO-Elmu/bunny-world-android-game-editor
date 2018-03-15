@@ -21,6 +21,10 @@ public class PlayGameActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // PlayMode for Page not to attach ShapeInspector's listener
+        ShapeSingleton.getInstance().playMode = true;
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_game);
         mLayout = (LinearLayout)findViewById(R.id.loadGame);

@@ -16,6 +16,7 @@ public class ShapeSingleton {
     // Shape is non-null if Advanced button clicked
     Shape selectedShape;
     List<Shape> shapes;
+    boolean playMode;
 
     public Shape getSelectedShape() {
         return selectedShape;

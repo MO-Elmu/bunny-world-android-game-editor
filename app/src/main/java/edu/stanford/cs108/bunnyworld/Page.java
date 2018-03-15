@@ -133,15 +133,16 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
         super.onSizeChanged(w, h, oldw, oldh);
 
         //hideInspector();
+        if (ShapeSingleton.getInstance().playMode == false) {
+            Button updateBtn = ((Activity) getContext()).findViewById(R.id.update_btn);
+            updateBtn.setOnClickListener(new UpdateButtonHandlr());
 
-        Button updateBtn = ((Activity) getContext()).findViewById(R.id.update_btn);
-        updateBtn.setOnClickListener(new UpdateButtonHandlr());
+            Button deleteBtn = ((Activity) getContext()).findViewById(R.id.delete_btn);
+            deleteBtn.setOnClickListener(new DeleteButtonHandlr());
 
-        Button deleteBtn = ((Activity) getContext()).findViewById(R.id.delete_btn);
-        deleteBtn.setOnClickListener(new DeleteButtonHandlr());
-
-        Button advancedBtn = ((Activity) getContext()).findViewById(R.id.advanced_btn);
-        advancedBtn.setOnClickListener(new AdvancedButtonHandlr());
+            Button advancedBtn = ((Activity) getContext()).findViewById(R.id.advanced_btn);
+            advancedBtn.setOnClickListener(new AdvancedButtonHandlr());
+        }
     }
 
     class AdvancedButtonHandlr implements View.OnClickListener {
