@@ -379,7 +379,9 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         newPage.setLayoutParams(newGame.getLpPages());
         //if(pageCounter!=1)newPage.setVisibility(View.GONE); // changes here when you add starter page option
         newGame.addView(newPage);
-        if(mLayout.getChildCount()>1) {
+
+        int i = mLayout.getChildCount();
+        if(mLayout.getChildCount()>2) {
             for (int j = 0; j < mLayout.getChildCount(); j++) {
                 if (mLayout.getChildAt(j) instanceof Page) {
                     mLayout.getChildAt(j).setVisibility(View.VISIBLE);
