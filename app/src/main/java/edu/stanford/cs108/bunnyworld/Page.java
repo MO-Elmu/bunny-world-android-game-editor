@@ -18,6 +18,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.content.Intent;
@@ -30,12 +31,13 @@ import java.util.List;
  * TODO: document your custom view class.
  */
 public class Page extends View /*implements View.OnClickListener*/ {
-    protected List<Shape> shapes = new ArrayList<>();
+    private List<Shape> shapes = new ArrayList<>();
     private int shapeCounter = 0;
     private Shape selectedShape;
     private boolean visibility;
     private boolean playMode = false;
     private boolean starterPage = false;
+    private boolean isDragging = false;
 
     private String pageName = "";
 
@@ -90,12 +92,12 @@ public class Page extends View /*implements View.OnClickListener*/ {
     }
 
     public Page(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context);
         init(attrs, 0);
     }
 
     public Page(Context context, boolean visibility) {
-        super(context);
+        this(context);
         this.visibility = visibility;
     }
 
@@ -106,10 +108,6 @@ public class Page extends View /*implements View.OnClickListener*/ {
 
     private void init(AttributeSet attrs, int defStyle) {
         // this.setBackgroundColor(Color.WHITE);  //Page background is white (specs)
-    }
-
-    public List<Shape> getShapes() {
-        return shapes;
     }
 
     @Override
@@ -128,22 +126,25 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 	}                    
                     }
                     //if the clicked shape has an on click action scripts execute it
-                    if(selectedShape != null) selectedShape.execOnClickScript(getContext(),(ViewGroup)this.getParent(),this);
+                    if(selectedShape != null) {
+                        selectedShape.execOnClickScript(getContext(),(ViewGroup)this.getParent(),this);
+                        if (selectedShape.imageIdentifier != 0) {
+                            DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(), selectedShape.imageIdentifier);
+                            ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.getName());
+                            ClipData.Item item2_imageId = new ClipData.Item(selectedShape.imageName);
+                            String mimeTypes[] = {ClipDescription.MIMETYPE_TEXT_PLAIN};
+                            ClipData draggedShape = new ClipData(selectedShape.getName(), mimeTypes, item1_shapeName);
+                            draggedShape.addItem(item2_imageId);
+                            this.startDrag(draggedShape, shapeShadowBuilder, null, 0);
+                            selectedShape.setVisible(false);
+                            invalidate();
+                        }
+
+                    }
                 }
                 invalidate();
                 break;
             case MotionEvent.ACTION_MOVE:
-                if(selectedShape != null) {
-                    DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(),selectedShape.imageIdentifier);
-                    ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.getName());
-                    ClipData.Item item2_imageId = new ClipData.Item(selectedShape.imageName);
-                    String mimeTypes[] = {ClipDescription.MIMETYPE_TEXT_PLAIN};
-                    ClipData draggedShape = new ClipData(selectedShape.getName(), mimeTypes, item1_shapeName);
-                    draggedShape.addItem(item2_imageId);
-                    this.startDrag(draggedShape, shapeShadowBuilder, null, 0);
-                    selectedShape.setVisible(false);
-                    invalidate();
-                }
 
                 break;
             case MotionEvent.ACTION_UP:
@@ -161,6 +162,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         this.setBackgroundColor(Color.WHITE);
+
         if(!shapes.isEmpty()){
             Iterator<Shape> it = shapes.iterator();
             while (it.hasNext()) {
@@ -172,13 +174,14 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 sh.drawSelf(canvas, this.getContext());
             }
         }
+        if(isDragging) flicker(canvas, selectedShape);
     }
 
     //overridden to count for onEnter Scripts if it exists for any of the page's shapes
     @Override
     protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
-        if(visibility == View.VISIBLE){
+        if(this.visibility == true){
             for (Shape sh : shapes) {
                  sh.execOnEnterScript(getContext(),(ViewGroup)this.getParent(),this);
             }
@@ -212,26 +215,35 @@ public class Page extends View /*implements View.OnClickListener*/ {
         // Handles all the expected events
         switch(action) {
             case DragEvent.ACTION_DRAG_STARTED:
+                this.isDragging = true;
                 System.out.println("ACTION_DRAG_STARTED In page");
                 //Check for onDrag events on the page
-                    return true;
+                invalidate();
+                return true;
 
             case DragEvent.ACTION_DRAG_ENTERED:
+                this.isDragging = true;
                 System.out.println("ACTION_DRAG_ENTERED In page");
                 if(selectedShape != null) selectedShape.setInPossession(false);
+                invalidate();
                 return true;
 
             case DragEvent.ACTION_DRAG_LOCATION:
+                isDragging = true;
                 // Ignore the event
+                invalidate();
                 return true;
 
             case DragEvent.ACTION_DRAG_EXITED:
+                isDragging = true;
                 System.out.println("ACTION_DRAG_EXITED In page");
                 if(selectedShape != null) selectedShape.setInPossession(true);
+                invalidate();
                 return true;
 
             case DragEvent.ACTION_DROP:
-                System.out.println("ACTION_DRAG_DROP In page");
+                isDragging = false;
+                System.out.println("ACTION_DROP In page");
                 int currX, currY;
                 currX = (int) event.getX();
                 currY = (int) event.getY();
@@ -318,14 +330,15 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 return false;
 
             case DragEvent.ACTION_DRAG_ENDED:
+                isDragging = false;
                 System.out.println("ACTION_DRAG_ENDED In page");
                 if(event.getResult()){
-                    System.out.println("Drop is True In Page");
+                    System.out.println("Drop Ended In Page");
                     invalidate();
                     selectedShape = null;
                     return true;
                 }
-                System.out.println("Drop is false In Page");
+                System.out.println("Drop not Ended In Page");
                 invalidate();
                 selectedShape = null;
                 return true;
@@ -339,37 +352,39 @@ public class Page extends View /*implements View.OnClickListener*/ {
     
 
     void flicker(Canvas canvas, Shape sh) {
-        System.out.println("Called FLICKER method");
+        if(sh == null) return;
+        System.out.println("FLICKER called while dragging shape: " + sh.getName());
 
         for (Shape shape2 : shapes) {
-//            System.out.println("In FLICKER For loop, current shape: " + shape2.getName());
+
             if(shape2.isVisible()) {
-                System.out.println("In FLICKER For loop, current shape is visible: " + shape2.getName());
-                System.out.println("FLICKER this shape's getOnDropShapes: ");
                 List<String> getOnDropNames = shape2.getOnDropShapes();
+                System.out.println("FLICKER "  + shape2.getName() + " is visible");
+
                 for(String shape3 : getOnDropNames) {
-                    System.out.println("FLICKER    " + shape3);
+                    System.out.println("FLICKER "  + shape2.getName() + " has onDrop for " + shape3);
+                    if(shape3.equals(sh.getName())) {
+                        System.out.println("FLICKER DRAW RECTANGLE!!!");
+
+                        int rectX1 = shape2.getX1();
+                        int rectY1 = shape2.getY1();
+                        int rectX2 = shape2.getX2();
+                        int rectY2 = shape2.getY2();
+
+                        Paint boundaryPaint =  new Paint();
+                        boundaryPaint.setStyle(Paint.Style.STROKE);
+                        boundaryPaint.setStrokeWidth(10.0f);
+                        boundaryPaint.setColor(Color.rgb(0,255,0));
+                        canvas.drawRect(rectX1-10, rectY1+10, rectX2+10, rectY2-10, boundaryPaint);
+                    }
                 }
+
+                shape2.onDropShapes.clear();
             }
-
-  /*            if(shape2.getOnDropShapes().contains(sh.getName())) {
-                System.out.println("FLICKER this one is dragging" + sh.getName() + " this one is flickering " + shape2.getName());
-                int rectX1 = sh.getX1();
-                int rectY1 = sh.getY1();
-                int rectX2 = sh.getX2();
-                int rectY2 = sh.getY2();
-                System.out.println("trying to draw a rectangle FLICKER");
-                Paint boundaryPaint =  new Paint();
-                boundaryPaint.setStyle(Paint.Style.STROKE);
-                boundaryPaint.setStrokeWidth(5.0f);
-                boundaryPaint.setColor(Color.rgb(0,255,0));
-                canvas.drawRect(rectX1-10, rectY1+10, rectX2+10, rectY2-10, boundaryPaint);
-                }
-                */
-
         }
-
     }
+
+
 
     public String getPageName() {
         return pageName;
@@ -395,6 +410,10 @@ public class Page extends View /*implements View.OnClickListener*/ {
         this.starterPage = (firstPageFlag == 0) ? false : true;
     }
     /***** Setters and Getters *******/
+
+    public List<Shape> getShapes() {
+        return shapes;
+    }
 
     public boolean isPlayMode() {
         return playMode;

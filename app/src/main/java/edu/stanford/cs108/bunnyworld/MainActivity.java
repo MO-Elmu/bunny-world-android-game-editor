@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        db = openOrCreateDatabase("GamesDB",MODE_PRIVATE,null);
+        db = openOrCreateDatabase("BunnyDB",MODE_PRIVATE,null);
         String sql = "select * from games";
 
         setupDatabase();
@@ -47,8 +47,17 @@ public class MainActivity extends AppCompatActivity {
         populateDatabase();
         checkDB();
 
-        loadGames();
+        //loadGames();
 
+
+    }
+
+    @Override
+    public void onResume()
+    {  // After a pause OR at startup
+        super.onResume();
+        //Refresh your stuff here
+        loadGames();
         GridView gridView = (GridView) findViewById(R.id.grid_view);
         gridView.setAdapter(new ImageAdapter(this, mThumbIds, text));
         final Button playButton = (Button) findViewById(R.id.playGame);
@@ -77,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadGames() {
+        text.clear();
+        mThumbIds.clear();
 
         String sql = "SELECT * FROM games;";
         Cursor cursor = db.rawQuery(sql,null);
@@ -117,33 +128,56 @@ public class MainActivity extends AppCompatActivity {
      -     * This method is used to add setup the database.
      -     */
     private void setupDatabase() {
-        String setupStrGames = "CREATE TABLE if not exists games ("
-                + "name TEXT, image_id INTEGER,"
+        System.out.println("setting up db");
+        String setupStr1 = "CREATE TABLE if not exists games ("
+                + "game_name TEXT,"
+                + "game_icon INTEGER,"
                 + "_id INTEGER PRIMARY KEY AUTOINCREMENT"
                 + ");";
-
-        String setupStrPages = "CREATE TABLE if not exists  pages ("
-                + "name TEXT, game_name TEXT, visibility INTEGER,"
+        System.out.println(setupStr1);
+        db.execSQL(setupStr1);
+        String setupStr2 = "CREATE TABLE if not exists pages ("
+                + "page_name TEXT,"
+                + "game_name TEXT,"
+                + "visible INTEGER,"
                 + "_id INTEGER PRIMARY KEY AUTOINCREMENT"
                 + ");";
+        db.execSQL(setupStr2);
 
-        String setupStrShapes = "CREATE TABLE if not exists  shapes ("
-                + "name TEXT, x REAL, y REAL, width REAL, height REAL,"
-                + "movable INTEGER, visible INTEGER, image_name TEXT, text TEXT,"
-                + "page_id INTEGER, in_possession INTEGER, _id INTEGER PRIMARY KEY AUTOINCREMENT"
+        String setupStr3 = "CREATE TABLE if not exists shapes ("
+                + "shape_name TEXT," //0
+                + "page_name TEXT,"  //1
+                + "game_name TEXT,"  //2
+                + "caption TEXT,"    //3
+                + "image_file TEXT," //4
+                + "in_possession INTEGER," //5
+                + "possessable INTEGER," //6
+                + "visible INTEGER,"     //7
+                + "movable INTEGER,"     //8
+                + "x_position INTEGER,"  //9
+                + "y_position INTEGER,"  //10
+                + "width INTEGER,"       //11
+                + "height INTEGER,"      //12
+                + "_id INTEGER PRIMARY KEY AUTOINCREMENT"
                 + ");";
+        db.execSQL(setupStr3);
 
         String setupStrScripts = "CREATE TABLE if not exists  scripts ("
                 + "trigger INTEGER, action INTEGER, to_shape TEXT, to_resource TEXT, to_page INTEGER,"
                 + "drop_shape TEXT, shape_id INTEGER, _id INTEGER PRIMARY KEY AUTOINCREMENT"
                 + ");";
-
-        String[] statements = new String[]{setupStrGames, setupStrPages, setupStrScripts,
-                setupStrShapes};
-        for(String sql : statements){
-            System.err.println(sql);
-            db.execSQL(sql);
-        }
+        String setupStr4 = "CREATE TABLE if not exists scripts ("
+                + "game_name TEXT," //0
+                + "shape_name TEXT," //1
+                + "trigger_name TEXT," //2  CLICK, ENTER, DROP
+                + "trigger_recipient TEXT," //3 Drop recipient
+                + "action_name TEXT," //4
+                + "show_hide_recipient TEXT," //5
+                + "play_recipient TEXT," //6
+                + "goto_recipient TEXT," //7
+                + "_id INTEGER PRIMARY KEY AUTOINCREMENT"
+                + ");";
+        db.execSQL(setupStr4);
     }
 
     /**
@@ -151,37 +185,41 @@ public class MainActivity extends AppCompatActivity {
      * the base Bunny World game
      */
     private void populateDatabase() {
-        Integer carr = R.drawable.carrot2;
+        Integer bunn = R.drawable.happybunny;
         String dataStr1 = "INSERT INTO games VALUES "
-                + "('Bunny World'," + carr+ ",NULL);";
+                + "('Bunny World'," + bunn + ",NULL);";
         String dataStr2 = "INSERT INTO pages VALUES "
-                + "('page1', 'Bunny World', 1 ,NULL), ('page2', 'Bunny World', 0 ,NULL), ('page3', 'Bunny World', 0 ,NULL), ('page4', 'Bunny World', 0 ,NULL);";
+                + "('page1', 'Bunny World', 1 ,NULL), ('page2', 'Bunny World', 0 ,NULL), ('page3', 'Bunny World', 0 ,NULL), ('page4', 'Bunny World', 0 ,NULL), ('page5', 'Bunny World', 0 ,NULL);";
         String dataStr3 = "INSERT INTO shapes VALUES "
-                + "('shape1', 100,100,200,200,0,1,'mystic','',2, 0 ,NULL);";
+                + "('shape1', 'page2', 'Bunny World', '','mystic', 0, 0,1,0, 100,100,200,200,NULL);";
         String dataStr4 = "INSERT INTO shapes VALUES "
-                + "('shape2', 250,200,100,100,0,1,'','Mystic Bunny Rub my tummy',2, 0 ,NULL);";
+                + "('shape2', 'page2', 'Bunny World','Mystic Bunny Rub my tummy','',0,0,1,0, 250,200,100,100,NULL);";
         String dataStr5 = "INSERT INTO shapes VALUES "
-                + "('shape3', 100,500,100,100,0,1,'','',2, 0 ,NULL),"
-                + "('shape4', 100,500,100,100,0,1,'','',1, 0 ,NULL),"
-                + "('shape5', 100,100,100,100,0,1,'','you are in a maze of twisty little passages, all alike.',1, 0 ,NULL),"
-                + "('shape6', 320,520,100,100,0,0,'','',1, 0 ,NULL), ('shape7', 320,320,100,100,0,1,'fire','',3, 0 ,NULL),"
-                + "('shape8', 320,520,100,100,0,1,'','Eek fire room. Run away!',3, 0 ,NULL), ('shape9', 600,320,100,100,1,1,'carrot','',3, 0 ,NULL),"
-                + "('shape10', 520,500,100,100,0,1,'','',1, 0 ,NULL), ('shape11', 520,600,100,100,0,1,'','',3, 0 ,NULL),"
-                + "('shape12', 320,200,200,200,0,1,'death','',4, 0 ,NULL), ('shape13', 120,600,100,100,0,1,'','you must appease the bunny of death',4, 0 ,NULL),"
-                + "('shape14', 20,200,100,100,1,1,'carrot','',4, 0 ,NULL), ('shape15', 200,600,100,100,0,0,'','',4, 0 ,NULL);";
+                + "('shape3', 'page2', 'Bunny World', '','',0,0,1,0,100,500,100,100,NULL),"
+                + "('shape4', 'page1', 'Bunny World', '','',0,0,1,0,100,500,100,100,NULL),"
+                + "('shape5', 'page1', 'Bunny World','you are in a maze of twisty little passages, all alike.','',0,0,1,0,100,100,100,100,NULL),"
+                + "('shape6', 'page1', 'Bunny World','','',0,0,0,0, 320,520,100,100,NULL), ('shape7', 'page3', 'Bunny World','','fire',0,0,1,0, 320,320,100,100,NULL),"
+                + "('shape5', 'page3', 'Bunny World','EEK fire room. run away!','',0,0,1,0,100,100,100,100,NULL), ('shape9', 'page3', 'Bunny World', '','carrot',0,1,1,1,100,500,100,100,NULL),"
+                + "('shape10','page1', 'Bunny World', '','',0,0,1,0,520,500,100,100,NULL), ('shape11', 'page3', 'Bunny World', '','',0,0,1,0,520,600,100,100,NULL),"
+                + "('shape12','page4', 'Bunny World', '','death',0,0,1,0,320,200,200,200,NULL), ('shape13','page4', 'Bunny World','you must appease the bunny of death', '', 0,0,1,0,120,500,100,100,NULL),"
+                + "('shape15', 'page4', 'Bunny World', '','',0,0,0,0,500,600,100,100,NULL), ('shape16', 'page5', 'Bunny World', '', 'carrot', 0,0,1,0, 20,200,100,100, NULL),"
+                + "('shape17', 'page5', 'Bunny World', '', 'carrot', 0,0,1,0, 500,400,100,100, NULL),('shape18', 'page5', 'Bunny World', '', 'carrot', 0,0,1,0, 200,400,100,100, NULL),"
+                + "('shape19', 'page5', 'Bunny World', 'You Win! Yay!', '', 0,0,1,0, 300,300,100,100, NULL);";
 
         String dataStr7 = "INSERT INTO scripts VALUES "
-                + " (1, 4, '', '', 'page2', '', 4 ,NULL), (1, 1, 'shape9', '', '', '', 1 ,NULL),"
-                +" (1, 4, '', '', 'page1', '', 3 ,NULL), (1, 4, '', '', 'page3', '', 6 ,NULL),"
-                +" (1, 4, '', '', 'page4', '', 10 ,NULL), (1, 4, '', '', 'page2', '', 11 ,NULL),"
-                +" (2, 2, 'shape6', '', '', '', 1 ,NULL), (2, 3, '', 'fire', '', '', 7 ,NULL),"
-                +" (2, 3, '', 'evillaugh', '', '', 12 ,NULL), (1, 3, '', 'munch', '', '', 1 ,NULL),"
-                +" (3, 3, '', 'munching', '', 'shape14', 12 ,NULL), (3, 2, 'shape15', '', '', 'shape14', 12 ,NULL),"
-                +" (3, 1, 'shape12', '', '', 'shape14', 12 ,NULL), (3, 1, 'shape14', '', '', 'shape14', 12 ,NULL);";
+                + " ('Bunny World', 'shape4', 'CLICK','','GOTO','','','page2',NULL), ('Bunny World', 'shape1', 'CLICK','', 'HIDE','shape9', '', '',NULL),"
+                +" ('Bunny World', 'shape3', 'CLICK', '', 'GOTO', '','','page1',NULL), ('Bunny World', 'shape6', 'CLICK', '', 'GOTO','','', 'page3',NULL),"
+                +" ('Bunny World', 'shape10', 'CLICK', '', 'GOTO', '','','page4',NULL), ('Bunny World', 'shape11','CLICK', '', 'GOTO','','','page2',NULL),"
+                +" ('Bunny World', 'shape1', 'ENTER', '', 'SHOW', 'shape6', '', '',NULL), ('Bunny World', 'shape7','ENTER','','PLAY', '','fire', '',NULL),"
+                +" ('Bunny World', 'shape12', 'ENTER', '', 'PLAY', '','evillaugh', '',NULL), ('Bunny World', 'shape1', 'CLICK', '', 'PLAY', '','munch', '',NULL),"
+                +" ('Bunny World', 'shape12', 'DROP', 'shape9', 'PLAY', '','munching', '',NULL), ('Bunny World', 'shape12', 'DROP', 'shape9', 'SHOW', 'shape15', '', '',NULL),"
+                +" ('Bunny World', 'shape12', 'DROP', 'shape9', 'HIDE', 'shape12', '', '' ,NULL), ('Bunny World', 'shape12', 'DROP', 'shape9','HIDE', 'shape9','','',NULL),"
+                +" ('Bunny World', 'shape19', 'ENTER','','PLAY','','hooray','',NULL), ('Bunny World', 'shape15', 'CLICK', '', 'GOTO', '','','page5',NULL);";
+
         //on click = 1, on enter = 2, on drop = 3
         //hide = 1, show = 2, play = 3, goto = 4
         String[] statements = new String[]{dataStr1, dataStr2, dataStr3,
-                dataStr4, dataStr5,  dataStr7};
+                dataStr4, dataStr5, dataStr7};
         for(String sql : statements){
             System.err.println(sql);
             db.execSQL(sql);
@@ -264,8 +302,8 @@ public class MainActivity extends AppCompatActivity {
             View rowView = new View(mContext);
 
             rowView = inflater.inflate(R.layout.sample_gridview, null);
-            holder.thumb_text =(TextView) rowView.findViewById(R.id.os_texts);
-            holder.thumb_img =(ImageView) rowView.findViewById(R.id.os_images);
+            holder.thumb_text =(TextView) rowView.findViewById(R.id.texts);
+            holder.thumb_img =(ImageView) rowView.findViewById(R.id.images);
             holder.thumb_img.setLayoutParams(new RelativeLayout.LayoutParams(200, 200));
             holder.thumb_img.setScaleType(ImageView.ScaleType.CENTER_CROP);
             holder.thumb_img.setPadding(8, 8, 8, 8);

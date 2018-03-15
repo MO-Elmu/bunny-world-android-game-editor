@@ -191,14 +191,20 @@ public class Shape{
       that onDrop scripts is slightly different in structure than the other 2 actions.
      */
 
-    private Map<String, String> parseScript(String script){
+    private Map<String, List<String>> parseScript(String script){
         List<String> clauses = tokenizeScript(script);
-        Map<String, String> scriptTokens = new LinkedHashMap<>();
+        Map<String, List<String>> scriptTokens = new LinkedHashMap<>();
         //Since onClick takes the first clause and ignore the rest(Specs) and onEnter
         //usually has one clause will only handle the first clause from the left.
         StringTokenizer tokenizer = new StringTokenizer(clauses.get(0));
+        String key, value;
+        List<String> holder = new ArrayList<String>();
         while(tokenizer.hasMoreTokens()){
-            scriptTokens.put(tokenizer.nextToken(), tokenizer.nextToken());
+            key = tokenizer.nextToken();
+            value = tokenizer.nextToken();
+            holder.clear();
+            holder.add(value);
+            scriptTokens.put(key, holder);
         }
         return scriptTokens;
     }
@@ -222,107 +228,133 @@ public class Shape{
             System.out.println("The shapes for ondrop "+onDropShapes);
         }
     }
-    private List<Map<String, String>> parseOnDropScript(String onDropScript) {
-        List<Map<String, String>> allOnDropActions = new ArrayList<>();
+    private List<Map<String, List<String>>> parseOnDropScript(String onDropScript) {
+        List<Map<String, List<String>>> allOnDropActions = new ArrayList<>();
         List<String> clauses = tokenizeScript(onDropScript);
         for (String clause : clauses) {
             System.out.println("#1 clauses: "+clause);
-            Map<String, String> scriptTokens = new LinkedHashMap<>();
+            Map<String, List<String>> scriptTokens = new LinkedHashMap<>();
             StringTokenizer tokenizer = new StringTokenizer(clause);
 
             System.out.println("#1 tokensizer: "+tokenizer);
+            //List<String> actionShapes = new ArrayList<String>();
+            String action, actionShape;
             tokenizer.nextToken();  //Skip the shape name store only the actions and their parameters
             while (tokenizer.hasMoreTokens()) {
-                scriptTokens.put(tokenizer.nextToken(), tokenizer.nextToken());
+                List<String> actionShapes = new ArrayList<String>(); //THIS MUST BE DECLARED WITHIN THE WHILE LOOP!!!!
+                action = tokenizer.nextToken();
+                actionShape = tokenizer.nextToken();
+                actionShapes.clear();
+                actionShapes.add(actionShape);
+                System.out.println("get string tokenss "+scriptTokens.get("show"));
+                if(scriptTokens.containsKey(action)){
+                    System.out.println("get string tokens "+scriptTokens.get("hide"));
+                    for(String st : scriptTokens.get(action)) {
+                        System.out.println("string: "+st);
+                        actionShapes.add(st);
+                    }
+                }
+                scriptTokens.put(action, actionShapes);
                 System.out.println("#1 scriptTokens: "+ scriptTokens);
             }
             allOnDropActions.add(scriptTokens);
         }
-        System.out.println("ALL action   "+allOnDropActions);
+        System.out.println("ALL actions   "+allOnDropActions);
         return allOnDropActions;
     }
 
-    private void execScripts(Map<String, String> scriptToken, Context context, ViewGroup game, Page parentPage){
+    private void execScripts(Map<String, List<String>> scriptToken, Context context, ViewGroup game, Page parentPage){
         System.out.println("Executing scripts");
         int pageCount = game.getChildCount();
 
         System.out.println("#1 action: "+scriptToken);
-        for(Map.Entry<String, String> entry : scriptToken.entrySet()){
+        for(Map.Entry<String, List<String>> entry : scriptToken.entrySet()){
 
             String action = entry.getKey();
             System.out.println("#1 action: "+action);
-            switch (action.toLowerCase()){
-                case "play":
-                    System.out.println("PLAYING SOUND");
-                    String soundFileName = entry.getValue();
-                    int soundFileId = context.getResources().getIdentifier(soundFileName, "raw",context.getPackageName());
-                    if(soundFileId == 0) break;
-                    MediaPlayer mp = MediaPlayer.create(context,soundFileId);
-                    mp.start();
-                    break;
-                case "goto":
-                    String pageName = entry.getValue();
-                    System.out.println("GOTO SCRIPT!!! " + pageName  + " c: "+pageCount);
-                    for(int i=0; i<pageCount; i++){
-                    	if(game.getChildAt(i) instanceof Page) {
-                        	final Page page = (Page)game.getChildAt(i);
-                        	System.out.println("pagename " + pageName  + " pageItr: "+page.getPageName());
-                        	if(pageName.equals(page.getPageName())){
-                        	
-                        	    System.out.println("pn " + page.getPageName() );
-                        	    //parentPage.animate().translationY(parentPage.getHeight());
-                        	
-                        	    page.setVis(true);
-                        	    parentPage.setVis(false);
-                        	    parentPage.setVisibility(View.GONE);
-                        	    //page.animate().translationY(parentPage.getHeight());
-                        	    page.setVisibility(View.VISIBLE);
-                        	    System.out.println("goto PAGE shapes:  "+page.getShapes());
-                        	    //page.clearAnimation();
-                        	} else {
-                        	    page.setVis(false);
-                        	    page.setVisibility(View.GONE);
-                        	}
-                        }
-                    }
-                    break;
-                case "hide":
-                    String shapeName = entry.getValue();
-                    for(int i=0; i<pageCount; i++){
-                    	if(game.getChildAt(i) instanceof Page) { 
-                        	final Page page = (Page)game.getChildAt(i);
-                        	System.out.println( "#1 pageItr: "+page.getPageName());
-                        	for (Shape sh : page.shapes){
-                        	    if(shapeName.equals(sh.getName())){
-                        	        sh.visible = false;
-                        	        page.invalidate();
-                        	    }
-                        	}
-                        }
-                    }
-                    break;
-                case "show":
-                    String name = entry.getValue();
-                    System.out.println("SHOWING! "+name);
-                    for(int i=0; i<pageCount; i++){
-                    	if(game.getChildAt(i) instanceof Page) {
-                        	final Page page = (Page)game.getChildAt(i);
-                        	System.out.println( "showing pageItr on enter : "+page.getPageName());
-                        	for (Shape sh : page.shapes){
-                        	    System.out.println( "showing shape name : "+sh.getName());
-                        	    if(name.equals(sh.getName())){
-                        	        System.out.println("SHOWING2 "+ sh.getName());
-                        	        sh.visible = true;
-                        	        page.invalidate();
-                        	    }
-                        	}
-                        }
-                    }
-                    break;
-                default:
-                    //handle unknown script commands
-                    break;
+            for(String name : entry.getValue()) {
+                switch (action.toLowerCase()) {
+                    case "play":
+                        System.out.println("PLAYING SOUND");
+                        String soundFileName = name;
+                        int soundFileId = context.getResources().getIdentifier(soundFileName, "raw", context.getPackageName());
+                        MediaPlayer mp = MediaPlayer.create(context, soundFileId);
+                        mp.start();
+                        break;
+                    case "goto":
+                        try {
+                            String pageName = name;
+                            System.out.println("GOTO SCRIPT!!! " + pageName + " c: " + pageCount);
+                            for (int i = 0; i < pageCount; i++) {
+                                final Page page = (Page) game.getChildAt(i);
+                                System.out.println("pagename " + pageName + " pageItr: " + page.getPageName());
+                                if (pageName.equals(page.getPageName())) {
 
+                                    System.out.println("pn " + page.getPageName());
+                                    //parentPage.animate().translationY(parentPage.getHeight());
+
+                                    page.setVis(true);
+                                    parentPage.setVis(false);
+                                    parentPage.setVisibility(View.GONE);
+                                    //page.animate().translationY(parentPage.getHeight());
+                                    page.setVisibility(View.VISIBLE);
+                                    System.out.println("goto PAGE shapes:  " + page.getShapes());
+                                    //page.clearAnimation();
+                                } else {
+                                    page.setVis(false);
+                                    page.setVisibility(View.GONE);
+                                }
+                            }
+                        } catch (ClassCastException e) {
+
+                        }
+                        break;
+                    case "hide":
+                        try {
+                            String shapeName = name;
+                            for (int i = 0; i < pageCount; i++) {
+                                final Page page = (Page) game.getChildAt(i);
+
+                                System.out.println("#1 pageItr: " + page.getPageName());
+                                for (Shape sh : page.getShapes()) {
+                                    if (shapeName.equals(sh.getName())) {
+                                        sh.visible = false;
+                                        page.invalidate();
+                                    }
+                                }
+                            }
+                        } catch (ClassCastException e) {
+
+                        }
+                        break;
+                    case "show":
+
+                        System.out.println("SHOWING! " + name);
+                        for (int i = 0; i < pageCount; i++) {
+                            try {
+                                final Page page = (Page) game.getChildAt(i);
+                                System.out.println("showing pageItr on enter : " + page.getPageName());
+                                for (Shape sh : page.getShapes()) {
+                                    System.out.println("showing shape name : " + sh.getName());
+                                    if (name.equals(sh.getName())) {
+                                        System.out.println("SHOWING2 " + sh.getName());
+                                        sh.visible = true;
+                                        page.invalidate();
+                                    }
+                                }
+
+                            } catch (ClassCastException e) {
+
+                            }
+
+
+                        }
+                        break;
+                    default:
+                        //handle unknown script commands
+                        break;
+
+                }
             }
 
         }
@@ -361,8 +393,8 @@ public class Shape{
 
              execScripts(parseOnDropScript(onDropScript).get(i), context, game, parentPage);
              }*/
-            System.out.println(parentPage.shapes);
-            for (Shape sh : parentPage.shapes){
+            System.out.println(parentPage.getShapes());
+            for (Shape sh : parentPage.getShapes()){
                 System.out.println("finding the drop shape in the page");
                 System.out.println("SHAPE " + sh.getName());
 
@@ -394,7 +426,7 @@ public class Shape{
     
     
     public List<String> getOnDropShapes() {
-
+        populateOnDropShapesArray(getOnDropScript());
         return onDropShapes;
     }
     
