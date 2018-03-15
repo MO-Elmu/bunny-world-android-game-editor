@@ -248,7 +248,9 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 currX = (int) event.getX();
                 currY = (int) event.getY();
                 if(selectedShape == null) {
+                    System.out.println("ACTION_DROP In page, null");
                     if (!playMode) {
+                        System.out.println("ACTION_DROP In page, null !playmode");
                         selectedShape = new Shape(event.getClipData().getItemAt(1).getText().toString(), this.getContext());
                         selectedShape.setName(event.getClipData().getItemAt(0).getText().toString());
                         this.addShape(selectedShape);
@@ -262,6 +264,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
                         return true;
                     }
                     if (playMode) {
+                        System.out.println("ACTION_DROP In page, null playmode");
                         //Play Mode while user is playing
                         selectedShape = new Shape(event.getClipData().getItemAt(1).getText().toString(), this.getContext());
                         selectedShape.setName(event.getClipData().getItemAt(0).getText().toString());
@@ -286,13 +289,16 @@ public class Page extends View /*implements View.OnClickListener*/ {
                         }
                         selectedShape = null;
                         invalidate();
+                        System.out.println("ACTION_DROP Returning false");
                         return false;
                     }
 
                 }
 
                 if(selectedShape != null) {
+                    System.out.println("ACTION_DROP In page, !null");
                     if (!playMode) {
+                        System.out.println("ACTION_DROP In page, !null !playmode");
                         selectedShape.setX1(currX - (selectedShape.getWidth() / 2));
                         selectedShape.setY1(currY - (selectedShape.getHeight() / 2));
                         selectedShape.setX2(currX + (selectedShape.getWidth() / 2));
@@ -303,6 +309,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
                         return true;
                     }
                     if (playMode) {
+                        System.out.println("ACTION_DROP In page, !null playmode");
                         if (!shapes.isEmpty()) {
                             for (Shape sh : shapes) {
                                 if (sh.contains(currX, currY)) {
@@ -324,6 +331,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
                         selectedShape.setVisible(true);
                         invalidate();
                         selectedShape = null;
+                        System.out.println("ACTION_DROP Returning false");
                         return false;
                     }
                 }

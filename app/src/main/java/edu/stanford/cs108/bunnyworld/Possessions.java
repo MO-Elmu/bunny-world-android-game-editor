@@ -146,36 +146,31 @@ public class Possessions extends View {
         switch(action) {
 
             case DragEvent.ACTION_DRAG_STARTED:
-                invalidate();
                 this.isDragging = true;
                 System.out.println("ACTION_DRAG_STARTED In Possessions");
                 return true;
 
             case DragEvent.ACTION_DRAG_ENTERED:
-                invalidate();
                 this.isDragging = true;
                 if(selectedShape != null) selectedShape.setInPossession(true);
                 System.out.println("ACTION_DRAG_ENTERED In Possessions!!!!");
                 return true;
 
             case DragEvent.ACTION_DRAG_LOCATION:
-                invalidate();
                 isDragging = true;
                 //System.out.println("ACTION_DRAG_LOCATION In Possessions");
                 // Ignore the event
                 return true;
 
             case DragEvent.ACTION_DRAG_EXITED:
-                invalidate();
                 isDragging = true;
                 System.out.println("ACTION_DRAG_Exited In Possessions");
                 if(selectedShape != null) selectedShape.setInPossession(false);
                 //System.out.println("ACTION_DRAG_EXITED In Possessions");
-                invalidate();
+//                invalidate();
                 return true;
 
             case DragEvent.ACTION_DROP:
-                invalidate();
                 isDragging = false;
                 int currX, currY;
                 currX = (int) event.getX();
@@ -213,7 +208,6 @@ public class Possessions extends View {
                 return false;
 
             case DragEvent.ACTION_DRAG_ENDED:
-                invalidate();
                 isDragging = false;
                 System.out.println("ACTION_DRAG_ENDED In Possessions");
                 if(event.getResult()){
