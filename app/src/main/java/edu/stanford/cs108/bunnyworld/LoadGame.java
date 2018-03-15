@@ -37,6 +37,18 @@ public class LoadGame {
 
     }
 
+    public Document getDoc(){
+        return doc;
+    }
+
+    public Possessions getPossessions(){
+        return possessions;
+    }
+
+    public LinearLayout getmLayout() {
+        return mLayout;
+    }
+
     private void setupShapeScript(Shape shape, String name, String gameName) {
         String loadScripts = "SELECT * from scripts where shape_name = '"+name+"' and game_name='"+gameName+"';";
 
@@ -110,6 +122,7 @@ public class LoadGame {
         //create the doc
         db = dbin;
         possessions = new Possessions(context);
+        mLayout = ml;
         String loadGame = "SELECT * from games where game_name = '"+name+"';";
         System.err.println(loadGame);
         Cursor cursorG = db.rawQuery(loadGame,null);
@@ -214,7 +227,7 @@ public class LoadGame {
         }
         possessions.setLayoutParams(doc.getLpPossessions());
         doc.addView(possessions);
-        ml.addView(doc);
+        mLayout.addView(doc);
 
     }
 }

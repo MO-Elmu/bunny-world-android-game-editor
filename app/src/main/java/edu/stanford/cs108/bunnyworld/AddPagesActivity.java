@@ -63,6 +63,14 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         if(gameMode.equals("edit")){
             db = openOrCreateDatabase("BunnyDB",MODE_PRIVATE,null);
             lga.setupGame(intent.getStringExtra("game"), this.getApplicationContext(), db, mLayout);
+            newGame = lga.getDoc();
+            //possessions = lga.getPossessions();
+            //mLayout = lga.getmLayout();
+            //mLayout = (LinearLayout)findViewById(R.id.add_page);
+           // mLayout.setOrientation(LinearLayout.VERTICAL);
+           // mLayout.setWeightSum(5.0f);
+           // mLayout.setVerticalGravity(Gravity.BOTTOM);
+            //mLayout.addView(possessions);
         }
 
     }
