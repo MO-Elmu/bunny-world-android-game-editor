@@ -154,7 +154,7 @@ public class Shape{
         }
         //Text takes precedence over image
         if(!text.trim().isEmpty()){
-            if(visible) canvas.drawText(text,x1,y1,txtPaint);
+            if(visible) canvas.drawText(text,x1,y2,txtPaint);
             //else canvas.drawText(text,x1,y1,hiddenTxtPaint);
             return;
         }
@@ -589,5 +589,31 @@ public class Shape{
         return imageName;
     }
 
+    public void setWidth(int width) {
+        this.width = width;
+        this.x2 = x1 + width;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+        this.y2 = y1 + height;
+    }
+
+    public Paint getTxtPaint() {
+        return txtPaint;
+    }
+
+    public void setX1_absolute(int x1) {
+        this.x1 = x1;
+    }
+    public void setY1_absolute(int y1) {
+        this.y1 = y1;
+    }
+    public void setX2_absolute(int x2) {
+        this.x2 = x2;
+    }
+    public void setY2_absolute(int y2) {
+        this.y2 = y2;
+    }
 
 }

@@ -1,5 +1,6 @@
 package edu.stanford.cs108.bunnyworld;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
@@ -7,6 +8,8 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.GestureDetector;
@@ -61,6 +64,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         possessions = new Possessions(this.getApplicationContext());
         mLayout.addView(possessions);
 
+
         LoadGame lga = new LoadGame();
         if(gameMode.equals("edit")){
             db = openOrCreateDatabase("BunnyDB",MODE_PRIVATE,null);
@@ -74,6 +78,9 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
            // mLayout.setVerticalGravity(Gravity.BOTTOM);
             //mLayout.addView(possessions);
         }
+
+        LinearLayout inspector = findViewById(R.id.inspector);
+        inspector.setVisibility(View.INVISIBLE);
 
     }
 
@@ -103,6 +110,8 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
                 this.showAlertDialog();
                 break;
             case R.id.add_shape:
+                // Addshape fragment not started from "advanced" button
+                ShapeSingleton.getInstance().setSelectedShape(null);
                 showAddShapeDialog();
                 break;
             case R.id.save_page:
@@ -250,7 +259,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
     		editingPage = false;
     		return;
 	}
-        newPage = new Page(this.getApplicationContext()); //add logic if the user leaves pageName blank
+        newPage = new Page(this); //add logic if the user leaves pageName blank
         if(pageName.getText().toString().trim().isEmpty()) newPage.setPageName("page " + (newGame.getChildCount()+1));
         else newPage.setPageName(pageName.getText().toString());
         adjustStarterPage(starterPage.isChecked());
@@ -311,8 +320,11 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         shape.setName(allShapeStringParams[0]);
         shape.setText(allShapeStringParams[1]);
         if(!allShapeStringParams[2].trim().isEmpty()){
-            float scaledFontSize = Integer.valueOf(allShapeStringParams[2]) * getResources().getDisplayMetrics().scaledDensity;
-            shape.setTxtFontSize((int)scaledFontSize);
+            //give me error
+            //float scaledFontSize = Integer.valueOf(allShapeStringParams[2]) * getResources().getDisplayMetrics().scaledDensity;
+            //shape.setTxtFontSize((int)scaledFontSize);
+
+            shape.setTxtFontSize( Integer.parseInt(allShapeStringParams[2]) );
         }
         shape.setImage(allShapeStringParams[3],this.getApplicationContext());
         shape.setOnClickScript(allShapeStringParams[4]);
@@ -324,6 +336,32 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         shape.setMovable(scriptsActions[3]);
         shape.setVisible(!scriptsActions[4]);
 
+        // For Advanced Button Editing , keep original shape info
+        if (ShapeSingleton.getInstance().selectedShape != null) {
+            shape.setX1_absolute(ShapeSingleton.getInstance().selectedShape.getX1());
+            shape.setY1_absolute(ShapeSingleton.getInstance().selectedShape.getY1());
+            shape.setX2_absolute(shape.getX1() + shape.getWidth());
+            shape.setY2_absolute(shape.getY1() + shape.getHeight());
+        }
+
+
+        //For text dragging
+        if (  !shape.getText().trim().isEmpty() )  {
+            Rect rect = new Rect();
+            String s = shape.getText();
+            Paint p= new Paint();
+            p.setTextSize(shape.getTxtFontSize());
+            p.getTextBounds(shape.getText(), 0, shape.getText().length(), rect);
+            int w = rect.width();
+            int h = rect.height();
+
+            shape.setX2_absolute(shape.getX1() + w);
+            shape.setY2_absolute( shape.getY1() );
+            shape.setY1_absolute(shape.getY1() - h);
+            shape.setWidth(shape.getX2() - shape.getX1());
+            shape.setHeight(shape.getY2() - shape.getY1());
+        }
+        // XT Implemented end
     }
     //Shape dialog listener interface methods
     @Override
@@ -331,6 +369,12 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         Shape shape = new Shape();
         createShape(shapeStringValues, checkBoxValues, shape);
         //mLayout.removeView(newPage);
+
+        // advance button clicked
+        if (ShapeSingleton.getInstance().selectedShape != null) {
+            newPage.removeShape(ShapeSingleton.getInstance().selectedShape);
+        }
+
         if(newPage!= null)newPage.addShape(shape);
         //mLayout.addView(newPage);
         addShapeDialogFragment.dismiss();
@@ -352,7 +396,9 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         newPage.setLayoutParams(newGame.getLpPages());
         //if(pageCounter!=1)newPage.setVisibility(View.GONE); // changes here when you add starter page option
         newGame.addView(newPage);
-        if(mLayout.getChildCount()>1) {
+
+        int i = mLayout.getChildCount();
+        if(mLayout.getChildCount()>2) {
             for (int j = 0; j < mLayout.getChildCount(); j++) {
                 if (mLayout.getChildAt(j) instanceof Page) {
                     mLayout.getChildAt(j).setVisibility(View.VISIBLE);

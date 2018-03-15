@@ -1,5 +1,6 @@
 package edu.stanford.cs108.bunnyworld;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
@@ -19,8 +20,14 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+
 import android.view.ViewParent;
+
+import android.widget.Button;
+import android.widget.EditText;
+
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.content.Intent;
 import android.view.Gravity;
@@ -31,8 +38,11 @@ import java.util.List;
 /**
  * TODO: document your custom view class.
  */
-public class Page extends View /*implements View.OnClickListener*/ {
-    private List<Shape> shapes = new ArrayList<>();
+
+
+public class Page extends View implements AddShapeDialogFragment.addShapeDialogFragmentListener{
+    protected List<Shape> shapes = new ArrayList<>();
+
     //this "shapeCounter" param should not be called to retrieve the number of shapes in this view
     // since it only used to keep the naming scheme of shapes incremented by 1 everytime
     //the user doesn't bother to enter a shape name. Instead classes should get the accurate
@@ -43,6 +53,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
     private boolean playMode = false;
     private boolean starterPage = false;
     private boolean isDragging = false;
+    private int prevX,prevY;
 
     private String pageName = "";
 
@@ -115,6 +126,97 @@ public class Page extends View /*implements View.OnClickListener*/ {
         // this.setBackgroundColor(Color.WHITE);  //Page background is white (specs)
     }
 
+
+    // XT Implemented start
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+
+        //hideInspector();
+
+        Button updateBtn = ((Activity) getContext()).findViewById(R.id.update_btn);
+        updateBtn.setOnClickListener(new UpdateButtonHandlr());
+
+        Button deleteBtn = ((Activity) getContext()).findViewById(R.id.delete_btn);
+        deleteBtn.setOnClickListener(new DeleteButtonHandlr());
+
+        Button advancedBtn = ((Activity) getContext()).findViewById(R.id.advanced_btn);
+        advancedBtn.setOnClickListener(new AdvancedButtonHandlr());
+    }
+
+    class AdvancedButtonHandlr implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            if (selectedShape != null) {
+                ShapeSingleton.getInstance().setSelectedShape(selectedShape);
+                ShapeSingleton.getInstance().setSelectedShapeContainer(shapes);
+
+                AddPagesActivity a = (AddPagesActivity) getContext();
+                a.showAddShapeDialog();
+
+
+            }
+        }
+    }
+
+    class DeleteButtonHandlr implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            if (selectedShape != null) {
+                removeShape(selectedShape);
+                ChangeText(selectedShape);
+                hideInspector();
+                invalidate();
+            }
+        }
+
+    }
+
+    public void removeShape (Shape shape) {
+        shapeCounter --;
+        shapes.remove(shape);
+        selectedShape = null;
+    }
+
+
+    @Override
+    public void onSaveShapeClick(String[] shapeStringValues, boolean[] checkBoxValues) {
+        AddPagesActivity a = (AddPagesActivity)getContext();
+        a.onSaveShapeClick(shapeStringValues, checkBoxValues);
+    }
+
+    @Override
+    public void onCancelShapeClick(View view) {
+        AddPagesActivity a = (AddPagesActivity)getContext();
+        a.onCancelShapeClick(view);
+    }
+
+    class UpdateButtonHandlr implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+
+            if (selectedShape != null) {
+                EditText X = ((Activity) getContext()).findViewById(R.id.X_input);
+                EditText Y = ((Activity) getContext()).findViewById(R.id.Y_input);
+                EditText width = ((Activity) getContext()).findViewById(R.id.Width_input);
+                EditText height = ((Activity) getContext()).findViewById(R.id.Height_input);
+
+                int xValue = Integer.parseInt( X.getText().toString() );
+                int yValue = Integer.parseInt( Y.getText().toString() );
+                int wValue = Integer.parseInt( width.getText().toString() );
+                int hValue = Integer.parseInt( height.getText().toString() );
+
+                selectedShape.setX1_absolute(xValue);
+                selectedShape.setY1_absolute(yValue);
+                selectedShape.setWidth(wValue);
+                selectedShape.setHeight(hValue);
+
+                invalidate();
+            }
+        }
+    }
+    // XT Implemented end
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int x, y;
@@ -128,11 +230,60 @@ public class Page extends View /*implements View.OnClickListener*/ {
                     for (Shape sh : shapes) {
                         if (sh.contains(x,y)) {
                             if(sh.isVisible())selectedShape = sh;  //select last added shape to the page
-                        }
+
+
+                	    }
                     }
-                    //if the clicked shape has an on click action scripts execute it
+
                     if(selectedShape != null) {
-                        selectedShape.execOnClickScript(getContext(),(ViewGroup)this.getParent(),this);
+                        showInspector();
+                        if (!selectedShape.getText().equals("")) {
+                            hideWH();
+                        } else {
+                            showWH();
+                        }
+                        ChangeText(selectedShape);
+
+                        //if the clicked shape has an on click action scripts execute it
+                        selectedShape.execOnClickScript(getContext(), (ViewGroup) this.getParent(), this);
+                    } else {
+                        hideInspector();
+                    }
+
+                }
+                prevX = x;
+                prevY = y;
+                invalidate();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if(selectedShape != null) {
+                    int currX, currY, xOffset, yOffset;
+                    // drag text
+
+                    if (!selectedShape.getText().equals("")){
+                        hideWH();
+                    } else {
+                        showWH();
+                    }
+
+                    if (!selectedShape.getText().equals("") || (selectedShape.getText().trim().isEmpty() && selectedShape.getImageName().trim().isEmpty()) || (selectedShape.getText().trim().isEmpty() && selectedShape.getImageIdentifier() == 0)) {
+                        currX = (int) event.getX();
+                        currY = (int) event.getY();
+                        xOffset = currX - prevX;
+                        yOffset = currY - prevY;
+                        prevX = currX;
+                        prevY = currY;
+                        selectedShape.setX1_absolute(selectedShape.getX1() + xOffset);
+                        selectedShape.setY1_absolute(selectedShape.getY1() + yOffset);
+
+                        selectedShape.setX2_absolute(selectedShape.getX1()  + selectedShape.getWidth());
+                        selectedShape.setY2_absolute(selectedShape.getY1()  + selectedShape.getHeight());
+
+                        ChangeText(selectedShape);
+                        invalidate();
+
+                    } else {
+
                         if (selectedShape.imageIdentifier != 0) {
                             DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(), selectedShape.imageIdentifier);
                             ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.getName());
@@ -142,21 +293,18 @@ public class Page extends View /*implements View.OnClickListener*/ {
                             draggedShape.addItem(item2_imageId);
                             this.startDrag(draggedShape, shapeShadowBuilder, null, 0);
                             selectedShape.setVisible(false);
+
+
                             invalidate();
                         }
-
                     }
                 }
-                invalidate();
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                break;
 
             case MotionEvent.ACTION_UP:
-//                this.isDragging = false;
-                selectedShape = null; //nullify selected shape when the user lift his finger
-                invalidate();
+
+                //selectedShape = null; //nullify selected shape when the user lift his finger
+                //invalidate();
+
                 break;
 
         }
@@ -224,14 +372,18 @@ public class Page extends View /*implements View.OnClickListener*/ {
         switch(action) {
             case DragEvent.ACTION_DRAG_STARTED:
                 System.out.println("ACTION_DRAG_STARTED In page");
+                hideInspector();
                 //Check for onDrag events on the page
- //               invalidate();
+
                 return true;
 
             case DragEvent.ACTION_DRAG_ENTERED:
                 System.out.println("ACTION_DRAG_ENTERED In page");
-                if(selectedShape != null) selectedShape.setInPossession(false);
-     //           invalidate();
+
+                if(selectedShape != null) {
+                    selectedShape.setInPossession(false);
+
+                }
                 return true;
 
             case DragEvent.ACTION_DRAG_LOCATION:
@@ -241,8 +393,11 @@ public class Page extends View /*implements View.OnClickListener*/ {
 
             case DragEvent.ACTION_DRAG_EXITED:
                 System.out.println("ACTION_DRAG_EXITED In page");
-                if(selectedShape != null) selectedShape.setInPossession(true);
-    //            invalidate();
+
+                if(selectedShape != null) {
+                    selectedShape.setInPossession(true);
+
+                }
                 return true;
 
             case DragEvent.ACTION_DROP:
@@ -250,6 +405,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 int currX, currY;
                 currX = (int) event.getX();
                 currY = (int) event.getY();
+
                 if(selectedShape == null) {
                     System.out.println("ACTION_DROP In page, null");
                     if (!playMode) {
@@ -257,10 +413,10 @@ public class Page extends View /*implements View.OnClickListener*/ {
                         selectedShape = new Shape(event.getClipData().getItemAt(1).getText().toString(), this.getContext());
                         selectedShape.setName(event.getClipData().getItemAt(0).getText().toString());
                         this.addShape(selectedShape);
-                        selectedShape.setX1(currX - (selectedShape.getWidth() / 2));
-                        selectedShape.setY1(currY - (selectedShape.getHeight() / 2));
-                        selectedShape.setX2(currX + (selectedShape.getWidth() / 2));
-                        selectedShape.setY2(currY + (selectedShape.getHeight() / 2));
+                        selectedShape.setX1_absolute(currX - (selectedShape.getWidth() / 2));
+                        selectedShape.setY1_absolute(currY - (selectedShape.getHeight() / 2));
+                        selectedShape.setX2_absolute(currX + (selectedShape.getWidth() / 2));
+                        selectedShape.setY2_absolute(currY + (selectedShape.getHeight() / 2));
                         selectedShape.setVisible(true);
                         invalidate();
                         selectedShape = null;
@@ -301,11 +457,12 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 if(selectedShape != null) {
                     System.out.println("ACTION_DROP In page, !null");
                     if (!playMode) {
-                        System.out.println("ACTION_DROP In page, !null !playmode");
-                        selectedShape.setX1(currX - (selectedShape.getWidth() / 2));
-                        selectedShape.setY1(currY - (selectedShape.getHeight() / 2));
-                        selectedShape.setX2(currX + (selectedShape.getWidth() / 2));
-                        selectedShape.setY2(currY + (selectedShape.getHeight() / 2));
+
+                        selectedShape.setX1_absolute(currX - (selectedShape.getWidth() / 2));
+                        selectedShape.setY1_absolute(currY - (selectedShape.getHeight() / 2));
+                        selectedShape.setX2_absolute(currX + (selectedShape.getWidth() / 2));
+                        selectedShape.setY2_absolute(currY + (selectedShape.getHeight() / 2));
+
                         selectedShape.setVisible(true);
                         invalidate();
                         selectedShape = null;
@@ -342,6 +499,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
 
             case DragEvent.ACTION_DRAG_ENDED:
                 System.out.println("ACTION_DRAG_ENDED In page");
+
                 if(event.getResult()){
                     System.out.println("Drop Ended In Page");
                     invalidate();
@@ -413,6 +571,72 @@ public class Page extends View /*implements View.OnClickListener*/ {
         }
     } */
 
+
+
+    // change the x, y, width and height for shape inspector based on input shape
+    private void ChangeText (Shape shape) {
+
+
+        EditText X = ((Activity) getContext()).findViewById(R.id.X_input);
+        EditText Y = ((Activity) getContext()).findViewById(R.id.Y_input);
+        EditText width = ((Activity) getContext()).findViewById(R.id.Width_input);
+        EditText height = ((Activity) getContext()).findViewById(R.id.Height_input);
+
+        if (shape != null) {
+            X.setText( String.valueOf(shape.getX1()));
+            Y.setText( String.valueOf(shape.getY1()));
+            width.setText( String.valueOf (shape.getWidth()) );
+            height.setText( String.valueOf (shape.getHeight()) );
+        } else {
+            X.setText("");
+            Y.setText( "");
+            width.setText( "" );
+            height.setText( "" );
+        }
+    }
+
+    // change the x, y, width and height for shape inspector based on input shape
+    private void hideInspector () {
+        LinearLayout inspector = ((Activity) getContext()).findViewById(R.id.inspector);
+        inspector.setVisibility(View.GONE);
+
+    }
+
+    private void showInspector () {
+        LinearLayout inspector = ((Activity) getContext()).findViewById(R.id.inspector);
+        inspector.setVisibility(View.VISIBLE);
+
+    }
+
+    // Hide width and height in shape inspector
+    private void hideWH () {
+        EditText w_edittext = ((Activity) getContext()).findViewById(R.id.Width_input);
+        w_edittext.setVisibility(View.GONE);
+
+        TextView w_label = ((Activity) getContext()).findViewById(R.id.Width_label);
+        w_label.setVisibility(View.GONE);
+
+        EditText h_edittext = ((Activity) getContext()).findViewById(R.id.Height_input);
+        h_edittext.setVisibility(View.GONE);
+
+        TextView h_label = ((Activity) getContext()).findViewById(R.id.Height_label);
+        h_label.setVisibility(View.GONE);
+    }
+
+    // Show width and height in shape inspector
+    private void showWH () {
+        EditText w_edittext = ((Activity) getContext()).findViewById(R.id.Width_input);
+        w_edittext.setVisibility(View.VISIBLE);
+
+        TextView w_label = ((Activity) getContext()).findViewById(R.id.Width_label);
+        w_label.setVisibility(View.VISIBLE);
+
+        EditText h_edittext = ((Activity) getContext()).findViewById(R.id.Height_input);
+        h_edittext.setVisibility(View.VISIBLE);
+
+        TextView h_label = ((Activity) getContext()).findViewById(R.id.Height_label);
+        h_label.setVisibility(View.VISIBLE);
+    }
 
 
     public String getPageName() {
