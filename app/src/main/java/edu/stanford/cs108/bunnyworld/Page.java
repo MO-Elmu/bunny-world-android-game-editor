@@ -32,6 +32,10 @@ import java.util.List;
  */
 public class Page extends View /*implements View.OnClickListener*/ {
     private List<Shape> shapes = new ArrayList<>();
+    //this "shapeCounter" param should not be called to retrieve the number of shapes in this view
+    // since it only used to keep the naming scheme of shapes incremented by 1 everytime
+    //the user doesn't bother to enter a shape name. Instead classes should get the accurate
+    // number of shapes from the shapes List.
     private int shapeCounter = 0;
     private Shape selectedShape;
     private boolean visibility;
@@ -169,7 +173,6 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 Shape sh = it.next();
                 if(sh.isInPossession())  {
                     it.remove();
-                    shapeCounter -= 1;
                 }
                 sh.drawSelf(canvas, this.getContext());
             }

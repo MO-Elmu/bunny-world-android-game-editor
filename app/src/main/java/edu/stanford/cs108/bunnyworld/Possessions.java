@@ -30,6 +30,10 @@ public class Possessions extends View {
 
 
     private List<Shape> shapes = new ArrayList<>();
+    //this "shapeCounter" param should not be called to retrieve the number of shapes in this view
+    // since it only used to keep the naming scheme of shapes incremented by 1 everytime
+    //the user doesn't bother to enter a shape name. Instead classes should get the accurate
+    // number of shapes from the shapes List.
     private int shapeCounter = 0;
     private Shape selectedShape;
     private boolean isDragging = false;
@@ -54,6 +58,12 @@ public class Possessions extends View {
 
     private void init(AttributeSet attrs, int defStyle) {
 
+    }
+    public void addShape(Shape shape){
+        shapeCounter += 1;
+        if(shape.getName().trim().isEmpty()) shape.setName("shape" + shapeCounter);
+        shapes.add(shape);
+        invalidate();
     }
 
 
@@ -189,7 +199,7 @@ public class Possessions extends View {
                     selectedShape.setY1(currY -(selectedShape.getHeight()/2));
                     selectedShape.setX2(currX + (selectedShape.getWidth()/2));
                     selectedShape.setY2(currY + (selectedShape.getHeight()/2));
-                    shapes.add(selectedShape);
+                    this.addShape(selectedShape);
  //                   organizePossessions();
                     selectedShape.setVisible(true);
                     invalidate();
