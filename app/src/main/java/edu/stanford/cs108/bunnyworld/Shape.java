@@ -279,8 +279,11 @@ public class Shape{
                         System.out.println("PLAYING SOUND");
                         String soundFileName = name;
                         int soundFileId = context.getResources().getIdentifier(soundFileName, "raw", context.getPackageName());
-                        MediaPlayer mp = MediaPlayer.create(context, soundFileId);
-                        mp.start();
+                        if(soundFileId != 0) {
+                            MediaPlayer mp = MediaPlayer.create(context, soundFileId);
+                            mp.start();
+                        }
+
                         break;
                     case "goto":
                         try {
@@ -302,8 +305,8 @@ public class Shape{
                                     System.out.println("goto PAGE shapes:  " + page.getShapes());
                                     //page.clearAnimation();
                                 } else {
-                                    page.setVis(false);
-                                    page.setVisibility(View.GONE);
+                                    //page.setVis(false);
+                                    //page.setVisibility(View.GONE);
                                 }
                             }
                         } catch (ClassCastException e) {

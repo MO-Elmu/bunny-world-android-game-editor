@@ -41,6 +41,8 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
     private SubMenu savedPagesSubMenu;  //user can move between already created pages and Edit them.
     int pageCounter=0; //this for testing only it should be deleted when the code is ready
     boolean gameInflated = false;
+    private String gameName,gameType,gameMode;
+    private int gameIcon;
     private Possessions possessions;
     private boolean editingPage = false;
 
@@ -54,33 +56,35 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         isPageCreated = false;  //make sure addShape menu starts inactive till user adds a page
         isCurrPageSaved = true;
         Intent intent = getIntent();
-        String gameName = intent.getStringExtra("gameName");
-        String gameType = intent.getStringExtra("game_type");
-        String gameMode = intent.getStringExtra("mode");
-        int gameIcon = intent.getIntExtra("game_icon", 0);
+        gameName = intent.getStringExtra("gameName");
+        gameType = intent.getStringExtra("game_type");
+        gameMode = intent.getStringExtra("mode");
+        gameIcon = intent.getIntExtra("game_icon", 0);
         mLayout = (LinearLayout)findViewById(R.id.add_page);
         mLayout.setOrientation(LinearLayout.VERTICAL);
         mLayout.setWeightSum(5.0f);
         mLayout.setVerticalGravity(Gravity.BOTTOM);
-        newGame = new Document(this.getApplicationContext(), gameName, gameIcon, gameType);
-        possessions = new Possessions(this.getApplicationContext());
-        mLayout.addView(possessions);
+        newGame = new Document(this, gameName, gameIcon, gameType);
+        possessions = new Possessions(this);
 
-
-        LoadGame lga = new LoadGame();
         if(gameMode.equals("edit")){
+            LoadGame lga = new LoadGame();
             db = openOrCreateDatabase("BunnyDB",MODE_PRIVATE,null);
-            lga.setupGame(intent.getStringExtra("game"), this.getApplicationContext(), db, mLayout);
+            lga.setupGame(intent.getStringExtra("game"), this, db);
             newGame = lga.getDoc();
-            //possessions = lga.getPossessions();
-            //mLayout = lga.getmLayout();
-            //mLayout = (LinearLayout)findViewById(R.id.add_page);
-           // mLayout.setOrientation(LinearLayout.VERTICAL);
-           // mLayout.setWeightSum(5.0f);
-           // mLayout.setVerticalGravity(Gravity.BOTTOM);
+            if(newGame.getChildCount()>0){
+                for(int i=0; i< newGame.getChildCount(); i++){
+                    if (newGame.getChildAt(i) instanceof Possessions) {
+                        possessions = (Possessions) newGame.getChildAt(i);
+                        newGame.removeView(possessions);
+                    }
+                }
+            }
+            possessions.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1.0f));
             //mLayout.addView(possessions);
+            //return;
         }
-
+        mLayout.addView(possessions);
         LinearLayout inspector = findViewById(R.id.inspector);
         inspector.setVisibility(View.INVISIBLE);
 
@@ -154,11 +158,6 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
                         isPageCreated = true;
                         isCurrPageSaved = false;
                         invalidateOptionsMenu();
-                        //mLayout.invalidate();
-                        //newPage = null;
-                        //newPage = (Page)mLayout.getChildAt(0);
-
-                        // mLayout.bringChildToFront(page);
                         break;
                     }
                 }
@@ -543,7 +542,6 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         newGame.addView(possessions);
         putInPlayMode(newGame);
         organizeGamePages(newGame);
-        //newGame.setLayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         mLayout.addView(newGame, 0);
         gameInflated = true;
         invalidateOptionsMenu();
