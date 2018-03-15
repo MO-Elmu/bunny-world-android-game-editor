@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.view.GestureDetectorCompat;
@@ -115,6 +116,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
         int x, y;
         switch(event.getAction()){
             case MotionEvent.ACTION_DOWN:
+                this.isDragging = true;
                 x = (int)event.getX();
                 y = (int)event.getY();
                 selectedShape = null;  //nullify the previously selected shape
@@ -148,6 +150,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
 
                 break;
             case MotionEvent.ACTION_UP:
+                this.isDragging = false;
                 selectedShape = null; //nullify selected shape when the user lift his finger
                 invalidate();
                 break;
@@ -174,7 +177,9 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 sh.drawSelf(canvas, this.getContext());
             }
         }
-        if(isDragging) flicker(canvas, selectedShape);
+        if(isDragging && selectedShape != null) {
+            pageFlicker(canvas, selectedShape);
+        }
     }
 
     //overridden to count for onEnter Scripts if it exists for any of the page's shapes
@@ -215,34 +220,29 @@ public class Page extends View /*implements View.OnClickListener*/ {
         // Handles all the expected events
         switch(action) {
             case DragEvent.ACTION_DRAG_STARTED:
-                this.isDragging = true;
                 System.out.println("ACTION_DRAG_STARTED In page");
                 //Check for onDrag events on the page
-//                invalidate();
+                invalidate();
                 return true;
 
             case DragEvent.ACTION_DRAG_ENTERED:
-                this.isDragging = true;
                 System.out.println("ACTION_DRAG_ENTERED In page");
                 if(selectedShape != null) selectedShape.setInPossession(false);
      //           invalidate();
                 return true;
 
             case DragEvent.ACTION_DRAG_LOCATION:
-                isDragging = true;
                 // Ignore the event
      //           invalidate();
                 return true;
 
             case DragEvent.ACTION_DRAG_EXITED:
-                isDragging = true;
                 System.out.println("ACTION_DRAG_EXITED In page");
                 if(selectedShape != null) selectedShape.setInPossession(true);
     //            invalidate();
                 return true;
 
             case DragEvent.ACTION_DROP:
-                isDragging = false;
                 System.out.println("ACTION_DROP In page");
                 int currX, currY;
                 currX = (int) event.getX();
@@ -338,7 +338,6 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 return false;
 
             case DragEvent.ACTION_DRAG_ENDED:
-                isDragging = false;
                 System.out.println("ACTION_DRAG_ENDED In page");
                 if(event.getResult()){
                     System.out.println("Drop Ended In Page");
@@ -357,9 +356,28 @@ public class Page extends View /*implements View.OnClickListener*/ {
         }
         return false;
     }
+
+    public void possessionsFlicker (Shape possSelectedShape) {
+        selectedShape = possSelectedShape;
+//        invalidate();
+    }
+
+    public void pageFlicker(Canvas canvas, Shape selectedShape) {
+        ViewParent viewParent = this.getParent();
+        Flicker flicker = new Flicker(selectedShape, viewParent);
+        int rectX1 = flicker.getRectX1();
+        int rectY1 = flicker.getRectY1();
+        int rectX2 = flicker.getRectX2();
+        int rectY2 = flicker.getRectY2();
+        System.out.println("FLICKER rect's xy " + rectX1 + " " + rectY1
+                + " " + rectX2 + " " + rectY2);
+        Paint boundaryPaint = flicker.getBoundaryPaint();
+
+        canvas.drawRect(rectX1, rectY1, rectX2, rectY2, boundaryPaint);
+    }
     
 
-    void flicker(Canvas canvas, Shape sh) {
+ /*   void flicker(Canvas canvas, Shape sh) {
         if(sh == null) return;
         System.out.println("FLICKER called while dragging shape: " + sh.getName());
 
@@ -390,7 +408,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 shape2.onDropShapes.clear();
             }
         }
-    }
+    } */
 
 
 
