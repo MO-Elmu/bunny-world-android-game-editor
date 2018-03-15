@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(MainActivity.this, ""+i, Toast.LENGTH_SHORT).show();
 
                 if(text.get(i).equals("")){
                     createButton.setText("Create New Game");
@@ -186,8 +185,11 @@ public class MainActivity extends AppCompatActivity {
      */
     private void populateDatabase() {
         Integer bunn = R.drawable.happybunny;
+        String mDrawableName = "running_rabbit";
+        int resID = getResources().getIdentifier(mDrawableName , "drawable", getPackageName());
+
         String dataStr1 = "INSERT INTO games VALUES "
-                + "('Bunny World'," + bunn + ",NULL);";
+                + "('Bunny World'," + bunn + ",NULL), ('Bunny World'," + resID + ",NULL);";
         String dataStr2 = "INSERT INTO pages VALUES "
                 + "('page1', 'Bunny World', 1 ,NULL), ('page2', 'Bunny World', 0 ,NULL), ('page3', 'Bunny World', 0 ,NULL), ('page4', 'Bunny World', 0 ,NULL), ('page5', 'Bunny World', 0 ,NULL);";
         String dataStr3 = "INSERT INTO shapes VALUES "

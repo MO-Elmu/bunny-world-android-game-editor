@@ -62,8 +62,8 @@ public class PlayGameActivity extends AppCompatActivity {
 
     }
 
-    private void setupShapeScript(Shape shape, String name) {
-        String loadScripts = "SELECT * from scripts where shape_name = '"+name+"';";
+    private void setupShapeScript(Shape shape, String name, String gameName) {
+        String loadScripts = "SELECT * from scripts where shape_name = '"+name+"' and game_name='"+gameName+"';";
 
         System.err.println(loadScripts);
         Cursor cursor = db.rawQuery(loadScripts,null);
@@ -140,7 +140,7 @@ public class PlayGameActivity extends AppCompatActivity {
 
         cursorG.moveToFirst();
         for(int i = 0; i < cursorG.getCount(); i++){
-            doc = new Document(this.getApplicationContext(), cursorG.getString(0), "", "");
+            doc = new Document(this.getApplicationContext(), cursorG.getString(0), 0, "");
 
         }
 
@@ -180,7 +180,7 @@ public class PlayGameActivity extends AppCompatActivity {
 
 
             //add the shapes
-            String loadShapes = "SELECT * from shapes where page_name = '"+pageName+"';";
+            String loadShapes = "SELECT * from shapes where page_name = '"+pageName+"' and game_name = '"+name+"';";
 
             System.err.println(loadShapes);
             Cursor cursorS = db.rawQuery(loadShapes,null);
@@ -215,7 +215,7 @@ public class PlayGameActivity extends AppCompatActivity {
                     s.setTxtFontSize((int)scaledFontSize);
                 }
                 s.setName(cursorS.getString(0));
-                setupShapeScript(s, cursorS.getString(0));
+                setupShapeScript(s, cursorS.getString(0), name);
                 shapes[j] = s;
 
                 //save shape
