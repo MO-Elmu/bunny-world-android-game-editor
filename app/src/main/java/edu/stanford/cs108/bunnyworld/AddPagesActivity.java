@@ -49,14 +49,20 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         Intent intent = getIntent();
         String gameName = intent.getStringExtra("gameName");
         String gameType = intent.getStringExtra("game_type");
-        String gameIcon = intent.getStringExtra("game_icon");
+        int gameIcon = intent.getIntExtra("game_icon", 0);
         mLayout = (LinearLayout)findViewById(R.id.add_page);
         mLayout.setOrientation(LinearLayout.VERTICAL);
         mLayout.setWeightSum(5.0f);
         mLayout.setVerticalGravity(Gravity.BOTTOM);
-        newGame = new Document(this.getApplicationContext(), gameName, gameType, gameIcon);
+        newGame = new Document(this.getApplicationContext(), gameName, gameIcon, gameType);
         possessions = new Possessions(this.getApplicationContext());
         mLayout.addView(possessions);
+
+        LoadGame lga = new LoadGame();
+        if(intent.getStringExtra("mode").equals("edit")){
+            db = openOrCreateDatabase("BunnyDB",MODE_PRIVATE,null);
+            lga.setupGame(intent.getStringExtra("game"), this.getApplicationContext(), db, mLayout);
+        }
 
     }
 
@@ -547,7 +553,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
 
         // save game in db
         String gameName = game.getGameName();
-        String gameIcon = game.getIconName();
+        int gameIcon = game.getIconName();
         String addStr = "INSERT INTO games VALUES "
                 + String.format("('%s', '%s', NULL)", gameName, gameIcon)
                 + ";";
@@ -579,7 +585,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
 
                     addStr = "INSERT INTO shapes VALUES "
                             + String.format("('%s', '%s', '%s', '%s', '%s', %d, %d, %d, %d, %d, %d, %d, %d, NULL)",
-                            shapeName, pageName, gameName, imageName, caption,
+                            shapeName, pageName, gameName,  caption, imageName,
                             inPossession, possessable, visible, movable, xPos, yPos, width, height)
                             + ";";
                     db.execSQL(addStr);

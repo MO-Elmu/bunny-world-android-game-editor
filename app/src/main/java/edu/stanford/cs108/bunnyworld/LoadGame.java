@@ -1,49 +1,24 @@
 package edu.stanford.cs108.bunnyworld;
 
-import android.content.Intent;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import static java.lang.Boolean.TRUE;
 
-public class PlayGameActivity extends AppCompatActivity {
+/**
+ * Created by maikefilmer on 3/14/18.
+ */
+
+public class LoadGame {
+
     SQLiteDatabase db;
     private Document doc;
     private LinearLayout mLayout;
     private Possessions possessions;
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_play_game);
-        mLayout = (LinearLayout)findViewById(R.id.loadGame);
-        db = openOrCreateDatabase("BunnyDB",MODE_PRIVATE,null);
-
-        mLayout.setOrientation(LinearLayout.VERTICAL);
-        mLayout.setWeightSum(1.0f);
-        mLayout.setVerticalGravity(Gravity.BOTTOM);
-        possessions = new Possessions(this.getApplicationContext());
-
-
-
-
-
-        Intent intent = getIntent();
-        Bundle data = intent.getExtras();
-
-        data.get("game");
-        System.out.println("GAMEEE: "+ data.get("game"));
-        loadGames();
-        setupGame(data.get("game").toString());
-    }
-
     /**
      * Load the games someone can play
      */
@@ -131,16 +106,17 @@ public class PlayGameActivity extends AppCompatActivity {
         shape.setOnDropScript(dropScript);
     }
 
-    public void setupGame(String name) {
+    public void setupGame(String name, Context context, SQLiteDatabase dbin, LinearLayout ml) {
         //create the doc
-
+        db = dbin;
+        possessions = new Possessions(context);
         String loadGame = "SELECT * from games where game_name = '"+name+"';";
         System.err.println(loadGame);
         Cursor cursorG = db.rawQuery(loadGame,null);
 
         cursorG.moveToFirst();
         for(int i = 0; i < cursorG.getCount(); i++){
-            doc = new Document(this.getApplicationContext(), cursorG.getString(0), 0, "");
+            doc = new Document(context, cursorG.getString(0), 0, "");
 
         }
 
@@ -164,7 +140,7 @@ public class PlayGameActivity extends AppCompatActivity {
             } else {
                 vis = true;
             }
-            Page p = new Page(this.getApplicationContext(), vis); //might want to add more information about a page to a page setting itself up
+            Page p = new Page(context, vis); //might want to add more information about a page to a page setting itself up
             p.setLayoutParams(doc.getLpPossessions());
 
             pages[i] = p;
@@ -208,10 +184,10 @@ public class PlayGameActivity extends AppCompatActivity {
                     visible = true;
                 }
                 Shape s = new Shape(cursorS.getInt(9), cursorS.getInt(10), cursorS.getInt(11)
-                        ,cursorS.getInt(12), movable, visible, cursorS.getString(4),this.getApplicationContext());
+                        ,cursorS.getInt(12), movable, visible, cursorS.getString(4), context);
                 if (!cursorS.getString(3).equals("")){
                     s.setText(cursorS.getString(3));
-                    float scaledFontSize = Integer.valueOf(12) * getResources().getDisplayMetrics().scaledDensity;
+                    float scaledFontSize = Integer.valueOf(12) * context.getResources().getDisplayMetrics().scaledDensity;
                     s.setTxtFontSize((int)scaledFontSize);
                 }
                 s.setName(cursorS.getString(0));
@@ -238,9 +214,7 @@ public class PlayGameActivity extends AppCompatActivity {
         }
         possessions.setLayoutParams(doc.getLpPossessions());
         doc.addView(possessions);
-        mLayout.addView(doc);
+        ml.addView(doc);
 
     }
-
-
 }

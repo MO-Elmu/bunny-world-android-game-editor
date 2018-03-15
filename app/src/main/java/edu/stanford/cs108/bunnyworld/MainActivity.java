@@ -62,22 +62,25 @@ public class MainActivity extends AppCompatActivity {
         gridView.setAdapter(new ImageAdapter(this, mThumbIds, text));
         final Button playButton = (Button) findViewById(R.id.playGame);
         final Button createButton = (Button) findViewById(R.id.createGame);
+        final Button editButton = (Button) findViewById(R.id.editGame);
         playButton.setVisibility(View.GONE);
         createButton.setVisibility(View.GONE);
+        editButton.setVisibility(View.GONE);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(MainActivity.this, ""+i, Toast.LENGTH_SHORT).show();
 
                 if(text.get(i).equals("")){
                     createButton.setText("Create New Game");
                     createButton.setVisibility(View.VISIBLE);
                     playButton.setVisibility(View.GONE);
+                    editButton.setVisibility(View.GONE);
                 } else {
                     playButton.setText("Play " + text.get(i));
-                    createButton.setText("Edit " + text.get(i));
+                    editButton.setText("Edit " + text.get(i));
                     playButton.setVisibility(View.VISIBLE);
-                    createButton.setVisibility(View.VISIBLE);
+                    editButton.setVisibility(View.VISIBLE);
+                    createButton.setVisibility(View.GONE);
                     chosenGame = text.get(i);
                 }
 
@@ -103,6 +106,18 @@ public class MainActivity extends AppCompatActivity {
         text.add("");
         mThumbIds.add(R.drawable.plus);
     }
+
+    /** Reacts to Edit Game Button and takes
+     * the view to a new Activity to be able
+     * to edit Games stored in the database.
+     * @param view
+     */
+     public void editGame(View view){
+        Intent intent = new Intent(this, AddPagesActivity.class);
+        intent.putExtra("game", chosenGame);
+        intent.putExtra("mode", "edit");
+        startActivity(intent);
+     }
 
     /** Handles the Create Game Button and moves the user
      * to a new Activity (CreateGameActivity).
@@ -186,6 +201,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void populateDatabase() {
         Integer bunn = R.drawable.happybunny;
+
         String dataStr1 = "INSERT INTO games VALUES "
                 + "('Bunny World'," + bunn + ",NULL);";
         String dataStr2 = "INSERT INTO pages VALUES "
