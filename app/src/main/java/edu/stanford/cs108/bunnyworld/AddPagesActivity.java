@@ -58,6 +58,12 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         possessions = new Possessions(this.getApplicationContext());
         mLayout.addView(possessions);
 
+        LoadGame lga = new LoadGame();
+        if(intent.getStringExtra("mode").equals("edit")){
+            db = openOrCreateDatabase("BunnyDB",MODE_PRIVATE,null);
+            lga.setupGame(intent.getStringExtra("game"), this.getApplicationContext(), db, mLayout);
+        }
+
     }
 
     //Handling Add Page options Menu

@@ -33,6 +33,12 @@
         android:layout_height="wrap_content"
         android:onClick="createGame"
         android:text="Create Game" />
+    <Button
+        android:id="@+id/editGame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="editGame"
+        android:text="Create Game" />
 
     <Button
         android:id="@+id/playGame"
