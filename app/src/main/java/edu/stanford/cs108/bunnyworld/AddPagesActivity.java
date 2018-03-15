@@ -63,6 +63,14 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         if(gameMode.equals("edit")){
             db = openOrCreateDatabase("BunnyDB",MODE_PRIVATE,null);
             lga.setupGame(intent.getStringExtra("game"), this.getApplicationContext(), db, mLayout);
+            newGame = lga.getDoc();
+            possessions = lga.getPossessions();
+            mLayout = lga.getmLayout();
+            mLayout = (LinearLayout)findViewById(R.id.add_page);
+            mLayout.setOrientation(LinearLayout.VERTICAL);
+            mLayout.setWeightSum(5.0f);
+            mLayout.setVerticalGravity(Gravity.BOTTOM);
+            //mLayout.addView(possessions);
         }
 
     }
@@ -129,6 +137,12 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
                             }
                         }
                         newPage.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 4.0f));
+                        if(newPage.getParent() != null){
+                            ((ViewGroup)newPage.getParent()).removeView(newPage);
+                            ((ViewGroup)newPage.getParent()).removeViewAt(0);
+                            System.out.println("trying to remove parent"+newPage.getParent()!=null);
+                        }
+                        System.out.println("does it have aprent?"+newPage.getParent()!=null);
                         mLayout.addView(newPage, 0);
                         isPageCreated = true;
                         isCurrPageSaved = false;
