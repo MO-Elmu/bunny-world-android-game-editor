@@ -45,6 +45,7 @@ public class CreateGameActivity extends AppCompatActivity {
         intent.putExtra("gameName", name);
         intent.putExtra("game_type", type);
         intent.putExtra("game_icon", resID);
+        intent.putExtra("mode", "create");
         startActivity(intent);
     }
 }
