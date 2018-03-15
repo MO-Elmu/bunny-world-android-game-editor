@@ -116,7 +116,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
         int x, y;
         switch(event.getAction()){
             case MotionEvent.ACTION_DOWN:
-                this.isDragging = true;
+ //               this.isDragging = true;
                 x = (int)event.getX();
                 y = (int)event.getY();
                 selectedShape = null;  //nullify the previously selected shape
@@ -124,8 +124,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
                     for (Shape sh : shapes) {
                         if (sh.contains(x,y)) {
                             if(sh.isVisible())selectedShape = sh;  //select last added shape to the page
-
-                	}                    
+                        }
                     }
                     //if the clicked shape has an on click action scripts execute it
                     if(selectedShape != null) {
@@ -146,11 +145,12 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 }
                 invalidate();
                 break;
-            case MotionEvent.ACTION_MOVE:
 
+            case MotionEvent.ACTION_MOVE:
                 break;
+
             case MotionEvent.ACTION_UP:
-                this.isDragging = false;
+//                this.isDragging = false;
                 selectedShape = null; //nullify selected shape when the user lift his finger
                 invalidate();
                 break;
@@ -222,7 +222,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
             case DragEvent.ACTION_DRAG_STARTED:
                 System.out.println("ACTION_DRAG_STARTED In page");
                 //Check for onDrag events on the page
-                invalidate();
+ //               invalidate();
                 return true;
 
             case DragEvent.ACTION_DRAG_ENTERED:

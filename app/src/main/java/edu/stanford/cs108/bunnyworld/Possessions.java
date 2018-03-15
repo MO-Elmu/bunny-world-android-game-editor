@@ -91,7 +91,7 @@ public class Possessions extends View {
         int x, y;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                this.isDragging = true;
+ //               this.isDragging = true;
                 x = (int) event.getX();
                 y = (int) event.getY();
                 selectedShape = null;  //nullify the previously selected shape
@@ -116,23 +116,12 @@ public class Possessions extends View {
 
                 invalidate();
                 break;
-            case MotionEvent.ACTION_MOVE:
-/*                if(selectedShape != null) {
-                    DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(),selectedShape.imageIdentifier);
-                    ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.getName());
-                    ClipData.Item item2_imageId = new ClipData.Item(selectedShape.imageName);
-                    String mimeTypes[] = {ClipDescription.MIMETYPE_TEXT_PLAIN};
-                    ClipData draggedShape = new ClipData(selectedShape.getName(), mimeTypes, item1_shapeName);
-                    draggedShape.addItem(item2_imageId);
-                    this.startDrag(draggedShape, shapeShadowBuilder, null, 0);
-                    selectedShape.setVisible(false);
-                    invalidate();
-                }
-*/
 
+            case MotionEvent.ACTION_MOVE:
                 break;
+
             case MotionEvent.ACTION_UP:
-                this.isDragging = false;
+//                this.isDragging = false;
                 selectedShape = null; //nullify selected shape when the user lift his finger
                 invalidate();
                 break;
@@ -183,7 +172,7 @@ public class Possessions extends View {
                     selectedShape.setX2(currX + (selectedShape.getWidth() / 2));
                     selectedShape.setY2(currY + (selectedShape.getHeight() / 2));
                     shapes.add(selectedShape);
-                    organizePossessions();
+//                    organizePossessions();
                     selectedShape.setVisible(true);
                     invalidate();
                     selectedShape = null;
@@ -196,7 +185,7 @@ public class Possessions extends View {
                     selectedShape.setY1(currY - (selectedShape.getHeight() / 2));
                     selectedShape.setX2(currX + (selectedShape.getWidth() / 2));
                     selectedShape.setY2(currY + (selectedShape.getHeight() / 2));
-                    organizePossessions();
+ //                   organizePossessions();
                     selectedShape.setVisible(true);
                     invalidate();
                     selectedShape = null;
@@ -205,6 +194,7 @@ public class Possessions extends View {
                 return false;
 
             case DragEvent.ACTION_DRAG_ENDED:
+//                organizePossessions();
                 System.out.println("ACTION_DRAG_ENDED In Possessions");
                 if (event.getResult()) {
                     System.out.println("Drop Ended In Possessions");
@@ -236,25 +226,31 @@ public class Possessions extends View {
         System.out.println("OG Called organizePossessions");
 //        int posX = Math.round(this.getX());
 //        int posY = Math.round(this.getY());
-        int posX = 0;
-        int posY = 0;
-        System.out.println("OG PosX " + posX + " PosY " + posY);
-        System.out.println(shapes.size());
+        int posX = 10;
+        int posY = 10;
+        int shapeSize = 100;
+        System.out.println("OG " + shapes.size());
+        int right = this.getRight();
 
         for (int i = 0; i < shapes.size(); i++) {
             Shape shape = shapes.get(i);
-            System.out.println("OG is moveable? " + shape.isMovable());
-            //    shape.setMovable(true);
+            float aspectRatio = shape.getHeight()/shape.getWidth();
+
+            // place single possession in upper corner and resize
             if (i == 0) {
+
                 shape.setX1(posX);
                 shape.setY1(posY);
-                System.out.println("OG shapeX1 " + shape.getX1() + " shapeY1 " + shape.getY1());
-                shape.setX2(posX + 200);
-                shape.setY2(posY + 200);
-                System.out.println("OG shapeX2 " + shape.getX2() + " shapeY2 " + shape.getY2());
-            } else {
-                int shapeX1 = Math.round(shape.getX1());
-                int shapeY2 = Math.round(shape.getY1());
+
+                shape.setX2(posX + shapeSize);
+                shape.setY2(Math.round(posY + shapeSize * aspectRatio));
+
+
+            } else { // resize and place other shapes to the right
+                shape.setX1(shapes.get(i - 1).getX2() + posX);
+                shape.setY1(posY);
+                shape.setX2(shapes.get(i - 1).getX2() + posX + shapeSize);
+                shape.setY2(Math.round(posY + shapeSize * aspectRatio));
             }
 
         }
@@ -271,7 +267,7 @@ public class Possessions extends View {
             while (it.hasNext()) {
                 Shape sh = it.next();
                 if (!sh.isInPossession()) it.remove();
-//                organizePossessions();
+                organizePossessions();
                 sh.drawSelf(canvas, this.getContext());
             }
         }
