@@ -188,7 +188,6 @@ public class Possessions extends View {
  //                   organizePossessions();
                     selectedShape.setVisible(true);
                     invalidate();
-
                     selectedShape = null;
                     return true;
                 }

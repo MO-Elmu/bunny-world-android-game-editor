@@ -218,27 +218,27 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 this.isDragging = true;
                 System.out.println("ACTION_DRAG_STARTED In page");
                 //Check for onDrag events on the page
-                invalidate();
+//                invalidate();
                 return true;
 
             case DragEvent.ACTION_DRAG_ENTERED:
                 this.isDragging = true;
                 System.out.println("ACTION_DRAG_ENTERED In page");
                 if(selectedShape != null) selectedShape.setInPossession(false);
-                invalidate();
+     //           invalidate();
                 return true;
 
             case DragEvent.ACTION_DRAG_LOCATION:
                 isDragging = true;
                 // Ignore the event
-                invalidate();
+     //           invalidate();
                 return true;
 
             case DragEvent.ACTION_DRAG_EXITED:
                 isDragging = true;
                 System.out.println("ACTION_DRAG_EXITED In page");
                 if(selectedShape != null) selectedShape.setInPossession(true);
-                invalidate();
+    //            invalidate();
                 return true;
 
             case DragEvent.ACTION_DROP:
