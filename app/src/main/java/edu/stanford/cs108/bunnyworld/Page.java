@@ -221,27 +221,27 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 this.isDragging = true;
                 System.out.println("ACTION_DRAG_STARTED In page");
                 //Check for onDrag events on the page
-                invalidate();
+//                invalidate();
                 return true;
 
             case DragEvent.ACTION_DRAG_ENTERED:
                 this.isDragging = true;
                 System.out.println("ACTION_DRAG_ENTERED In page");
                 if(selectedShape != null) selectedShape.setInPossession(false);
-                invalidate();
+     //           invalidate();
                 return true;
 
             case DragEvent.ACTION_DRAG_LOCATION:
                 isDragging = true;
                 // Ignore the event
-                invalidate();
+     //           invalidate();
                 return true;
 
             case DragEvent.ACTION_DRAG_EXITED:
                 isDragging = true;
                 System.out.println("ACTION_DRAG_EXITED In page");
                 if(selectedShape != null) selectedShape.setInPossession(true);
-                invalidate();
+    //            invalidate();
                 return true;
 
             case DragEvent.ACTION_DROP:
@@ -251,7 +251,9 @@ public class Page extends View /*implements View.OnClickListener*/ {
                 currX = (int) event.getX();
                 currY = (int) event.getY();
                 if(selectedShape == null) {
+                    System.out.println("ACTION_DROP In page, null");
                     if (!playMode) {
+                        System.out.println("ACTION_DROP In page, null !playmode");
                         selectedShape = new Shape(event.getClipData().getItemAt(1).getText().toString(), this.getContext());
                         selectedShape.setName(event.getClipData().getItemAt(0).getText().toString());
                         this.addShape(selectedShape);
@@ -265,6 +267,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
                         return true;
                     }
                     if (playMode) {
+                        System.out.println("ACTION_DROP In page, null playmode");
                         //Play Mode while user is playing
                         selectedShape = new Shape(event.getClipData().getItemAt(1).getText().toString(), this.getContext());
                         selectedShape.setName(event.getClipData().getItemAt(0).getText().toString());
@@ -289,13 +292,16 @@ public class Page extends View /*implements View.OnClickListener*/ {
                         }
                         selectedShape = null;
                         invalidate();
+                        System.out.println("ACTION_DROP Returning false");
                         return false;
                     }
 
                 }
 
                 if(selectedShape != null) {
+                    System.out.println("ACTION_DROP In page, !null");
                     if (!playMode) {
+                        System.out.println("ACTION_DROP In page, !null !playmode");
                         selectedShape.setX1(currX - (selectedShape.getWidth() / 2));
                         selectedShape.setY1(currY - (selectedShape.getHeight() / 2));
                         selectedShape.setX2(currX + (selectedShape.getWidth() / 2));
@@ -306,6 +312,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
                         return true;
                     }
                     if (playMode) {
+                        System.out.println("ACTION_DROP In page, !null playmode");
                         if (!shapes.isEmpty()) {
                             for (Shape sh : shapes) {
                                 if (sh.contains(currX, currY)) {
@@ -327,6 +334,7 @@ public class Page extends View /*implements View.OnClickListener*/ {
                         selectedShape.setVisible(true);
                         invalidate();
                         selectedShape = null;
+                        System.out.println("ACTION_DROP Returning false");
                         return false;
                     }
                 }
