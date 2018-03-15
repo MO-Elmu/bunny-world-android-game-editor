@@ -1,5 +1,6 @@
 package edu.stanford.cs108.bunnyworld;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
@@ -60,6 +61,10 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         possessions = new Possessions(this.getApplicationContext());
         mLayout.addView(possessions);
 
+        LinearLayout inspector = findViewById(R.id.inspector);
+        inspector.setVisibility(View.INVISIBLE);
+
+
     }
 
     //Handling Add Page options Menu
@@ -88,6 +93,8 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
                 this.showAlertDialog();
                 break;
             case R.id.add_shape:
+                // Addshape fragment not started from "advanced" button
+                ShapeSingleton.getInstance().setSelectedShape(null);
                 showAddShapeDialog();
                 break;
             case R.id.save_page:
@@ -296,8 +303,11 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         shape.setName(allShapeStringParams[0]);
         shape.setText(allShapeStringParams[1]);
         if(!allShapeStringParams[2].trim().isEmpty()){
-            float scaledFontSize = Integer.valueOf(allShapeStringParams[2]) * getResources().getDisplayMetrics().scaledDensity;
-            shape.setTxtFontSize((int)scaledFontSize);
+            //give me error
+            //float scaledFontSize = Integer.valueOf(allShapeStringParams[2]) * getResources().getDisplayMetrics().scaledDensity;
+            //shape.setTxtFontSize((int)scaledFontSize);
+
+            shape.setTxtFontSize( Integer.parseInt(allShapeStringParams[2]) );
         }
         shape.setImage(allShapeStringParams[3],this.getApplicationContext());
         shape.setOnClickScript(allShapeStringParams[4]);
@@ -308,6 +318,15 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         shape.setOnDrop(scriptsActions[2]);
         shape.setMovable(scriptsActions[3]);
         shape.setVisible(!scriptsActions[4]);
+
+        // For Advanced Button Editing , keep original shape info
+        if (ShapeSingleton.getInstance().selectedShape != null) {
+            shape.setX1_absolute(ShapeSingleton.getInstance().selectedShape.getX1());
+            shape.setY1_absolute(ShapeSingleton.getInstance().selectedShape.getY1());
+            shape.setX2_absolute(shape.getX1() + shape.getWidth());
+            shape.setY2_absolute(shape.getY1() + shape.getHeight());
+        }
+
 
         //For text dragging
         if (  !shape.getText().trim().isEmpty() )  {
@@ -333,6 +352,12 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         Shape shape = new Shape();
         createShape(shapeStringValues, checkBoxValues, shape);
         //mLayout.removeView(newPage);
+
+        // advance button clicked
+        if (ShapeSingleton.getInstance().selectedShape != null) {
+            newPage.removeShape(ShapeSingleton.getInstance().selectedShape);
+        }
+
         if(newPage!= null)newPage.addShape(shape);
         //mLayout.addView(newPage);
         addShapeDialogFragment.dismiss();

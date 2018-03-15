@@ -13,6 +13,7 @@ public class ShapeSingleton {
         return ourInstance;
     }
 
+    // Shape is non-null if Advanced button clicked
     Shape selectedShape;
     List<Shape> shapes;
 

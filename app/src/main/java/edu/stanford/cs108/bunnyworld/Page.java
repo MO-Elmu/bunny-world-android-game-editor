@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.content.Intent;
 import android.view.Gravity;
@@ -117,6 +118,8 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
+        //hideInspector();
+
         Button updateBtn = ((Activity) getContext()).findViewById(R.id.update_btn);
         updateBtn.setOnClickListener(new UpdateButtonHandlr());
 
@@ -132,9 +135,12 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
         public void onClick(View view) {
             if (selectedShape != null) {
                 ShapeSingleton.getInstance().setSelectedShape(selectedShape);
+                ShapeSingleton.getInstance().setSelectedShapeContainer(shapes);
+
                 AddPagesActivity a = (AddPagesActivity) getContext();
                 a.showAddShapeDialog();
-                ShapeSingleton.getInstance().setSelectedShape(null);
+
+
             }
         }
     }
@@ -143,14 +149,20 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
         @Override
         public void onClick(View view) {
             if (selectedShape != null) {
-                shapeCounter --;
-                shapes.remove(selectedShape);
+                removeShape(selectedShape);
+                ChangeText(selectedShape);
+                hideInspector();
                 invalidate();
             }
         }
 
     }
 
+    public void removeShape (Shape shape) {
+        shapeCounter --;
+        shapes.remove(shape);
+        selectedShape = null;
+    }
 
 
     @Override
@@ -180,8 +192,8 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                 int wValue = Integer.parseInt( width.getText().toString() );
                 int hValue = Integer.parseInt( height.getText().toString() );
 
-                selectedShape.setX1(xValue);
-                selectedShape.setY1(yValue);
+                selectedShape.setX1_absolute(xValue);
+                selectedShape.setY1_absolute(yValue);
                 selectedShape.setWidth(wValue);
                 selectedShape.setHeight(hValue);
 
@@ -211,10 +223,21 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                 	    }
                     }
 
-                    ChangeText(selectedShape);
+                    if(selectedShape != null) {
+                        showInspector();
+                        if (!selectedShape.getText().equals("")) {
+                            hideWH();
+                        } else {
+                            showWH();
+                        }
+                        ChangeText(selectedShape);
 
-                    //if the clicked shape has an on click action scripts execute it
-                    if(selectedShape != null) selectedShape.execOnClickScript(getContext(),(ViewGroup)this.getParent(),this);
+                        //if the clicked shape has an on click action scripts execute it
+                        selectedShape.execOnClickScript(getContext(), (ViewGroup) this.getParent(), this);
+                    } else {
+                        hideInspector();
+                    }
+
                 }
                 prevX = x;
                 prevY = y;
@@ -224,18 +247,25 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                 if(selectedShape != null) {
                     int currX, currY, xOffset, yOffset;
                     // drag text
-                    if (!selectedShape.getText().equals("")) {
+
+                    if (!selectedShape.getText().equals("")){
+                        hideWH();
+                    } else {
+                        showWH();
+                    }
+
+                    if (!selectedShape.getText().equals("") || (selectedShape.getText().trim().isEmpty() && selectedShape.getImageName().trim().isEmpty()) || (selectedShape.getText().trim().isEmpty() && selectedShape.getImageIdentifier() == 0)) {
                         currX = (int) event.getX();
                         currY = (int) event.getY();
                         xOffset = currX - prevX;
                         yOffset = currY - prevY;
                         prevX = currX;
                         prevY = currY;
-                        selectedShape.setX1(selectedShape.getX1() + xOffset);
-                        selectedShape.setY1(selectedShape.getY1() + yOffset);
+                        selectedShape.setX1_absolute(selectedShape.getX1() + xOffset);
+                        selectedShape.setY1_absolute(selectedShape.getY1() + yOffset);
 
-                        selectedShape.setX2(selectedShape.getX1()  + selectedShape.getWidth());
-                        selectedShape.setY2(selectedShape.getY1()  + selectedShape.getHeight());
+                        selectedShape.setX2_absolute(selectedShape.getX1()  + selectedShape.getWidth());
+                        selectedShape.setY2_absolute(selectedShape.getY1()  + selectedShape.getHeight());
 
                         ChangeText(selectedShape);
                         invalidate();
@@ -248,11 +278,11 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                             ClipData.Item item2_imageId = new ClipData.Item(selectedShape.imageName);
                             String mimeTypes[] = {ClipDescription.MIMETYPE_TEXT_PLAIN};
                             ClipData draggedShape = new ClipData(selectedShape.getName(), mimeTypes, item1_shapeName);
+                            draggedShape.addItem(item2_imageId);
                             this.startDrag(draggedShape, shapeShadowBuilder, null, 0);
                             selectedShape.setVisible(false);
-                            selectedShape.setX2(selectedShape.getX1() + selectedShape.getWidth());
-                            selectedShape.setY2(selectedShape.getY1() + selectedShape.getHeight());
-                            ChangeText(selectedShape);
+
+
                             invalidate();
                         }
                     }
@@ -260,8 +290,8 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
 
                 break;
             case MotionEvent.ACTION_UP:
-                selectedShape = null; //nullify selected shape when the user lift his finger
-                invalidate();
+                //selectedShape = null; //nullify selected shape when the user lift his finger
+                //invalidate();
                 break;
 
         }
@@ -326,12 +356,16 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
         switch(action) {
             case DragEvent.ACTION_DRAG_STARTED:
                 System.out.println("ACTION_DRAG_STARTED In page");
+                hideInspector();
                 //Check for onDrag events on the page
-                    return true;
+                return true;
 
             case DragEvent.ACTION_DRAG_ENTERED:
                 System.out.println("ACTION_DRAG_ENTERED In page");
-                if(selectedShape != null) selectedShape.setInPossession(false);
+                if(selectedShape != null) {
+                    selectedShape.setInPossession(false);
+
+                }
                 return true;
 
             case DragEvent.ACTION_DRAG_LOCATION:
@@ -340,7 +374,10 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
 
             case DragEvent.ACTION_DRAG_EXITED:
                 System.out.println("ACTION_DRAG_EXITED In page");
-                if(selectedShape != null) selectedShape.setInPossession(true);
+                if(selectedShape != null) {
+                    selectedShape.setInPossession(true);
+
+                }
                 return true;
 
             case DragEvent.ACTION_DROP:
@@ -348,15 +385,16 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                 int currX, currY;
                 currX = (int) event.getX();
                 currY = (int) event.getY();
+
                 if(selectedShape == null) {
                     if (!playMode) {
                         selectedShape = new Shape(event.getClipData().getItemAt(1).getText().toString(), this.getContext());
                         selectedShape.setName(event.getClipData().getItemAt(0).getText().toString());
                         this.addShape(selectedShape);
-                        selectedShape.setX1(currX - (selectedShape.getWidth() / 2));
-                        selectedShape.setY1(currY - (selectedShape.getHeight() / 2));
-                        selectedShape.setX2(currX + (selectedShape.getWidth() / 2));
-                        selectedShape.setY2(currY + (selectedShape.getHeight() / 2));
+                        selectedShape.setX1_absolute(currX - (selectedShape.getWidth() / 2));
+                        selectedShape.setY1_absolute(currY - (selectedShape.getHeight() / 2));
+                        selectedShape.setX2_absolute(currX + (selectedShape.getWidth() / 2));
+                        selectedShape.setY2_absolute(currY + (selectedShape.getHeight() / 2));
                         selectedShape.setVisible(true);
                         invalidate();
                         selectedShape = null;
@@ -394,10 +432,10 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
 
                 if(selectedShape != null) {
                     if (!playMode) {
-                        selectedShape.setX1(currX - (selectedShape.getWidth() / 2));
-                        selectedShape.setY1(currY - (selectedShape.getHeight() / 2));
-                        selectedShape.setX2(currX + (selectedShape.getWidth() / 2));
-                        selectedShape.setY2(currY + (selectedShape.getHeight() / 2));
+                        selectedShape.setX1_absolute(currX - (selectedShape.getWidth() / 2));
+                        selectedShape.setY1_absolute(currY - (selectedShape.getHeight() / 2));
+                        selectedShape.setX2_absolute(currX + (selectedShape.getWidth() / 2));
+                        selectedShape.setY2_absolute(currY + (selectedShape.getHeight() / 2));
                         selectedShape.setVisible(true);
                         invalidate();
                         selectedShape = null;
@@ -432,6 +470,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
 
             case DragEvent.ACTION_DRAG_ENDED:
                 System.out.println("ACTION_DRAG_ENDED In page");
+
                 if(event.getResult()){
                     System.out.println("Drop is True In Page");
                     invalidate();
@@ -504,8 +543,49 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
             width.setText( "" );
             height.setText( "" );
         }
+    }
 
+    // change the x, y, width and height for shape inspector based on input shape
+    private void hideInspector () {
+        LinearLayout inspector = ((Activity) getContext()).findViewById(R.id.inspector);
+        inspector.setVisibility(View.GONE);
 
+    }
+
+    private void showInspector () {
+        LinearLayout inspector = ((Activity) getContext()).findViewById(R.id.inspector);
+        inspector.setVisibility(View.VISIBLE);
+
+    }
+
+    // Hide width and height in shape inspector
+    private void hideWH () {
+        EditText w_edittext = ((Activity) getContext()).findViewById(R.id.Width_input);
+        w_edittext.setVisibility(View.GONE);
+
+        TextView w_label = ((Activity) getContext()).findViewById(R.id.Width_label);
+        w_label.setVisibility(View.GONE);
+
+        EditText h_edittext = ((Activity) getContext()).findViewById(R.id.Height_input);
+        h_edittext.setVisibility(View.GONE);
+
+        TextView h_label = ((Activity) getContext()).findViewById(R.id.Height_label);
+        h_label.setVisibility(View.GONE);
+    }
+
+    // Show width and height in shape inspector
+    private void showWH () {
+        EditText w_edittext = ((Activity) getContext()).findViewById(R.id.Width_input);
+        w_edittext.setVisibility(View.VISIBLE);
+
+        TextView w_label = ((Activity) getContext()).findViewById(R.id.Width_label);
+        w_label.setVisibility(View.VISIBLE);
+
+        EditText h_edittext = ((Activity) getContext()).findViewById(R.id.Height_input);
+        h_edittext.setVisibility(View.VISIBLE);
+
+        TextView h_label = ((Activity) getContext()).findViewById(R.id.Height_label);
+        h_label.setVisibility(View.VISIBLE);
     }
 
 
