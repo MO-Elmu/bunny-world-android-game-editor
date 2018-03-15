@@ -23,6 +23,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import java.util.List;
+
 public class AddPagesActivity extends AppCompatActivity implements AlertDialogFragment.AlertDialogListener, AddShapeDialogFragment.addShapeDialogFragmentListener {
 
     SQLiteDatabase db;
@@ -564,12 +566,13 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         String gameName = game.getGameName();
         int gameIcon = game.getIconName();
         String addStr = "INSERT INTO games VALUES "
-                + String.format("('%s', '%s', NULL)", gameName, gameIcon)
+                + String.format("('%s', %d, NULL)", gameName, gameIcon)
                 + ";";
         db.execSQL(addStr);
 
         // save page in db
         for (int i = 0; i < game.getChildCount(); i++) {
+            List<Shape> shapes;
             if (game.getChildAt(i) instanceof Page) {
                 Page page = (Page) game.getChildAt(i);
                 String pageName = page.getPageName();
@@ -578,38 +581,14 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
                         + String.format("('%s', '%s', %d, NULL)", pageName, gameName, starterPageFlag)
                         + ";";
                 db.execSQL(addStr);
-
-                for (Shape shape : page.getShapes()) {
-                    String shapeName = shape.getName();
-                    String imageName = shape.getImageName();
-                    String caption = shape.getText();
-                    int inPossession = shape.isInPossession() ? 1 : 0;
-                    int possessable = shape.getPossessable();
-                    int visible = shape.isVisible() ? 1: 0;
-                    int movable = shape.isMovable() ? 1: 0;
-                    int xPos = shape.getX1();
-                    int yPos = shape.getY1();
-                    int width = shape.getWidth();
-                    int height = shape.getHeight();
-
-                    addStr = "INSERT INTO shapes VALUES "
-                            + String.format("('%s', '%s', '%s', '%s', '%s', %d, %d, %d, %d, %d, %d, %d, %d, NULL)",
-                            shapeName, pageName, gameName,  caption, imageName,
-                            inPossession, possessable, visible, movable, xPos, yPos, width, height)
-                            + ";";
-                    db.execSQL(addStr);
-
-                    boolean onClick = shape.isOnClick();
-                    boolean onEnter = shape.isOnEnter();
-                    boolean onDrop = shape.isOnDrop();
-
-                    if (shape.isOnClick())
-                        saveScript(gameName, shapeName,"CLICK", shape.getOnClickScript(), 0);
-                    if (shape.isOnEnter())
-                        saveScript(gameName, shapeName,"ENTER", shape.getOnEnterScript(), 0);
-                    if (shape.isOnDrop())
-                        saveScript(gameName, shapeName,"DROP", shape.getOnDropScript(), 1);
-                }
+                shapes = page.getShapes();
+                saveShapes(shapes, gameName, pageName, 0);
+            }
+            else //possession
+            {
+                Possessions possessions = (Possessions) game.getChildAt(i);
+                shapes = possessions.getShapes();
+                saveShapes(shapes, gameName, "POSS", 1);
             }
         }
 
@@ -619,6 +598,39 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         System.out.println(tableToString("shapes"));
         System.out.println(tableToString("scripts"));
 
+    }
+
+    void saveShapes(List<Shape> shapes, String gameName, String pageName, int inPossession){
+        for (Shape shape : shapes) {
+            String shapeName = shape.getName();
+            String imageName = shape.getImageName();
+            String caption = shape.getText();
+            int possessable = shape.getPossessable();
+            int visible = shape.isVisible() ? 1: 0;
+            int movable = shape.isMovable() ? 1: 0;
+            int xPos = shape.getX1();
+            int yPos = shape.getY1();
+            int width = shape.getWidth();
+            int height = shape.getHeight();
+
+            String addStr = "INSERT INTO shapes VALUES "
+                    + String.format("('%s', '%s', '%s', '%s', '%s', %d, %d, %d, %d, %d, %d, %d, %d, NULL)",
+                    shapeName, pageName, gameName,  caption, imageName,
+                    inPossession, possessable, visible, movable, xPos, yPos, width, height)
+                    + ";";
+            db.execSQL(addStr);
+
+            boolean onClick = shape.isOnClick();
+            boolean onEnter = shape.isOnEnter();
+            boolean onDrop = shape.isOnDrop();
+
+            if (shape.isOnClick())
+                saveScript(gameName, shapeName,"CLICK", shape.getOnClickScript(), 0);
+            if (shape.isOnEnter())
+                saveScript(gameName, shapeName,"ENTER", shape.getOnEnterScript(), 0);
+            if (shape.isOnDrop())
+                saveScript(gameName, shapeName,"DROP", shape.getOnDropScript(), 1);
+        }
     }
 
     void saveScript(String gameName, String shapeName, String triggerName, String script,
@@ -724,7 +736,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         db.execSQL(clearStr);
         String setupStr = "CREATE TABLE games ("
                 + "game_name TEXT,"
-                + "game_icon TEXT,"
+                + "game_icon INT,"
                 + "_id INTEGER PRIMARY KEY AUTOINCREMENT"
                 + ");";
         db.execSQL(setupStr);
