@@ -26,7 +26,7 @@ import java.util.List;
 public class Document extends LinearLayout {
 
     private String gameName = "";
-    private String iconName = "";
+    private int iconName;
     private String gameType = "";
 
     //public View possessions;
@@ -48,7 +48,7 @@ public class Document extends LinearLayout {
         this.gameName = name;
 
     }
-    public Document(Context context, String name,String iconName,String gameType) {
+    public Document(Context context, String name,int iconName,String gameType) {
         this(context);
         this.gameName = name;
         this.iconName = iconName;
@@ -68,7 +68,7 @@ public class Document extends LinearLayout {
         return gameName;
     }
 
-    public String getIconName() {
+    public int getIconName() {
         return iconName;
     }
 

@@ -140,7 +140,7 @@ public class PlayGameActivity extends AppCompatActivity {
 
         cursorG.moveToFirst();
         for(int i = 0; i < cursorG.getCount(); i++){
-            doc = new Document(this.getApplicationContext(), cursorG.getString(0), "", "");
+            doc = new Document(this.getApplicationContext(), cursorG.getString(0), 0, "");
 
         }
 
