@@ -579,7 +579,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
 
                     addStr = "INSERT INTO shapes VALUES "
                             + String.format("('%s', '%s', '%s', '%s', '%s', %d, %d, %d, %d, %d, %d, %d, %d, NULL)",
-                            shapeName, pageName, gameName, imageName, caption,
+                            shapeName, pageName, gameName,  caption, imageName,
                             inPossession, possessable, visible, movable, xPos, yPos, width, height)
                             + ";";
                     db.execSQL(addStr);

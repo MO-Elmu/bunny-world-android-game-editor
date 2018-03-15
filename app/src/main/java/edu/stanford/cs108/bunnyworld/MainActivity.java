@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(MainActivity.this, ""+i, Toast.LENGTH_SHORT).show();
 
                 if(text.get(i).equals("")){
                     createButton.setText("Create New Game");
