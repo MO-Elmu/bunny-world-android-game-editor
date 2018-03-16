@@ -30,7 +30,7 @@ public class AddShapeDialogFragment extends DialogFragment implements View.OnCli
     private addShapeDialogFragmentListener mListener;
     private Spinner imagesSpinner;
     private EditText shapeName, shapeText, shapeTxtFont, shapeOnClickScript, shapeOnEnterScript, shapeOnDropScript;
-    private CheckBox onClick, onEnter, onDrop, movable, invisible;
+    private CheckBox onClick, onEnter, onDrop, movable, invisible, possessable;
     List<Shape> Shapes;
     Shape selectedShape;
     String imagename;
@@ -60,6 +60,7 @@ public class AddShapeDialogFragment extends DialogFragment implements View.OnCli
         onDrop = (CheckBox)view.findViewById(R.id.on_drop);
         movable = (CheckBox)view.findViewById(R.id.checkbox_movable);
         invisible = (CheckBox)view.findViewById(R.id.checkbox_invisible);
+        possessable = (CheckBox)view.findViewById(R.id.checkbox_possessable);
         
         save.setOnClickListener(this);
         cancel.setOnClickListener(this);
@@ -94,6 +95,7 @@ public class AddShapeDialogFragment extends DialogFragment implements View.OnCli
             onDrop.setChecked(selectedShape.isOnDrop());
             movable.setChecked(selectedShape.isMovable());
             invisible.setChecked(!selectedShape.isVisible());
+            possessable.setChecked(selectedShape.getPossessable() == 1);
             imagename = selectedShape.getImageName();
             for (int i = 0; i < list.size(); i++ ){
                 if (list.get(i).text.equals(imagename) ) {
@@ -146,7 +148,7 @@ public class AddShapeDialogFragment extends DialogFragment implements View.OnCli
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.save_shape:
-                boolean checkBoxValues[] = {onClick.isChecked(), onEnter.isChecked(), onDrop.isChecked(), movable.isChecked(), invisible.isChecked()};
+                boolean checkBoxValues[] = {onClick.isChecked(), onEnter.isChecked(), onDrop.isChecked(), movable.isChecked(), invisible.isChecked(), possessable.isChecked()};
                 String[] shapeStringValues = {shapeName.getText().toString(), shapeText.getText().toString(),
                         shapeTxtFont.getText().toString(), imagesSpinner.getSelectedItem().toString(),
                         shapeOnClickScript.getText().toString(), shapeOnEnterScript.getText().toString(),
