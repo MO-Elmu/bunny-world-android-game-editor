@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
                 +" ('Bunny World', 'shape1', 'ENTER', '', 'SHOW', 'shape6', '', '',NULL), ('Bunny World', 'shape7','ENTER','','PLAY', '','fire', '',NULL),"
                 +" ('Bunny World', 'shape12', 'ENTER', '', 'PLAY', '','evillaugh', '',NULL), ('Bunny World', 'shape1', 'CLICK', '', 'PLAY', '','munch', '',NULL),"
                 +" ('Bunny World', 'shape12', 'DROP', 'shape9', 'PLAY', '','munching', '',NULL), ('Bunny World', 'shape12', 'DROP', 'shape9', 'SHOW', 'shape15', '', '',NULL),"
-                +" ('Bunny World', 'shape12', 'DROP', 'shape9', 'HIDE', 'shape12', '', '' ,NULL), ('Bunny World', 'shape12', 'DROP', 'shape9','HIDE', 'shape9','','',NULL),('Bunny World', 'shape12', 'DROP', 'duck','PLAY', '','woof','',NULL),"
+                +" ('Bunny World', 'shape12', 'DROP', 'shape9', 'HIDE', 'shape12', '', '' ,NULL), ('Bunny World', 'shape12', 'DROP', 'shape9','HIDE', 'shape9','','',NULL),"
                 +" ('Bunny World', 'shape19', 'ENTER','','PLAY','','hooray','',NULL), ('Bunny World', 'shape15', 'CLICK', '', 'GOTO', '','','page5',NULL);";
 
         //on click = 1, on enter = 2, on drop = 3
