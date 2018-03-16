@@ -191,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
                 + "show_hide_recipient TEXT," //5
                 + "play_recipient TEXT," //6
                 + "goto_recipient TEXT," //7
+                + "action_order INT," //8
                 + "_id INTEGER PRIMARY KEY AUTOINCREMENT"
                 + ");";
         db.execSQL(setupStr4);
@@ -230,14 +231,14 @@ public class MainActivity extends AppCompatActivity {
                 + "('shape19', 'page5', 'Bunny World', 'You Win! Yay!', '', 0,0,1,0, 300,300,100,100, 20,NULL);";
 
         String dataStr7 = "INSERT INTO scripts VALUES "
-                + " ('Bunny World', 'shape4', 'CLICK','','GOTO','','','page2',NULL), ('Bunny World', 'shape1', 'CLICK','', 'HIDE','shape9', '', '',NULL),"
-                +" ('Bunny World', 'shape3', 'CLICK', '', 'GOTO', '','','page1',NULL), ('Bunny World', 'shape6', 'CLICK', '', 'GOTO','','', 'page3',NULL),"
-                +" ('Bunny World', 'shape10', 'CLICK', '', 'GOTO', '','','page4',NULL), ('Bunny World', 'shape11','CLICK', '', 'GOTO','','','page2',NULL),"
-                +" ('Bunny World', 'shape1', 'ENTER', '', 'SHOW', 'shape6', '', '',NULL), ('Bunny World', 'shape7','ENTER','','PLAY', '','fire', '',NULL),"
-                +" ('Bunny World', 'shape12', 'ENTER', '', 'PLAY', '','evillaugh', '',NULL), ('Bunny World', 'shape1', 'CLICK', '', 'PLAY', '','munch', '',NULL),"
-                +" ('Bunny World', 'shape12', 'DROP', 'shape9', 'PLAY', '','munching', '',NULL), ('Bunny World', 'shape12', 'DROP', 'shape9', 'SHOW', 'shape15', '', '',NULL),"
-                +" ('Bunny World', 'shape12', 'DROP', 'shape9', 'HIDE', 'shape12', '', '' ,NULL), ('Bunny World', 'shape12', 'DROP', 'shape9','HIDE', 'shape9','','',NULL),"
-                +" ('Bunny World', 'shape19', 'ENTER','','PLAY','','hooray','',NULL), ('Bunny World', 'shape15', 'CLICK', '', 'GOTO', '','','page5',NULL);";
+                + " ('Bunny World', 'shape4', 'CLICK','','GOTO','','','page2', 1, NULL), ('Bunny World', 'shape1', 'CLICK','', 'HIDE', 'shape9', '', '', 1, NULL),"
+                +" ('Bunny World', 'shape3', 'CLICK', '', 'GOTO', '','','page1', 1, NULL), ('Bunny World', 'shape6', 'CLICK', '', 'GOTO','','', 'page3', 1, NULL),"
+                +" ('Bunny World', 'shape10', 'CLICK', '', 'GOTO', '','','page4', 1, NULL), ('Bunny World', 'shape11','CLICK', '', 'GOTO','','','page2', 1, NULL),"
+                +" ('Bunny World', 'shape1', 'ENTER', '', 'SHOW', 'shape6', '', '', 1, NULL), ('Bunny World', 'shape7','ENTER','','PLAY', '','fire', '', 1, NULL),"
+                +" ('Bunny World', 'shape12', 'ENTER', '', 'PLAY', '','evillaugh', '', 1, NULL), ('Bunny World', 'shape1', 'CLICK', '', 'PLAY', '','munch', '', 1, NULL),"
+                +" ('Bunny World', 'shape12', 'DROP', 'shape9', 'PLAY', '','munching', '', 1, NULL), ('Bunny World', 'shape12', 'DROP', 'shape9', 'SHOW', 'shape15', '', '', 1, NULL),"
+                +" ('Bunny World', 'shape12', 'DROP', 'shape9', 'HIDE', 'shape12', '', '' , 1, NULL), ('Bunny World', 'shape12', 'DROP', 'shape9','HIDE', 'shape9','','', 1, NULL),"
+                +" ('Bunny World', 'shape19', 'ENTER','','PLAY','','hooray','', 1, NULL), ('Bunny World', 'shape15', 'CLICK', '', 'GOTO', '','','page5', 1, NULL);";
 
         //on click = 1, on enter = 2, on drop = 3
         //hide = 1, show = 2, play = 3, goto = 4

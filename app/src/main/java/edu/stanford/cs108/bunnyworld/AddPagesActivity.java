@@ -614,6 +614,10 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         // save game in db
         String gameName = game.getGameName();
         int gameIcon = game.getIconName();
+
+        // remove current instance of the game from db if it already exists
+        removeGame(gameName);
+
         String addStr = "INSERT INTO games VALUES "
                 + String.format("('%s', %d, NULL)", gameName, gameIcon)
                 + ";";
@@ -649,7 +653,24 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
 
     }
 
-    void saveShapes(List<Shape> shapes, String gameName, String pageName, int inPossession){
+    private void removeGame(String gameName) {
+        String delStr;
+
+        delStr = String.format("DELETE FROM games WHERE game_name='%s'", gameName);
+        db.execSQL(delStr);
+
+        delStr = String.format("DELETE FROM pages WHERE game_name='%s'", gameName);
+        db.execSQL(delStr);
+
+        delStr = String.format("DELETE FROM shapes WHERE game_name='%s'", gameName);
+        db.execSQL(delStr);
+
+        delStr = String.format("DELETE FROM scripts WHERE game_name='%s'", gameName);
+        db.execSQL(delStr);
+    }
+
+
+    private void saveShapes(List<Shape> shapes, String gameName, String pageName, int inPossession){
         for (Shape shape : shapes) {
             String shapeName = shape.getName();
             String imageName = shape.getImageName();
@@ -661,11 +682,12 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
             int yPos = shape.getY1();
             int width = shape.getWidth();
             int height = shape.getHeight();
+            int fontSize = shape.getTxtFontSize();
 
             String addStr = "INSERT INTO shapes VALUES "
                     + String.format("('%s', '%s', '%s', '%s', '%s', %d, %d, %d, %d, %d, %d, %d, %d, %d, NULL)",
                     shapeName, pageName, gameName,  caption, imageName,
-                    inPossession, possessable, visible, movable, xPos, yPos, width, height, 12)
+                    inPossession, possessable, visible, movable, xPos, yPos, width, height, fontSize)
                     + ";";
             db.execSQL(addStr);
 
@@ -682,17 +704,20 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         }
     }
 
-    void saveScript(String gameName, String shapeName, String triggerName, String script,
+    private void saveScript(String gameName, String shapeName, String triggerName, String script,
                     int isOnDrop){
-        String[] parts = script.trim().split(";");
-        String triggerRecipient = "";
-        System.out.println(script);
+        String[] clauses = script.trim().split(";");
 
-        for (int i = 0; i < parts.length; i++) {
-            String[] words = parts[i].trim().split(" ");
+        for (int i = 0; i < clauses.length; i++) {
+
+            System.out.println(clauses[i]);
+
+            String triggerRecipient = "";
+
+            String[] words = clauses[i].trim().split(" ");
             int start;
 
-            if ((isOnDrop == 1) && (i == 0)) {
+            if (isOnDrop == 1) {
                 triggerRecipient = words[0];
                 start = 1;
             } else {
@@ -700,6 +725,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
             }
 
             String addStr = "";
+            int actionCounter = 0;
             for (int j = start; j < words.length; j += 2) {
                 String actionName = words[j].toUpperCase();
                 String actionRecipient = words[j + 1];
@@ -707,40 +733,42 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
                 if (isOnDrop == 1) {
                     if (actionName.equals(Shape.SHOW) || actionName.equals(Shape.HIDE))
                         addStr = "INSERT INTO scripts VALUES "
-                                + String.format("('%s', '%s', '%s', '%s', '%s', '%s', NULL, NULL, NULL)",
-                                gameName, shapeName, triggerName, triggerRecipient, actionName, actionRecipient)
+                                + String.format("('%s', '%s', '%s', '%s', '%s', '%s', NULL, NULL, %d, NULL)",
+                                gameName, shapeName, triggerName, triggerRecipient, actionName, actionRecipient, actionCounter)
                                 + ";";
                     if (actionName.equals(Shape.PLAY))
                         addStr = "INSERT INTO scripts VALUES "
-                                + String.format("('%s', '%s', '%s', '%s', '%s', NULL,'%s', NULL, NULL)",
-                                gameName, shapeName, triggerName, triggerRecipient, actionName, actionRecipient)
+                                + String.format("('%s', '%s', '%s', '%s', '%s', NULL,'%s', NULL, %d, NULL)",
+                                gameName, shapeName, triggerName, triggerRecipient, actionName, actionRecipient, actionCounter)
                                 + ";";
                     if (actionName.equals(Shape.GOTO))
                         addStr = "INSERT INTO scripts VALUES "
-                                + String.format("('%s', '%s', '%s', '%s', '%s', NULL, NULL, '%s', NULL)",
-                                gameName, shapeName, triggerName, triggerRecipient, actionName, actionRecipient)
+                                + String.format("('%s', '%s', '%s', '%s', '%s', NULL, NULL, '%s', %d, NULL)",
+                                gameName, shapeName, triggerName, triggerRecipient, actionName, actionRecipient, actionCounter)
                                 + ";";
                 } else {
                     if (actionName.equals(Shape.SHOW) || actionName.equals(Shape.HIDE))
                         addStr = "INSERT INTO scripts VALUES "
-                                + String.format("('%s', '%s', '%s', NULL, '%s', '%s',  NULL, NULL, NULL)",
-                                gameName, shapeName, triggerName, actionName, actionRecipient)
+                                + String.format("('%s', '%s', '%s', NULL, '%s', '%s',  NULL, NULL, %d, NULL)",
+                                gameName, shapeName, triggerName, actionName, actionRecipient, actionCounter)
                                 + ";";
                     if (actionName.equals(Shape.PLAY))
                         addStr = "INSERT INTO scripts VALUES "
-                                + String.format("('%s', '%s', '%s', NULL, '%s', NULL,'%s', NULL, NULL)",
-                                gameName, shapeName, triggerName, actionName, actionRecipient)
+                                + String.format("('%s', '%s', '%s', NULL, '%s', NULL,'%s', NULL, %d, NULL)",
+                                gameName, shapeName, triggerName, actionName, actionRecipient, actionCounter)
                                 + ";";
                     if (actionName.equals(Shape.GOTO))
                         addStr = "INSERT INTO scripts VALUES "
-                                + String.format("('%s', '%s', '%s', NULL, '%s', NULL, NULL, '%s', NULL)",
-                                gameName, shapeName, triggerName, actionName, actionRecipient)
+                                + String.format("('%s', '%s', '%s', NULL, '%s', NULL, NULL, '%s',%d,  NULL)",
+                                gameName, shapeName, triggerName, actionName, actionRecipient, actionCounter)
                                 + ";";
                 }
                 db.execSQL(addStr);
+                actionCounter++;
             }
         }
     }
+
     // helper function to print table, shoudl be removed after debugging
     // https://stackoverflow.com/questions/27003486/printing-all-rows-of-a-sqlite-database-in-android
     private String tableToString(String tableName) {
@@ -865,6 +893,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
                 + "show_hide_recipient TEXT,"
                 + "play_recipient TEXT,"
                 + "goto_recipient TEXT,"
+                + "action_order INT,"
                 + "_id INTEGER PRIMARY KEY AUTOINCREMENT"
                 + ");";
         db.execSQL(setupStr);
