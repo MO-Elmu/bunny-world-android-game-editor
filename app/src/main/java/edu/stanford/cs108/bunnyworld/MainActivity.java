@@ -173,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
                 + "y_position INTEGER,"  //10
                 + "width INTEGER,"       //11
                 + "height INTEGER,"      //12
+                + "font_size INTEGER,"      //13
                 + "_id INTEGER PRIMARY KEY AUTOINCREMENT"
                 + ");";
         db.execSQL(setupStr3);
@@ -206,21 +207,27 @@ public class MainActivity extends AppCompatActivity {
                 + "('Bunny World'," + bunn + ",NULL);";
         String dataStr2 = "INSERT INTO pages VALUES "
                 + "('page1', 'Bunny World', 1 ,NULL), ('page2', 'Bunny World', 0 ,NULL), ('page3', 'Bunny World', 0 ,NULL), ('page4', 'Bunny World', 0 ,NULL), ('page5', 'Bunny World', 0 ,NULL);";
-        String dataStr3 = "INSERT INTO shapes VALUES "
-                + "('shape1', 'page2', 'Bunny World', '','mystic', 0, 0,1,0, 100,100,200,200,NULL);";
-        String dataStr4 = "INSERT INTO shapes VALUES "
-                + "('shape2', 'page2', 'Bunny World','Mystic Bunny Rub my tummy','',0,0,1,0, 250,200,100,100,NULL);";
-        String dataStr5 = "INSERT INTO shapes VALUES "
-                + "('shape3', 'page2', 'Bunny World', '','',0,0,1,0,100,500,100,100,NULL),"
-                + "('shape4', 'page1', 'Bunny World', '','',0,0,1,0,100,500,100,100,NULL),"
-                + "('shape5', 'page1', 'Bunny World','you are in a maze of twisty little passages, all alike.','',0,0,1,0,100,100,100,100,NULL),"
-                + "('shape6', 'page1', 'Bunny World','','',0,0,0,0, 320,520,100,100,NULL), ('shape7', 'page3', 'Bunny World','','fire',0,0,1,0, 320,320,100,100,NULL),"
-                + "('shape5', 'page3', 'Bunny World','EEK fire room. run away!','',0,0,1,0,100,100,100,100,NULL), ('shape9', 'page3', 'Bunny World', '','carrot',0,1,1,1,100,500,100,100,NULL),"
-                + "('shape10','page1', 'Bunny World', '','',0,0,1,0,520,500,100,100,NULL), ('shape11', 'page3', 'Bunny World', '','',0,0,1,0,520,600,100,100,NULL),"
-                + "('shape12','page4', 'Bunny World', '','death',0,0,1,0,320,200,200,200,NULL), ('shape13','page4', 'Bunny World','you must appease the bunny of death', '', 0,0,1,0,120,500,100,100,NULL),"
-                + "('shape15', 'page4', 'Bunny World', '','',0,0,0,0,500,600,100,100,NULL), ('shape16', 'page5', 'Bunny World', '', 'carrot', 0,0,1,0, 20,200,100,100, NULL),"
-                + "('shape17', 'page5', 'Bunny World', '', 'carrot', 0,0,1,0, 500,400,100,100, NULL),('shape18', 'page5', 'Bunny World', '', 'carrot', 0,0,1,0, 200,400,100,100, NULL),"
-                + "('shape19', 'page5', 'Bunny World', 'You Win! Yay!', '', 0,0,1,0, 300,300,100,100, NULL);";
+        String dataStr3 = "INSERT INTO shapes (shape_name, page_name,game_name,caption,image_file,"
+                + "in_possession,possessable,visible,movable,x_position,"
+                + "y_position,width,height,font_size, _id) VALUES "
+                + "('shape1', 'page2', 'Bunny World', '','mystic', 0, 0,1,0, 100,100,200,200,0,NULL);";
+        String dataStr4 = "INSERT INTO shapes (shape_name, page_name,game_name,caption,image_file,"
+                + "in_possession,possessable,visible,movable,x_position,"
+                + "y_position,width,height,font_size, _id) VALUES "
+                + "('shape2', 'page2', 'Bunny World','Mystic Bunny Rub my tummy','',0,0,1,0, 250,200,100,100, 20,NULL);";
+        String dataStr5 = "INSERT INTO shapes (shape_name, page_name,game_name,caption,image_file,"
+                + "in_possession,possessable,visible,movable,x_position,"
+                + "y_position,width,height,font_size, _id) VALUES "
+                + "('shape3', 'page2', 'Bunny World', '','',0,0,1,0,100,500,100,100,0,NULL),"
+                + "('shape4', 'page1', 'Bunny World', '','',0,0,1,0,100,500,100,100,0,NULL),"
+                + "('shape5', 'page1', 'Bunny World','you are in a maze of twisty little passages, all alike.','',0,0,1,0,100,100,100,100,20,NULL),"
+                + "('shape6', 'page1', 'Bunny World','','',0,0,0,0, 320,520,100,100,0,NULL), ('shape7', 'page3', 'Bunny World','','fire',0,0,1,0, 320,320,100,100,0,NULL),"
+                + "('shape5', 'page3', 'Bunny World','EEK fire room. run away!','',0,0,1,0,100,100,100,100,0,NULL), ('shape9', 'page3', 'Bunny World', '','carrot',0,1,1,1,100,500,100,100,0,NULL),"
+                + "('shape10','page1', 'Bunny World', '','',0,0,1,0,520,500,100,100,0,NULL), ('shape11', 'page3', 'Bunny World', '','',0,0,1,0,520,600,100,100,0,NULL),"
+                + "('shape12','page4', 'Bunny World', '','death',0,0,1,0,320,200,200,200,0,NULL), ('shape13','page4', 'Bunny World','you must appease the bunny of death', '', 0,0,1,0,120,500,100,100,20,NULL),"
+                + "('shape15', 'page4', 'Bunny World', '','',0,0,0,0,500,600,100,100,0,NULL), ('shape16', 'page5', 'Bunny World', '', 'carrot', 0,0,1,0, 20,200,100,100,0, NULL),"
+                + "('shape17', 'page5', 'Bunny World', '', 'carrot', 0,0,1,0, 500,400,100,100, 0,NULL),('shape18', 'page5', 'Bunny World', '', 'carrot', 0,0,1,0, 200,400,100,100, 0,NULL),"
+                + "('shape19', 'page5', 'Bunny World', 'You Win! Yay!', '', 0,0,1,0, 300,300,100,100, 0,NULL);";
 
         String dataStr7 = "INSERT INTO scripts VALUES "
                 + " ('Bunny World', 'shape4', 'CLICK','','GOTO','','','page2',NULL), ('Bunny World', 'shape1', 'CLICK','', 'HIDE','shape9', '', '',NULL),"
