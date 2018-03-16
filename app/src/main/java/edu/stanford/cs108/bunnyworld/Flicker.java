@@ -25,6 +25,7 @@ public class Flicker {
     public Flicker(Shape draggingShape, ViewParent viewParent) {
         this.draggingShape = draggingShape;
         if(viewParent.toString().contains("Document")) {
+            System.out.println("FLICKER Document");
 
             this.document = (Document) viewParent;
 
@@ -37,6 +38,7 @@ public class Flicker {
                 }
             }
         } else if(viewParent.toString().contains("LinearLayout")){
+            System.out.println("FLICKER LinearLayout");
 
             this.linearLayout = (LinearLayout) viewParent;
 
