@@ -6,6 +6,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewParent;
+import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,19 +20,38 @@ public class Flicker {
     private Shape draggingShape;
     private List<Shape> pageShapes;
     private Document document;
+    private LinearLayout linearLayout;
 
     public Flicker(Shape draggingShape, ViewParent viewParent) {
         this.draggingShape = draggingShape;
-        this.document = (Document) viewParent;
+        if(viewParent.toString().contains("Document")) {
 
-        int childCount = document.getChildCount();
-        for(int i = 0; i < childCount; i++) {
-            View child = document.getChildAt(i);
-            if(child.isShown() && child.toString().contains("Page")) {
-                this.page = (Page) child;
-                this.pageShapes = page.getShapes();
+            this.document = (Document) viewParent;
+
+            int childCount = document.getChildCount();
+            for(int i = 0; i < childCount; i++) {
+                View child = document.getChildAt(i);
+                if(child.isShown() && child.toString().contains("Page")) {
+                    this.page = (Page) child;
+                    this.pageShapes = page.getShapes();
+                }
+            }
+        } else if(viewParent.toString().contains("LinearLayout")){
+
+            this.linearLayout = (LinearLayout) viewParent;
+
+            int childCount = linearLayout.getChildCount();
+            for(int i = 0; i < childCount; i++) {
+                View child = linearLayout.getChildAt(i);
+                if(child.isShown() && child.toString().contains("Page")) {
+                    this.page = (Page) child;
+                    this.pageShapes = page.getShapes();
+                }
             }
         }
+
+
+
         setDrawRectShapeNames();
     }
 
