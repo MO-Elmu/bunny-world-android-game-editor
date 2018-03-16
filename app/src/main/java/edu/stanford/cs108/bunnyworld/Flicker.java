@@ -35,6 +35,12 @@ public class Flicker {
         setDrawRectShapeNames();
     }
 
+    public Flicker(Shape draggingShape, Page page) {
+        this.draggingShape = draggingShape;
+        this.page = page;
+        this.pageShapes = page.getShapes();
+    }
+
     void setDrawRectShapeNames() {
         List<Shape> drawRectShapes = new ArrayList<>();
         for (Shape pageShape : pageShapes) {
