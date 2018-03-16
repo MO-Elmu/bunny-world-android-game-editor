@@ -37,7 +37,7 @@ public class Possessions extends View {
     // number of shapes from the shapes List.
     private int shapeCounter = 0;
     private Shape selectedShape;
-    private boolean isDragging = false;
+
 
 
     public Possessions(Context context) {
@@ -101,7 +101,6 @@ public class Possessions extends View {
         int x, y;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
- //               this.isDragging = true;
                 x = (int) event.getX();
                 y = (int) event.getY();
                 selectedShape = null;  //nullify the previously selected shape
@@ -113,6 +112,7 @@ public class Possessions extends View {
                 }
 
                 if (selectedShape != null) {
+                    possessionsFlicker();
                     DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(), selectedShape.imageIdentifier);
                     ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.getName());
                     ClipData.Item item2_imageId = new ClipData.Item(selectedShape.imageName);
@@ -121,9 +121,10 @@ public class Possessions extends View {
                     draggedShape.addItem(item2_imageId);
                     this.startDrag(draggedShape, shapeShadowBuilder, null, 0);
                     selectedShape.setVisible(false);
+                    resetShapeList();
                     invalidate();
                 }
-
+                resetShapeList();
                 invalidate();
                 break;
 
@@ -131,8 +132,8 @@ public class Possessions extends View {
                 break;
 
             case MotionEvent.ACTION_UP:
-//                this.isDragging = false;
                 selectedShape = null; //nullify selected shape when the user lift his finger
+                resetShapeList();
                 invalidate();
                 break;
 
@@ -164,8 +165,6 @@ public class Possessions extends View {
             case DragEvent.ACTION_DRAG_EXITED:
                 System.out.println("ACTION_DRAG_Exited In Possessions");
                 if (selectedShape != null) selectedShape.setInPossession(false);
-                //System.out.println("ACTION_DRAG_EXITED In Possessions");
-//                invalidate();
                 return true;
 
             case DragEvent.ACTION_DROP:
@@ -182,8 +181,8 @@ public class Possessions extends View {
                     selectedShape.setX2(currX + (selectedShape.getWidth()/2));
                     selectedShape.setY2(currY + (selectedShape.getHeight()/2));
                     this.addShape(selectedShape);
- //                   organizePossessions();
                     selectedShape.setVisible(true);
+                    resetShapeList();
                     invalidate();
                     selectedShape = null;
                     return true;
@@ -195,8 +194,8 @@ public class Possessions extends View {
                     selectedShape.setY1(currY - (selectedShape.getHeight() / 2));
                     selectedShape.setX2(currX + (selectedShape.getWidth() / 2));
                     selectedShape.setY2(currY + (selectedShape.getHeight() / 2));
- //                   organizePossessions();
                     selectedShape.setVisible(true);
+                    resetShapeList();
                     invalidate();
                     selectedShape = null;
                     return true;
@@ -204,10 +203,10 @@ public class Possessions extends View {
                 return false;
 
             case DragEvent.ACTION_DRAG_ENDED:
-//                organizePossessions();
                 System.out.println("ACTION_DRAG_ENDED In Possessions");
                 if (event.getResult()) {
                     System.out.println("Drop Ended In Possessions");
+                    resetShapeList();
                     invalidate();
                     selectedShape = null;
                     return true;
@@ -216,6 +215,7 @@ public class Possessions extends View {
                     System.out.println("Drop not Ended In Possessions");
                     selectedShape.setInPossession(true);
                     selectedShape.setVisible(true);
+                    resetShapeList();
                     invalidate();
                     selectedShape = null;
                     return true;
@@ -266,27 +266,32 @@ public class Possessions extends View {
         }
     }
 
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-
-        this.setBackgroundColor(Color.GRAY);
+    private void resetShapeList() {
         if (!shapes.isEmpty()) {
             Iterator<Shape> it = shapes.iterator();
             while (it.hasNext()) {
                 Shape sh = it.next();
                 if (!sh.isInPossession()) it.remove();
-                organizePossessions();
-                sh.drawSelf(canvas, this.getContext());
             }
-        }
-        if (isDragging && selectedShape != null) {
-            Page myPage = findMyPage();
-            myPage.possessionsFlicker(selectedShape);
         }
     }
 
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        this.setBackgroundColor(Color.GRAY);
+        for(Shape sh : shapes) {
+            sh.drawSelf(canvas, this.getContext());
+        }
+        organizePossessions();
+    }
+
+    public void possessionsFlicker() {
+        ViewParent viewParent = this.getParent();
+        Flicker flicker = new Flicker(selectedShape, viewParent);
+    }
+/*
     private Page findMyPage() {
         Page result = null;
         ViewParent viewParent = this.getParent();
@@ -300,7 +305,7 @@ public class Possessions extends View {
         }
         return result;
     }
-
+*/
 
     public List<Shape> getShapes() {
         return shapes;
