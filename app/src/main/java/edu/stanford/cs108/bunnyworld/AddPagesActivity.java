@@ -49,7 +49,6 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        ShapeSingleton.getInstance().playMode = false;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_pages);

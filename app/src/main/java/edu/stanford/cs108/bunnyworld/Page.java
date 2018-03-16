@@ -54,7 +54,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
     private boolean starterPage = false;
     private boolean isDragging = false;
     private int prevX,prevY;
-
+    private boolean possessionMode;
     private String pageName = "";
 
     private class TapGestureListener extends
@@ -131,9 +131,9 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-
+        possessionMode = false;
         //hideInspector();
-        if (ShapeSingleton.getInstance().playMode == false) {
+        if (!playMode) {
             Button updateBtn = ((Activity) getContext()).findViewById(R.id.update_btn);
             updateBtn.setOnClickListener(new UpdateButtonHandlr());
 
@@ -249,7 +249,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
 
                             //if the clicked shape has an on click action scripts execute it
                             selectedShape.execOnClickScript(getContext(), (ViewGroup) this.getParent(), this);
-                            if (selectedShape.imageIdentifier != 0) {
+                            if (selectedShape.imageIdentifier != 0 && selectedShape.getText().equals("") ) {
                                 DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(), selectedShape.imageIdentifier);
                                 ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.getName());
                                 ClipData.Item item2_imageId = new ClipData.Item(selectedShape.imageName);
@@ -258,7 +258,6 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                                 draggedShape.addItem(item2_imageId);
                                 this.startDrag(draggedShape, shapeShadowBuilder, null, 0);
                                 selectedShape.setVisible(false);
-
 
                                 invalidate();
                             }
@@ -269,7 +268,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                         if(selectedShape != null) {
                             selectedShape.execOnClickScript(getContext(), (ViewGroup) this.getParent(), this);
 
-                            if (selectedShape.imageIdentifier != 0 && selectedShape.getPossessable() == 1) {
+                            if (selectedShape.imageIdentifier != 0 && selectedShape.getPossessable() == 1 && selectedShape.getImageName().equals("") ) {
                                 DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(), selectedShape.imageIdentifier);
                                 ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.getName());
                                 ClipData.Item item2_imageId = new ClipData.Item(selectedShape.imageName);
@@ -301,34 +300,35 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                         } else {
                             showWH();
                         }
-                    }
 
-                    if (!selectedShape.getText().equals("") || (selectedShape.getText().trim().isEmpty() && selectedShape.getImageName().trim().isEmpty()) || (selectedShape.getText().trim().isEmpty() && selectedShape.getImageIdentifier() == 0)) {
-                        currX = (int) event.getX();
-                        currY = (int) event.getY();
-                        xOffset = currX - prevX;
-                        yOffset = currY - prevY;
-                        prevX = currX;
-                        prevY = currY;
-                        selectedShape.setX1_absolute(selectedShape.getX1() + xOffset);
-                        selectedShape.setY1_absolute(selectedShape.getY1() + yOffset);
+                        if (!selectedShape.getText().equals("") || (selectedShape.getText().trim().isEmpty() && selectedShape.getImageName().trim().isEmpty()) || (selectedShape.getText().trim().isEmpty() && selectedShape.getImageIdentifier() == 0)) {
+                            currX = (int) event.getX();
+                            currY = (int) event.getY();
+                            xOffset = currX - prevX;
+                            yOffset = currY - prevY;
+                            prevX = currX;
+                            prevY = currY;
+                            selectedShape.setX1_absolute(selectedShape.getX1() + xOffset);
+                            selectedShape.setY1_absolute(selectedShape.getY1() + yOffset);
+                            selectedShape.setX2_absolute(selectedShape.getX1() + selectedShape.getWidth());
+                            selectedShape.setY2_absolute(selectedShape.getY1() + selectedShape.getHeight());
 
-                        selectedShape.setX2_absolute(selectedShape.getX1()  + selectedShape.getWidth());
-                        selectedShape.setY2_absolute(selectedShape.getY1()  + selectedShape.getHeight());
-
-                        if(!playMode) {
                             ChangeText(selectedShape);
-                        }
-                        invalidate();
+                            invalidate();
 
-                    } else {}
+                        } else {
+                            hideInspector();
+                        }
+                    }
                 }
 
             case MotionEvent.ACTION_UP:
 
                 //selectedShape = null; //nullify selected shape when the user lift his finger
                 //invalidate();
-
+                if (!playMode && selectedShape != null){
+                    selectedShape.setVisible(true);
+                }
                 break;
 
         }
@@ -397,7 +397,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
             case DragEvent.ACTION_DRAG_STARTED:
                 System.out.println("ACTION_DRAG_STARTED In page");
                 if(!playMode) {
-                   // hideInspector();
+                    hideInspector();
                 }
                 //Check for onDrag events on the page
 
@@ -410,23 +410,28 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                     selectedShape.setInPossession(false);
 
                 }
+                possessionMode = false;
                 return true;
 
             case DragEvent.ACTION_DRAG_LOCATION:
                 // Ignore the event
      //           invalidate();
-                if(selectedShape != null) {
-                    int xloc = (int) event.getX() - selectedShape.getWidth() / 2;
-                    int yloc = (int) event.getY() - selectedShape.getHeight() / 2;
-
-                    EditText X = ((Activity) getContext()).findViewById(R.id.X_input);
-                    EditText Y = ((Activity) getContext()).findViewById(R.id.Y_input);
-                    X.setText(String.valueOf(xloc));
-                    Y.setText(String.valueOf(yloc));
-                } else{
-                    //hideInspector();
-                }
-
+//                if (!playMode) {
+//                    if (selectedShape != null) {
+//                        if (possessionMode == false) {
+//
+//                            int xloc = (int) event.getX() - selectedShape.getWidth() / 2;
+//                            int yloc = (int) event.getY() - selectedShape.getHeight() / 2;
+//
+//                            EditText X = ((Activity) getContext()).findViewById(R.id.X_input);
+//                            EditText Y = ((Activity) getContext()).findViewById(R.id.Y_input);
+//                            X.setText(String.valueOf(xloc));
+//                            Y.setText(String.valueOf(yloc));
+//                        }
+//                    } else {
+//                        //hideInspector();
+//                    }
+//                }
 
                 return true;
 
@@ -435,8 +440,10 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
 
                 if(selectedShape != null) {
                     selectedShape.setInPossession(true);
-                    hideInspector();
-
+//                    if( !playMode) {
+//                        possessionMode = true;
+//                        hideInspector();
+//                    }
                 }
                 return true;
 
