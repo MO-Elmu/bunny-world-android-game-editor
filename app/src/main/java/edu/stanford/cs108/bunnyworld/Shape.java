@@ -386,7 +386,7 @@ public class Shape{
         System.out.println("EXEC drop script  "+onDrop + " "+onDropScript.trim().isEmpty()+isValidScript(onDropScript));
         if(!onDrop || onDropScript.trim().isEmpty() || !isValidScript(onDropScript)) return;
         populateOnDropShapesArray(onDropScript);
-        System.out.println("#5 on drop shapes  "+onDropShapes);
+        System.out.println("about to iter drop shapes");
         for(int i=0; i<onDropShapes.size(); i++){
 
             System.out.println("iter drop shapes");
@@ -407,8 +407,7 @@ public class Shape{
                 if(onDropShapes.get(i).equals(sh.getName())){
                     System.out.println("DROP SHAPE " + sh.getName());
                     if( x1 < sh.getX2() && x2 > sh.getX1() && y1 < sh.getY2() && y2>sh.getY1()) {
-                        System.out.println("#5 OVERLAP "+ onDropScript);
-                        System.out.println("#5 OVERLAP "+ parseOnDropScript(onDropScript));
+                        System.out.println("OVERLAP");
                         execScripts(parseOnDropScript(onDropScript).get(i), context, game, parentPage);
                     }
                 }
