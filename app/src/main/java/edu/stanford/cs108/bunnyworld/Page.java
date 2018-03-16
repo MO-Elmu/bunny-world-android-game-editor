@@ -324,7 +324,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                             invalidate();
 
                         } else {
-                            hideInspector();
+                           // hideInspector();
                         }
                     }
                 }
@@ -425,14 +425,12 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
         switch(action) {
             case DragEvent.ACTION_DRAG_STARTED:
 
-                //this.isDragging = true;
+                this.isDragging = true;
 
                 System.out.println("ACTION_DRAG_STARTED In page");
-                if(!playMode) {
-                    hideInspector();
-                }
 
-                //invalidate();
+
+                invalidate();
                 //Check for onDrag events on the page
 
                 return true;
@@ -446,6 +444,10 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                 return true;
 
             case DragEvent.ACTION_DRAG_LOCATION:
+
+                if(!playMode) {
+                    hideInspector();
+                }
                 // Ignore the event
      //           invalidate();
 
