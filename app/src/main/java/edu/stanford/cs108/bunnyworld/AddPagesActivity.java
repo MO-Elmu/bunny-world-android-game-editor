@@ -251,7 +251,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         CheckBox starterPage = (CheckBox)dialogView.findViewById(R.id.starter_page);
 	if(editingPage){
     		if(pageName.getText().toString().trim().isEmpty()){
-        		newPage.setPageName("page " + (newGame.getChildCount()));
+        		newPage.setPageName("page" + (newGame.getChildCount()));
     		}else{
         		newPage.setPageName(pageName.getText().toString());
     		}
@@ -261,7 +261,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
     		return;
 	}
         newPage = new Page(this); //add logic if the user leaves pageName blank
-        if(pageName.getText().toString().trim().isEmpty()) newPage.setPageName("page " + (newGame.getChildCount()+1));
+        if(pageName.getText().toString().trim().isEmpty()) newPage.setPageName("page" + (newGame.getChildCount()+1));
         else newPage.setPageName(pageName.getText().toString());
         adjustStarterPage(starterPage.isChecked());
 	newPage.setStarterPage(starterPage.isChecked());
