@@ -691,21 +691,16 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
                     + ";";
             db.execSQL(addStr);
 
-            boolean onClick = shape.isOnClick();
-            boolean onEnter = shape.isOnEnter();
-            boolean onDrop = shape.isOnDrop();
-
             if (shape.isOnClick())
-                saveScript(gameName, shapeName,"CLICK", shape.getOnClickScript(), 0);
+                saveScript(gameName, shapeName, Shape.CLICK, shape.getOnClickScript());
             if (shape.isOnEnter())
-                saveScript(gameName, shapeName,"ENTER", shape.getOnEnterScript(), 0);
+                saveScript(gameName, shapeName, Shape.ENTER, shape.getOnEnterScript());
             if (shape.isOnDrop())
-                saveScript(gameName, shapeName,"DROP", shape.getOnDropScript(), 1);
+                saveScript(gameName, shapeName, Shape.DROP, shape.getOnDropScript());
         }
     }
 
-    private void saveScript(String gameName, String shapeName, String triggerName, String script,
-                    int isOnDrop){
+    private void saveScript(String gameName, String shapeName, String triggerName, String script){
         String[] clauses = script.trim().split(";");
 
         for (int i = 0; i < clauses.length; i++) {
@@ -717,7 +712,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
             String[] words = clauses[i].trim().split(" ");
             int start;
 
-            if (isOnDrop == 1) {
+            if (triggerName.equals(Shape.DROP)) {
                 triggerRecipient = words[0];
                 start = 1;
             } else {
@@ -730,7 +725,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
                 String actionName = words[j].toUpperCase();
                 String actionRecipient = words[j + 1];
 
-                if (isOnDrop == 1) {
+                if (triggerName.equals(Shape.DROP)) {
                     if (actionName.equals(Shape.SHOW) || actionName.equals(Shape.HIDE))
                         addStr = "INSERT INTO scripts VALUES "
                                 + String.format("('%s', '%s', '%s', '%s', '%s', '%s', NULL, NULL, %d, NULL)",
@@ -766,6 +761,9 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
                 db.execSQL(addStr);
                 actionCounter++;
             }
+
+            if (triggerName.equals(Shape.CLICK))
+                break;
         }
     }
 
