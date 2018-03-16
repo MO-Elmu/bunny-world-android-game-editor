@@ -52,7 +52,6 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
     private boolean visibility;
     private boolean playMode = false;
     private boolean starterPage = false;
-    private boolean isDragging = false;
     private int prevX,prevY;
 
     private float STROKE_WIDTH = 10.0f;
@@ -228,7 +227,6 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
         int x, y;
         switch(event.getAction()){
             case MotionEvent.ACTION_DOWN:
-                this.isDragging = true;
                 x = (int)event.getX();
                 y = (int)event.getY();
 
@@ -354,7 +352,6 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
             sh.drawSelf(canvas, this.getContext());
         }
 
-//        if(isDragging && !drawRectShapes.isEmpty()) {
         if(true) {
             System.out.println("FLICKER list size " + drawRectShapes.size());
             for(Shape drawRectOnShape : drawRectShapes) {
@@ -424,15 +421,12 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
         // Handles all the expected events
         switch(action) {
             case DragEvent.ACTION_DRAG_STARTED:
-
-                //this.isDragging = true;
-
                 System.out.println("ACTION_DRAG_STARTED In page");
                 if(!playMode) {
                     hideInspector();
                 }
 
-                //invalidate();
+                invalidate();
                 //Check for onDrag events on the page
 
                 return true;
@@ -584,7 +578,6 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                 return false;
 
             case DragEvent.ACTION_DRAG_ENDED:
-                this.isDragging = false;
                 drawRectShapes.clear();
                 System.out.println("ACTION_DRAG_ENDED In page");
 
