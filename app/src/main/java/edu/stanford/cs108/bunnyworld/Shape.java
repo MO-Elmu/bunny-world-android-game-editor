@@ -61,6 +61,10 @@ public class Shape{
     List<String> onDropShapes = new ArrayList<>();
 
     // constants
+    public static final String CLICK = "CLICK";
+    public static final String ENTER = "ENTER";
+    public static final String DROP = "DROP";
+
     public static final String GOTO = "GOTO";
     public static final String PLAY = "PLAY";
     public static final String HIDE = "HIDE";
