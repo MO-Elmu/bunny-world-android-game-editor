@@ -39,6 +39,7 @@ public class Flicker {
         this.draggingShape = draggingShape;
         this.page = page;
         this.pageShapes = page.getShapes();
+        setDrawRectShapeNames();
     }
 
     void setDrawRectShapeNames() {

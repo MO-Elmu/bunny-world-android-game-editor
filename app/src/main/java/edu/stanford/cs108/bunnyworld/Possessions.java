@@ -291,7 +291,7 @@ public class Possessions extends View {
         ViewParent viewParent = this.getParent();
         Flicker flicker = new Flicker(selectedShape, viewParent);
     }
-
+/*
     private Page findMyPage() {
         Page result = null;
         ViewParent viewParent = this.getParent();
@@ -305,7 +305,7 @@ public class Possessions extends View {
         }
         return result;
     }
-
+*/
 
     public List<Shape> getShapes() {
         return shapes;

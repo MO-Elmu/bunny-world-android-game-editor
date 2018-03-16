@@ -403,7 +403,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
     public void onClick(View v){
 
     }*/
-    
+
     private void resetShapeList() {
         if(!shapes.isEmpty()){
             Iterator<Shape> it = shapes.iterator();
