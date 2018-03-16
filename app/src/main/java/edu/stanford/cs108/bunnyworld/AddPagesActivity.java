@@ -379,6 +379,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
 
         if(newPage!= null)newPage.addShape(shape);
         //mLayout.addView(newPage);
+
         addShapeDialogFragment.dismiss();
     }
 
