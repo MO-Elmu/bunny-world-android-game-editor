@@ -24,6 +24,7 @@ public class Flicker {
 
     public Flicker(Shape draggingShape, ViewParent viewParent) {
         this.draggingShape = draggingShape;
+        
         if(viewParent.toString().contains("Document")) {
             System.out.println("FLICKER Document");
 
