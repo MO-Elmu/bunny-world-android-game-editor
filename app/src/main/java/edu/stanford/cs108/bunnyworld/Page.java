@@ -236,19 +236,24 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                 	    }
                     }
 
-                    if(selectedShape != null) {
-                        showInspector();
-                        if (!selectedShape.getText().equals("")) {
-                            hideWH();
-                        } else {
-                            showWH();
-                        }
-                        ChangeText(selectedShape);
+                    if(!playMode) {
+                        if (selectedShape != null) {
+                            showInspector();
+                            if (!selectedShape.getText().equals("")) {
+                                hideWH();
+                            } else {
+                                showWH();
+                            }
+                            ChangeText(selectedShape);
 
-                        //if the clicked shape has an on click action scripts execute it
+                            //if the clicked shape has an on click action scripts execute it
+                            selectedShape.execOnClickScript(getContext(), (ViewGroup) this.getParent(), this);
+                        } else {
+                            hideInspector();
+                        }
+                    } else{//if the clicked shape has an on click action scripts execute it
                         selectedShape.execOnClickScript(getContext(), (ViewGroup) this.getParent(), this);
-                    } else {
-                        hideInspector();
+
                     }
 
                 }
@@ -261,10 +266,12 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                     int currX, currY, xOffset, yOffset;
                     // drag text
 
-                    if (!selectedShape.getText().equals("")){
-                        hideWH();
-                    } else {
-                        showWH();
+                    if(!playMode) {
+                        if (!selectedShape.getText().equals("")) {
+                            hideWH();
+                        } else {
+                            showWH();
+                        }
                     }
 
                     if (!selectedShape.getText().equals("") || (selectedShape.getText().trim().isEmpty() && selectedShape.getImageName().trim().isEmpty()) || (selectedShape.getText().trim().isEmpty() && selectedShape.getImageIdentifier() == 0)) {
@@ -373,7 +380,9 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
         switch(action) {
             case DragEvent.ACTION_DRAG_STARTED:
                 System.out.println("ACTION_DRAG_STARTED In page");
-                hideInspector();
+                if(!playMode) {
+                    hideInspector();
+                }
                 //Check for onDrag events on the page
 
                 return true;
