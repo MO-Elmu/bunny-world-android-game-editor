@@ -215,6 +215,7 @@ public class PlayGameActivity extends AppCompatActivity {
                     s.setTxtFontSize((int)scaledFontSize);
                 }
                 s.setName(cursorS.getString(0));
+                s.setPossessable(cursorS.getInt(6));
                 setupShapeScript(s, cursorS.getString(0), name);
                 shapes[j] = s;
 

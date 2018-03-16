@@ -31,7 +31,7 @@ public class Shape{
     private boolean movable = true;
     private boolean visible = true;
     private boolean inPossession = false;
-    private int possessable = 0;
+    private boolean possessable = false;
     protected String imageName = "";
     protected int imageIdentifier;
     private String text = "";
@@ -538,11 +538,11 @@ public class Shape{
     }
 
     public int getPossessable() {
-        return possessable;
+        return possessable ? 1 : 0;
     }
 
     public void setPossessable(int possessable) {
-        this.possessable = possessable;
+        this.possessable = (possessable == 0) ? false : true;
     }
 
     public int getX1() {
