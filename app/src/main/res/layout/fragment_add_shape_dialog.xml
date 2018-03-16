@@ -199,6 +199,14 @@
         android:text="Invisible"
         app:layout_constraintLeft_toRightOf="@id/checkbox_movable"
         app:layout_constraintTop_toBottomOf="@+id/on_drop_script" />
+    <CheckBox
+        android:id="@+id/checkbox_possessable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:text="Possassable"
+        app:layout_constraintLeft_toRightOf="@id/checkbox_invisible"
+        app:layout_constraintTop_toBottomOf="@+id/on_drop_script" />
 
 
     <Button

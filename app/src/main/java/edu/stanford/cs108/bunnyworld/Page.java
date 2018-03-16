@@ -254,6 +254,20 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                     } else{//if the clicked shape has an on click action scripts execute it
                         if(selectedShape != null) {
                             selectedShape.execOnClickScript(getContext(), (ViewGroup) this.getParent(), this);
+
+                            if (selectedShape.imageIdentifier != 0 && selectedShape.getPossessable() == 1) {
+                                DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(), selectedShape.imageIdentifier);
+                                ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.getName());
+                                ClipData.Item item2_imageId = new ClipData.Item(selectedShape.imageName);
+                                String mimeTypes[] = {ClipDescription.MIMETYPE_TEXT_PLAIN};
+                                ClipData draggedShape = new ClipData(selectedShape.getName(), mimeTypes, item1_shapeName);
+                                draggedShape.addItem(item2_imageId);
+                                this.startDrag(draggedShape, shapeShadowBuilder, null, 0);
+                                selectedShape.setVisible(false);
+
+
+                                invalidate();
+                            }
                         }
                     }
 
@@ -293,22 +307,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                         }
                         invalidate();
 
-                    } else {
-
-                        if (selectedShape.imageIdentifier != 0) {
-                            DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(), selectedShape.imageIdentifier);
-                            ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.getName());
-                            ClipData.Item item2_imageId = new ClipData.Item(selectedShape.imageName);
-                            String mimeTypes[] = {ClipDescription.MIMETYPE_TEXT_PLAIN};
-                            ClipData draggedShape = new ClipData(selectedShape.getName(), mimeTypes, item1_shapeName);
-                            draggedShape.addItem(item2_imageId);
-                            this.startDrag(draggedShape, shapeShadowBuilder, null, 0);
-                            selectedShape.setVisible(false);
-
-
-                            invalidate();
-                        }
-                    }
+                    } else {}
                 }
 
             case MotionEvent.ACTION_UP:

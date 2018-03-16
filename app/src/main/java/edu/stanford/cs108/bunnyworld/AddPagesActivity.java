@@ -336,6 +336,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         shape.setOnDrop(scriptsActions[2]);
         shape.setMovable(scriptsActions[3]);
         shape.setVisible(!scriptsActions[4]);
+        shape.setPossessable(scriptsActions[5] == true ? 1 : 0);
 
         // For Advanced Button Editing , keep original shape info
         if (ShapeSingleton.getInstance().selectedShape != null) {
@@ -660,9 +661,9 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
             int height = shape.getHeight();
 
             String addStr = "INSERT INTO shapes VALUES "
-                    + String.format("('%s', '%s', '%s', '%s', '%s', %d, %d, %d, %d, %d, %d, %d, %d, NULL)",
+                    + String.format("('%s', '%s', '%s', '%s', '%s', %d, %d, %d, %d, %d, %d, %d, %d, %d, NULL)",
                     shapeName, pageName, gameName,  caption, imageName,
-                    inPossession, possessable, visible, movable, xPos, yPos, width, height)
+                    inPossession, possessable, visible, movable, xPos, yPos, width, height, 12)
                     + ";";
             db.execSQL(addStr);
 
@@ -817,6 +818,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
                 + "y_position INTEGER,"
                 + "width INTEGER,"
                 + "height INTEGER,"
+                + "font_size INTEGER,"
                 + "_id INTEGER PRIMARY KEY AUTOINCREMENT"
                 + ");";
         db.execSQL(setupStr);
