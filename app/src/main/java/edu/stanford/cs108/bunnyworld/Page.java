@@ -252,8 +252,9 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                             hideInspector();
                         }
                     } else{//if the clicked shape has an on click action scripts execute it
-                        selectedShape.execOnClickScript(getContext(), (ViewGroup) this.getParent(), this);
-
+                        if(selectedShape != null) {
+                            selectedShape.execOnClickScript(getContext(), (ViewGroup) this.getParent(), this);
+                        }
                     }
 
                 }
@@ -287,7 +288,9 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                         selectedShape.setX2_absolute(selectedShape.getX1()  + selectedShape.getWidth());
                         selectedShape.setY2_absolute(selectedShape.getY1()  + selectedShape.getHeight());
 
-                        ChangeText(selectedShape);
+                        if(!playMode) {
+                            ChangeText(selectedShape);
+                        }
                         invalidate();
 
                     } else {
