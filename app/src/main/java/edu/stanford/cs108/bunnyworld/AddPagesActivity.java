@@ -81,6 +81,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
                 }
             }
             possessions.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1.0f));
+            putInEditMode(newGame);
             //mLayout.addView(possessions);
             //return;
         }
@@ -379,6 +380,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
 
         if(newPage!= null)newPage.addShape(shape);
         //mLayout.addView(newPage);
+
         addShapeDialogFragment.dismiss();
     }
 

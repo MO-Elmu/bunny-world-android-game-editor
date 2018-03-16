@@ -226,6 +226,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
  //               this.isDragging = true;
                 x = (int)event.getX();
                 y = (int)event.getY();
+
                 selectedShape = null;  //nullify the previously selected shape
                 if(!shapes.isEmpty()){
                     for (Shape sh : shapes) {
@@ -248,6 +249,19 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
 
                             //if the clicked shape has an on click action scripts execute it
                             selectedShape.execOnClickScript(getContext(), (ViewGroup) this.getParent(), this);
+                            if (selectedShape.imageIdentifier != 0) {
+                                DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(), selectedShape.imageIdentifier);
+                                ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.getName());
+                                ClipData.Item item2_imageId = new ClipData.Item(selectedShape.imageName);
+                                String mimeTypes[] = {ClipDescription.MIMETYPE_TEXT_PLAIN};
+                                ClipData draggedShape = new ClipData(selectedShape.getName(), mimeTypes, item1_shapeName);
+                                draggedShape.addItem(item2_imageId);
+                                this.startDrag(draggedShape, shapeShadowBuilder, null, 0);
+                                selectedShape.setVisible(false);
+
+
+                                invalidate();
+                            }
                         } else {
                             hideInspector();
                         }
@@ -373,7 +387,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
 
     }*/
 
-
+    //int w = selectedShape.getWidth(), h = selectedShape.getHeight();
     @Override
     public boolean onDragEvent(DragEvent event) {
         int x, y;
@@ -383,7 +397,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
             case DragEvent.ACTION_DRAG_STARTED:
                 System.out.println("ACTION_DRAG_STARTED In page");
                 if(!playMode) {
-                    hideInspector();
+                   // hideInspector();
                 }
                 //Check for onDrag events on the page
 
@@ -401,6 +415,19 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
             case DragEvent.ACTION_DRAG_LOCATION:
                 // Ignore the event
      //           invalidate();
+                if(selectedShape != null) {
+                    int xloc = (int) event.getX() - selectedShape.getWidth() / 2;
+                    int yloc = (int) event.getY() - selectedShape.getHeight() / 2;
+
+                    EditText X = ((Activity) getContext()).findViewById(R.id.X_input);
+                    EditText Y = ((Activity) getContext()).findViewById(R.id.Y_input);
+                    X.setText(String.valueOf(xloc));
+                    Y.setText(String.valueOf(yloc));
+                } else{
+                    //hideInspector();
+                }
+
+
                 return true;
 
             case DragEvent.ACTION_DRAG_EXITED:
@@ -408,6 +435,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
 
                 if(selectedShape != null) {
                     selectedShape.setInPossession(true);
+                    hideInspector();
 
                 }
                 return true;
