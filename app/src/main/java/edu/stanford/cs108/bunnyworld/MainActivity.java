@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
                 + "('shape12','page4', 'Bunny World', '','death',0,0,1,0,320,200,200,200,0,NULL), ('shape13','page4', 'Bunny World','you must appease the bunny of death', '', 0,0,1,0,50,500,100,100,20,NULL),"
                 + "('shape15', 'page4', 'Bunny World', '','',0,0,0,0,500,600,100,100,0,NULL), ('shape16', 'page5', 'Bunny World', '', 'carrot', 0,0,1,0, 20,200,100,100,0, NULL),"
                 + "('shape17', 'page5', 'Bunny World', '', 'carrot', 0,0,1,0, 500,400,100,100, 0,NULL),('shape18', 'page5', 'Bunny World', '', 'carrot', 0,0,1,0, 200,400,100,100, 0,NULL),"
-                + "('shape19', 'page5', 'Bunny World', 'You Win! Yay!', '', 0,0,1,0, 300,300,100,100, 20,NULL);";
+                + "('shape19', 'page5', 'Bunny World', 'You Win! Yay!', '', 0,0,1,0, 300,300,100,100, 20,NULL), ('duck', 'page4', 'Bunny World', '', 'duck', 0,1,1,1, 300,400,100,100, 0,NULL);";
 
         String dataStr7 = "INSERT INTO scripts VALUES "
                 + " ('Bunny World', 'shape4', 'CLICK','','GOTO','','','page2',NULL), ('Bunny World', 'shape1', 'CLICK','', 'HIDE','shape9', '', '',NULL),"
@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
                 +" ('Bunny World', 'shape1', 'ENTER', '', 'SHOW', 'shape6', '', '',NULL), ('Bunny World', 'shape7','ENTER','','PLAY', '','fire', '',NULL),"
                 +" ('Bunny World', 'shape12', 'ENTER', '', 'PLAY', '','evillaugh', '',NULL), ('Bunny World', 'shape1', 'CLICK', '', 'PLAY', '','munch', '',NULL),"
                 +" ('Bunny World', 'shape12', 'DROP', 'shape9', 'PLAY', '','munching', '',NULL), ('Bunny World', 'shape12', 'DROP', 'shape9', 'SHOW', 'shape15', '', '',NULL),"
-                +" ('Bunny World', 'shape12', 'DROP', 'shape9', 'HIDE', 'shape12', '', '' ,NULL), ('Bunny World', 'shape12', 'DROP', 'shape9','HIDE', 'shape9','','',NULL),"
+                +" ('Bunny World', 'shape12', 'DROP', 'shape9', 'HIDE', 'shape12', '', '' ,NULL), ('Bunny World', 'shape12', 'DROP', 'shape9','HIDE', 'shape9','','',NULL),('Bunny World', 'shape12', 'DROP', 'duck','PLAY', '','woof','',NULL),"
                 +" ('Bunny World', 'shape19', 'ENTER','','PLAY','','hooray','',NULL), ('Bunny World', 'shape15', 'CLICK', '', 'GOTO', '','','page5',NULL);";
 
         //on click = 1, on enter = 2, on drop = 3

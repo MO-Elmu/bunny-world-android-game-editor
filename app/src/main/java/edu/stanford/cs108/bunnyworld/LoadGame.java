@@ -51,6 +51,7 @@ public class LoadGame {
 
     private void setupShapeScript(Shape shape, String name, String gameName) {
         String loadScripts = "SELECT * from scripts where shape_name = '"+name+"' and game_name='"+gameName+"';";
+        String onDropShape = "";
 
         System.err.println(loadScripts);
         Cursor cursor = db.rawQuery(loadScripts,null);
@@ -96,6 +97,18 @@ public class LoadGame {
                 System.out.println("DROP");
                 if( dropCount == 0) {
                     dropScript += cursor.getString(3) + " ";
+                    System.out.println(cursor.getString(3)+ "#5 the on drop trigger");
+                    onDropShape = cursor.getString(3);
+                }
+
+                if(cursor.getString(3).equals(onDropShape)){
+                    System.out.println("#5 on drop equals the cursor position " + onDropShape + ":"+ cursor.getString(3));
+                } else {
+                    System.out.println("#5 on drop dOES NOT equals the cursor position " + onDropShape +":"+ cursor.getString(3));
+                    dropScript += "; " + cursor.getString(3)+ " ";
+                    onDropShape = cursor.getString(3);
+                    System.out.println("#5 drop script  "+dropScript);
+
                 }
                 if (action.equals("HIDE")){
                     dropScript += "hide " + cursor.getString(5) + " ";
@@ -112,6 +125,8 @@ public class LoadGame {
             }
             cursor.moveToNext();
         }
+
+        System.out.println("#5 on drop script "+ dropScript);
 
         shape.setOnClickScript(clickScript);
         shape.setOnEnterScript(enterScript);
