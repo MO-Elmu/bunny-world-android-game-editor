@@ -211,7 +211,7 @@ public class PlayGameActivity extends AppCompatActivity {
                         ,cursorS.getInt(12), movable, visible, cursorS.getString(4),this.getApplicationContext());
                 if (!cursorS.getString(3).equals("")){
                     s.setText(cursorS.getString(3));
-                    float scaledFontSize = Integer.valueOf(12) * getResources().getDisplayMetrics().scaledDensity;
+                    float scaledFontSize = Integer.valueOf(cursorS.getInt(13)) * getResources().getDisplayMetrics().scaledDensity;
                     s.setTxtFontSize((int)scaledFontSize);
                 }
                 s.setName(cursorS.getString(0));
