@@ -149,6 +149,7 @@ public class Possessions extends View {
 
             case DragEvent.ACTION_DRAG_STARTED:
                 System.out.println("ACTION_DRAG_STARTED In Possessions");
+                this.isDragging = true;
                 return true;
 
             case DragEvent.ACTION_DRAG_ENTERED:
@@ -205,6 +206,7 @@ public class Possessions extends View {
 
             case DragEvent.ACTION_DRAG_ENDED:
 //                organizePossessions();
+                this.isDragging = false;
                 System.out.println("ACTION_DRAG_ENDED In Possessions");
                 if (event.getResult()) {
                     System.out.println("Drop Ended In Possessions");
@@ -282,8 +284,15 @@ public class Possessions extends View {
             }
         }
         if (isDragging && selectedShape != null) {
+            System.out.println("FLICKER called onDraw in Possessions, isDragging == true");
             Page myPage = findMyPage();
-            myPage.possessionsFlicker(selectedShape);
+            try {
+                myPage.possessionsFlicker(selectedShape);
+            }
+            catch (Exception e) {
+                System.out.println("Error calling possessionsFLICKER");
+            }
+
         }
     }
 

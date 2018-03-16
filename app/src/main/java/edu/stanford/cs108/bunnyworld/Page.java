@@ -54,6 +54,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
     private boolean starterPage = false;
     private boolean isDragging = false;
     private int prevX,prevY;
+ //   Canvas canvas;
 
     private String pageName = "";
 
@@ -329,6 +330,8 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
         super.onDraw(canvas);
         this.setBackgroundColor(Color.WHITE);
 
+  //      this.canvas = canvas;
+
         if(!shapes.isEmpty()){
             Iterator<Shape> it = shapes.iterator();
             while (it.hasNext()) {
@@ -382,6 +385,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
         // Handles all the expected events
         switch(action) {
             case DragEvent.ACTION_DRAG_STARTED:
+                this.isDragging = true;
                 System.out.println("ACTION_DRAG_STARTED In page");
                 if(!playMode) {
                     hideInspector();
@@ -392,7 +396,6 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
 
             case DragEvent.ACTION_DRAG_ENTERED:
                 System.out.println("ACTION_DRAG_ENTERED In page");
-
                 if(selectedShape != null) {
                     selectedShape.setInPossession(false);
 
@@ -511,6 +514,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                 return false;
 
             case DragEvent.ACTION_DRAG_ENDED:
+                this.isDragging = false;
                 System.out.println("ACTION_DRAG_ENDED In page");
 
                 if(event.getResult()){
@@ -532,23 +536,27 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
     }
 
     public void possessionsFlicker (Shape possSelectedShape) {
-        selectedShape = possSelectedShape;
+        System.out.println("FLICKER called possessionsFlicker");
+//        pageFlicker(canvas, possSelectedShape);
 //        invalidate();
     }
 
     public void pageFlicker(Canvas canvas, Shape selectedShape) {
+        System.out.println("FLICKER called pageFlicker on " + selectedShape.getName());
         ViewParent viewParent = this.getParent();
         Flicker flicker = new Flicker(selectedShape, viewParent);
-        int rectX1 = flicker.getRectX1();
-        int rectY1 = flicker.getRectY1();
-        int rectX2 = flicker.getRectX2();
-        int rectY2 = flicker.getRectY2();
+        int rectX1 = flicker.getRectX1() - 10;
+        int rectY1 = flicker.getRectY1() - 10;
+        int rectX2 = flicker.getRectX2() + 10;
+        int rectY2 = flicker.getRectY2() + 10;
         System.out.println("FLICKER rect's xy " + rectX1 + " " + rectY1
                 + " " + rectX2 + " " + rectY2);
         Paint boundaryPaint = flicker.getBoundaryPaint();
-
         canvas.drawRect(rectX1, rectY1, rectX2, rectY2, boundaryPaint);
+
     }
+
+
     
 
  /*   void flicker(Canvas canvas, Shape sh) {

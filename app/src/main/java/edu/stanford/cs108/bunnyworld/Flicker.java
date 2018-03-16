@@ -38,7 +38,6 @@ public class Flicker {
         int childCount = document.getChildCount();
         for(int i = 0; i < childCount; i++) {
             View child = document.getChildAt(i);
-            System.out.println("FLICKER document child: " + child.toString());
             if(child.isShown() && child.toString().contains("Page")) {
                 this.page = (Page) child;
                 this.pageShapes = page.getShapes();
@@ -52,13 +51,13 @@ public class Flicker {
 
             if (pageShape.isVisible()) {
                 List<String> getOnDropNames = pageShape.getOnDropShapes();
-                System.out.println("FLICKER " + pageShape.getName() + " is visible");
+                System.out.println("FLICKER class " + pageShape.getName() + " is visible");
 
                 for (String onDroppableShape : getOnDropNames) {
-                    System.out.println("FLICKER " + pageShape.getName() + " has onDrop for " + onDroppableShape);
+                    System.out.println("FLICKER class " + pageShape.getName() + " has onDrop for " + onDroppableShape);
 
                     if (onDroppableShape.equals(draggingShape.getName())) {
-                        System.out.println("FLICKER DRAW RECTANGLE!!!");
+                        System.out.println("FLICKER class DRAW RECTANGLE!!!");
 
                         this.rectX1 = pageShape.getX1();
                         this.rectY1 = pageShape.getY1();
