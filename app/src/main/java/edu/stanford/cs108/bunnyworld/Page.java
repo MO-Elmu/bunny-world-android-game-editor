@@ -54,7 +54,10 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
     private boolean starterPage = false;
     private boolean isDragging = false;
     private int prevX,prevY;
- //   Canvas canvas;
+    private float STROKE_WIDTH = 10.0f;
+    Paint boundaryPaint;
+
+    List<Shape> drawRectShapes = new ArrayList<>();
 
     private String pageName = "";
 
@@ -224,7 +227,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
         int x, y;
         switch(event.getAction()){
             case MotionEvent.ACTION_DOWN:
- //               this.isDragging = true;
+                this.isDragging = true;
                 x = (int)event.getX();
                 y = (int)event.getY();
                 selectedShape = null;  //nullify the previously selected shape
@@ -328,21 +331,26 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         this.setBackgroundColor(Color.WHITE);
+        System.out.println("FLICKER called pages onDraw");
 
-  //      this.canvas = canvas;
-
-        if(!shapes.isEmpty()){
-            Iterator<Shape> it = shapes.iterator();
-            while (it.hasNext()) {
-                Shape sh = it.next();
-                if(sh.isInPossession())  {
-                    it.remove();
-                }
-                sh.drawSelf(canvas, this.getContext());
-            }
+        for(Shape sh : shapes) {
+            sh.drawSelf(canvas, this.getContext());
         }
-        if(isDragging && selectedShape != null) {
-            pageFlicker(canvas, selectedShape);
+
+//        if(isDragging && !drawRectShapes.isEmpty()) {
+        if(true) {
+            System.out.println("FLICKER list size " + drawRectShapes.size());
+            for(Shape drawRectOnShape : drawRectShapes) {
+                boundaryPaint = new Paint();
+                boundaryPaint.setStyle(Paint.Style.STROKE);
+                boundaryPaint.setStrokeWidth(STROKE_WIDTH);
+                boundaryPaint.setColor(Color.rgb(0, 255, 0));
+                float x1 = drawRectOnShape.getX1() - 10;
+                float y1 = drawRectOnShape.getY1() - 10;
+                float x2 = drawRectOnShape.getX2() + 10;
+                float y2 = drawRectOnShape.getY2() + 10;
+                canvas.drawRect(x1, y1, x2, y2, boundaryPaint);
+            }
         }
     }
 
@@ -376,6 +384,17 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
 
     }*/
 
+    private void resetShapeList() {
+        if(!shapes.isEmpty()){
+            Iterator<Shape> it = shapes.iterator();
+            while (it.hasNext()) {
+                Shape sh = it.next();
+                if(sh.isInPossession())  {
+                    it.remove();
+                }
+            }
+        }
+    }
 
     @Override
     public boolean onDragEvent(DragEvent event) {
@@ -389,6 +408,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                 if(!playMode) {
                     hideInspector();
                 }
+                invalidate();
                 //Check for onDrag events on the page
 
                 return true;
@@ -433,6 +453,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                         selectedShape.setX2_absolute(currX + (selectedShape.getWidth() / 2));
                         selectedShape.setY2_absolute(currY + (selectedShape.getHeight() / 2));
                         selectedShape.setVisible(true);
+                        resetShapeList();
                         invalidate();
                         selectedShape = null;
                         return true;
@@ -452,6 +473,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                                         selectedShape.setX2(currX + (selectedShape.getWidth() / 2));
                                         selectedShape.setY2(currY + (selectedShape.getHeight() / 2));
                                         selectedShape.setVisible(true);
+                                        resetShapeList();
                                         invalidate();
                                         sh.execOnDropScript(getContext(), (ViewGroup) this.getParent(), this, selectedShape.getName(),selectedShape.getX1(), selectedShape.getX2(),selectedShape.getY1(),selectedShape.getY2());
                                         selectedShape = null;
@@ -462,6 +484,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                             }
                         }
                         selectedShape = null;
+                        resetShapeList();
                         invalidate();
                         System.out.println("ACTION_DROP Returning false");
                         return false;
@@ -514,15 +537,18 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
 
             case DragEvent.ACTION_DRAG_ENDED:
                 this.isDragging = false;
+                drawRectShapes.clear();
                 System.out.println("ACTION_DRAG_ENDED In page");
 
                 if(event.getResult()){
                     System.out.println("Drop Ended In Page");
+                    resetShapeList();
                     invalidate();
                     selectedShape = null;
                     return true;
                 }
                 System.out.println("Drop not Ended In Page");
+                resetShapeList();
                 invalidate();
                 selectedShape = null;
                 return true;
@@ -534,20 +560,11 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
         return false;
     }
 
-    public void possessionsFlicker (Shape possSelectedShape) {
-        System.out.println("FLICKER called possessionsFlicker");
-//        pageFlicker(canvas, possSelectedShape);
-//        invalidate();
-    }
-
-    public void pageFlicker(Canvas canvas, Shape selectedShape) {
+/*    public void pageFlicker(Shape selectedShape) {
         System.out.println("FLICKER called pageFlicker on " + selectedShape.getName());
         ViewParent viewParent = this.getParent();
         Flicker flicker = new Flicker(selectedShape, viewParent);
-        int rectX1 = flicker.getRectX1() - 10;
-        int rectY1 = flicker.getRectY1() - 10;
-        int rectX2 = flicker.getRectX2() + 10;
-        int rectY2 = flicker.getRectY2() + 10;
+
         System.out.println("FLICKER rect's xy " + rectX1 + " " + rectY1
                 + " " + rectX2 + " " + rectY2);
         Paint boundaryPaint = flicker.getBoundaryPaint();
@@ -558,7 +575,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
 
     
 
- /*   void flicker(Canvas canvas, Shape sh) {
+       void flicker(Canvas canvas, Shape sh) {
         if(sh == null) return;
         System.out.println("FLICKER called while dragging shape: " + sh.getName());
 
@@ -658,6 +675,11 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
         h_label.setVisibility(View.VISIBLE);
     }
 
+    public void setDrawRectShapes(List<Shape> drawRectShapeNames) {
+        this.drawRectShapes = drawRectShapeNames;
+        System.out.println("FLICKER page drawRectShapes setter called, size " + drawRectShapeNames.size());
+
+    }
 
     public String getPageName() {
         return pageName;

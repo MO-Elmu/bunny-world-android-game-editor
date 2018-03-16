@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewParent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,22 +19,10 @@ public class Flicker {
     private Shape draggingShape;
     private List<Shape> pageShapes;
     private Document document;
-    private float STROKE_WIDTH = 10.0f;
-    int rectX1 = 0;
-    int rectY1 = 0;
-    int rectX2 = 0;
-    int rectY2 = 0;
-
-    Paint boundaryPaint;
 
     public Flicker(Shape draggingShape, ViewParent viewParent) {
         this.draggingShape = draggingShape;
         this.document = (Document) viewParent;
-
-        boundaryPaint = new Paint();
-        boundaryPaint.setStyle(Paint.Style.STROKE);
-        boundaryPaint.setStrokeWidth(STROKE_WIDTH);
-        boundaryPaint.setColor(Color.rgb(0, 255, 0));
 
         int childCount = document.getChildCount();
         for(int i = 0; i < childCount; i++) {
@@ -43,10 +32,11 @@ public class Flicker {
                 this.pageShapes = page.getShapes();
             }
         }
-        drawRectangle();
+        setDrawRectShapeNames();
     }
 
-    void drawRectangle() {
+    void setDrawRectShapeNames() {
+        List<Shape> drawRectShapes = new ArrayList<>();
         for (Shape pageShape : pageShapes) {
 
             if (pageShape.isVisible()) {
@@ -59,40 +49,26 @@ public class Flicker {
                     if (onDroppableShape.equals(draggingShape.getName())) {
                         System.out.println("FLICKER class DRAW RECTANGLE!!!");
 
-                        this.rectX1 = pageShape.getX1();
+                        drawRectShapes.add(pageShape);
+
+ /*                       this.rectX1 = pageShape.getX1();
                         this.rectY1 = pageShape.getY1();
                         this.rectX2 = pageShape.getX2();
                         this.rectY2 = pageShape.getY2();
                         System.out.println("FLICKER shape's xy " + pageShape.getX1() + " " + pageShape.getY1()
                                 + " " + pageShape.getX2() + " " + pageShape.getY2());
+                                */
                     }
                 }
                 pageShape.onDropShapes.clear();
             }
         }
+        System.out.println("FLICKER drawRectShapes in flicker class size " + drawRectShapes.size());
+        page.setDrawRectShapes(drawRectShapes);
     }
 
     public Page getPage() {
         return page;
     }
 
-    public int getRectX1() {
-        return rectX1;
-    }
-
-    public int getRectY1() {
-        return rectY1;
-    }
-
-    public int getRectX2() {
-        return rectX2;
-    }
-
-    public int getRectY2() {
-        return rectY2;
-    }
-
-    public Paint getBoundaryPaint() {
-        return boundaryPaint;
-    }
 }

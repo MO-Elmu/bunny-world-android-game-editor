@@ -101,7 +101,7 @@ public class Possessions extends View {
         int x, y;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
- //               this.isDragging = true;
+                isDragging = true;
                 x = (int) event.getX();
                 y = (int) event.getY();
                 selectedShape = null;  //nullify the previously selected shape
@@ -113,6 +113,7 @@ public class Possessions extends View {
                 }
 
                 if (selectedShape != null) {
+                    possessionsFlicker();
                     DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(), selectedShape.imageIdentifier);
                     ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.getName());
                     ClipData.Item item2_imageId = new ClipData.Item(selectedShape.imageName);
@@ -131,7 +132,7 @@ public class Possessions extends View {
                 break;
 
             case MotionEvent.ACTION_UP:
-//                this.isDragging = false;
+                isDragging = false;
                 selectedShape = null; //nullify selected shape when the user lift his finger
                 invalidate();
                 break;
@@ -149,7 +150,6 @@ public class Possessions extends View {
 
             case DragEvent.ACTION_DRAG_STARTED:
                 System.out.println("ACTION_DRAG_STARTED In Possessions");
-                this.isDragging = true;
                 return true;
 
             case DragEvent.ACTION_DRAG_ENTERED:
@@ -206,7 +206,6 @@ public class Possessions extends View {
 
             case DragEvent.ACTION_DRAG_ENDED:
 //                organizePossessions();
-                this.isDragging = false;
                 System.out.println("ACTION_DRAG_ENDED In Possessions");
                 if (event.getResult()) {
                     System.out.println("Drop Ended In Possessions");
@@ -283,17 +282,16 @@ public class Possessions extends View {
                 sh.drawSelf(canvas, this.getContext());
             }
         }
+        /*
         if (isDragging && selectedShape != null) {
-            System.out.println("FLICKER called onDraw in Possessions, isDragging == true");
-            Page myPage = findMyPage();
-            try {
-                myPage.possessionsFlicker(selectedShape);
-            }
-            catch (Exception e) {
-                System.out.println("Error calling possessionsFLICKER");
-            }
-
+            possessionsFlicker();
         }
+        */
+    }
+
+    public void possessionsFlicker() {
+        ViewParent viewParent = this.getParent();
+        Flicker flicker = new Flicker(selectedShape, viewParent);
     }
 
     private Page findMyPage() {
