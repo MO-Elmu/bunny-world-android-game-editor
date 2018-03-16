@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -30,7 +31,9 @@ public class AddShapeDialogFragment extends DialogFragment implements View.OnCli
     private Spinner imagesSpinner;
     private EditText shapeName, shapeText, shapeTxtFont, shapeOnClickScript, shapeOnEnterScript, shapeOnDropScript;
     private CheckBox onClick, onEnter, onDrop, movable, invisible;
-
+    List<Shape> Shapes;
+    Shape selectedShape;
+    String imagename;
 
     /*public AddShapeDialogFragment() {
         // Required empty public constructor
@@ -39,11 +42,14 @@ public class AddShapeDialogFragment extends DialogFragment implements View.OnCli
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_shape_dialog, container, false);
         Button save = (Button) view.findViewById(R.id.save_shape);
         Button cancel = (Button)view.findViewById(R.id.cancel_shape);
         shapeName = (EditText)view.findViewById(R.id.shape_name);
+
         shapeText = (EditText)view.findViewById(R.id.shape_txt);
         shapeTxtFont = (EditText)view.findViewById(R.id.font_size);
         shapeOnClickScript = (EditText)view.findViewById(R.id.on_click_script);
@@ -70,6 +76,35 @@ public class AddShapeDialogFragment extends DialogFragment implements View.OnCli
                 R.layout.spinner_layout,R.id.txt,list);
         imagesSpinner = (Spinner)view.findViewById(R.id.image_spinner);
         imagesSpinner.setAdapter(adapter);
+
+        // Get selectedShape info by ShapeSingleton Class
+        selectedShape = ShapeSingleton.getInstance().getSelectedShape();
+        Shapes = ShapeSingleton.getInstance().getSelectedShapeContainer();
+
+        if (selectedShape != null ) {
+
+            shapeName.setText(selectedShape.getName());
+            shapeText.setText(selectedShape.getText());
+            shapeTxtFont.setText( String.valueOf (selectedShape.getTxtFontSize() ) );
+            shapeOnClickScript.setText(selectedShape.getOnClickScript());
+            shapeOnEnterScript.setText(selectedShape.getOnEnterScript());
+            shapeOnDropScript.setText(selectedShape.getOnDropScript());
+            onClick.setChecked(selectedShape.isOnClick());
+            onEnter.setChecked(selectedShape.isOnEnter());
+            onDrop.setChecked(selectedShape.isOnDrop());
+            movable.setChecked(selectedShape.isMovable());
+            invisible.setChecked(!selectedShape.isVisible());
+            imagename = selectedShape.getImageName();
+            for (int i = 0; i < list.size(); i++ ){
+                if (list.get(i).text.equals(imagename) ) {
+                    imagesSpinner.setSelection(i);
+                    break;
+                }
+            }
+
+
+        }
+
         return view;
     }
 

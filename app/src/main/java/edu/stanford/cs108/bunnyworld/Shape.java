@@ -154,7 +154,7 @@ public class Shape{
         }
         //Text takes precedence over image
         if(!text.trim().isEmpty()){
-            if(visible) canvas.drawText(text,x1,y1,txtPaint);
+            if(visible) canvas.drawText(text,x1,y2,txtPaint);
             //else canvas.drawText(text,x1,y1,hiddenTxtPaint);
             return;
         }
@@ -199,8 +199,9 @@ public class Shape{
         //usually has one clause will only handle the first clause from the left.
         StringTokenizer tokenizer = new StringTokenizer(clauses.get(0));
         String key, value;
-        List<String> holder = new ArrayList<String>();
+
         while(tokenizer.hasMoreTokens()){
+            List<String> holder = new ArrayList<String>();
             key = tokenizer.nextToken();
             value = tokenizer.nextToken();
             holder.clear();
@@ -279,8 +280,11 @@ public class Shape{
                         System.out.println("PLAYING SOUND");
                         String soundFileName = name;
                         int soundFileId = context.getResources().getIdentifier(soundFileName, "raw", context.getPackageName());
-                        MediaPlayer mp = MediaPlayer.create(context, soundFileId);
-                        mp.start();
+                        if(soundFileId != 0) {
+                            MediaPlayer mp = MediaPlayer.create(context, soundFileId);
+                            mp.start();
+                        }
+
                         break;
                     case "goto":
                         try {
@@ -302,8 +306,8 @@ public class Shape{
                                     System.out.println("goto PAGE shapes:  " + page.getShapes());
                                     //page.clearAnimation();
                                 } else {
-                                    page.setVis(false);
-                                    page.setVisibility(View.GONE);
+                                    //page.setVis(false);
+                                    //page.setVisibility(View.GONE);
                                 }
                             }
                         } catch (ClassCastException e) {
@@ -589,5 +593,31 @@ public class Shape{
         return imageName;
     }
 
+    public void setWidth(int width) {
+        this.width = width;
+        this.x2 = x1 + width;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+        this.y2 = y1 + height;
+    }
+
+    public Paint getTxtPaint() {
+        return txtPaint;
+    }
+
+    public void setX1_absolute(int x1) {
+        this.x1 = x1;
+    }
+    public void setY1_absolute(int y1) {
+        this.y1 = y1;
+    }
+    public void setX2_absolute(int x2) {
+        this.x2 = x2;
+    }
+    public void setY2_absolute(int y2) {
+        this.y2 = y2;
+    }
 
 }

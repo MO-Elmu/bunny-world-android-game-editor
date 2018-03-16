@@ -23,7 +23,7 @@ public class ImageDragShadowBuilder extends View.DragShadowBuilder {
             throw new NullPointerException("Drawable from id is null");
         }
 
-        builder.shadow.setBounds(0, 0, builder.shadow.getMinimumWidth(), builder.shadow.getMinimumHeight());
+        builder.shadow.setBounds(0, 0, 200, 200);
 
         return builder;
     }
@@ -48,8 +48,8 @@ public class ImageDragShadowBuilder extends View.DragShadowBuilder {
 
     @Override
     public void onProvideShadowMetrics(Point shadowSize, Point shadowTouchPoint) {
-        shadowSize.x = shadow.getMinimumWidth();
-        shadowSize.y = shadow.getMinimumHeight();
+        shadowSize.x = 200;
+        shadowSize.y = 200;
 
         shadowTouchPoint.x = (int) (shadowSize.x / 2);
         shadowTouchPoint.y = (int) (shadowSize.y / 2);

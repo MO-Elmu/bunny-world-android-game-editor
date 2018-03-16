@@ -17,7 +17,7 @@ public class LoadGame {
 
     SQLiteDatabase db;
     private Document doc;
-    private LinearLayout mLayout;
+    //private LinearLayout mLayout;
     private Possessions possessions;
     /**
      * Load the games someone can play
@@ -45,9 +45,9 @@ public class LoadGame {
         return possessions;
     }
 
-    public LinearLayout getmLayout() {
+   /* public LinearLayout getmLayout() {
         return mLayout;
-    }
+    }*/
 
     private void setupShapeScript(Shape shape, String name, String gameName) {
         String loadScripts = "SELECT * from scripts where shape_name = '"+name+"' and game_name='"+gameName+"';";
@@ -118,11 +118,11 @@ public class LoadGame {
         shape.setOnDropScript(dropScript);
     }
 
-    public void setupGame(String name, Context context, SQLiteDatabase dbin, LinearLayout ml) {
+    public void setupGame(String name, Context context, SQLiteDatabase dbin) {
         //create the doc
         db = dbin;
         possessions = new Possessions(context);
-        mLayout = ml;
+        //mLayout = ml;
         String loadGame = "SELECT * from games where game_name = '"+name+"';";
         System.err.println(loadGame);
         Cursor cursorG = db.rawQuery(loadGame,null);
@@ -154,7 +154,7 @@ public class LoadGame {
                 vis = true;
             }
             Page p = new Page(context, vis); //might want to add more information about a page to a page setting itself up
-            p.setLayoutParams(doc.getLpPossessions());
+            p.setLayoutParams(doc.getLpPages());
 
             pages[i] = p;
             String pageName = cursor.getString(0);
@@ -163,8 +163,11 @@ public class LoadGame {
 
             if (cursor.getInt(2) == 0) {
                 p.setVisibility(View.GONE);
+
             } else {
                 p.setVisibility(View.VISIBLE);
+                p.setStarterPage(true);
+
             }
 
 
@@ -227,7 +230,6 @@ public class LoadGame {
         }
         possessions.setLayoutParams(doc.getLpPossessions());
         doc.addView(possessions);
-        mLayout.addView(doc);
 
     }
 }
