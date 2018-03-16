@@ -415,16 +415,18 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
             case DragEvent.ACTION_DRAG_LOCATION:
                 // Ignore the event
      //           invalidate();
-                if(selectedShape != null) {
-                    int xloc = (int) event.getX() - selectedShape.getWidth() / 2;
-                    int yloc = (int) event.getY() - selectedShape.getHeight() / 2;
+                if(!playMode) {
+                    if (selectedShape != null) {
+                        int xloc = (int) event.getX() - selectedShape.getWidth() / 2;
+                        int yloc = (int) event.getY() - selectedShape.getHeight() / 2;
 
-                    EditText X = ((Activity) getContext()).findViewById(R.id.X_input);
-                    EditText Y = ((Activity) getContext()).findViewById(R.id.Y_input);
-                    X.setText(String.valueOf(xloc));
-                    Y.setText(String.valueOf(yloc));
-                } else{
-                    //hideInspector();
+                        EditText X = ((Activity) getContext()).findViewById(R.id.X_input);
+                        EditText Y = ((Activity) getContext()).findViewById(R.id.Y_input);
+                        X.setText(String.valueOf(xloc));
+                        Y.setText(String.valueOf(yloc));
+                    } else {
+                        //hideInspector();
+                    }
                 }
 
 
@@ -435,7 +437,9 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
 
                 if(selectedShape != null) {
                     selectedShape.setInPossession(true);
-                    hideInspector();
+                    if(!playMode) {
+                        hideInspector();
+                    }
 
                 }
                 return true;
