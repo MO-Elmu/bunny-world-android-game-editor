@@ -737,7 +737,6 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
                                 gameName, shapeName, triggerName, actionName, actionRecipient)
                                 + ";";
                 }
-                System.out.println(addStr);
                 db.execSQL(addStr);
             }
         }
