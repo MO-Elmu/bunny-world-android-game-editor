@@ -73,6 +73,7 @@ public class PlayGameActivity extends AppCompatActivity {
         String trigger, action;
         int dropCount = 0;
         String clickScript = "", enterScript = "", dropScript = "";
+        String onDropShape = "";
         for(int i = 0; i < cursor.getCount(); i++){
             System.out.println(cursor.getInt(0));
             trigger = cursor.getString(2);
@@ -109,6 +110,17 @@ public class PlayGameActivity extends AppCompatActivity {
                 System.out.println("DROP");
                 if( dropCount == 0) {
                     dropScript += cursor.getString(3) + " ";
+                    System.out.println(cursor.getString(3)+ "#5 the on drop trigger");
+                    onDropShape = cursor.getString(3);
+                }
+                if(cursor.getString(3).equals(onDropShape)){
+                    System.out.println("#5 on drop equals the cursor position " + onDropShape + ":"+ cursor.getString(3));
+                } else {
+                    System.out.println("#5 on drop dOES NOT equals the cursor position " + onDropShape +":"+ cursor.getString(3));
+                    dropScript += "; " + cursor.getString(3)+ " ";
+                    onDropShape = cursor.getString(3);
+                    System.out.println("#5 drop script  "+dropScript);
+
                 }
                 if (action.equals("HIDE")){
                     dropScript += "hide " + cursor.getString(5) + " ";
@@ -125,6 +137,8 @@ public class PlayGameActivity extends AppCompatActivity {
             }
             cursor.moveToNext();
         }
+
+        System.out.println("#5 DS: "+dropScript);
 
         shape.setOnClickScript(clickScript);
         shape.setOnEnterScript(enterScript);
