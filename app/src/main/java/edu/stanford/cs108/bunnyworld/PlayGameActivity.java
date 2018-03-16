@@ -287,7 +287,7 @@ public class PlayGameActivity extends AppCompatActivity {
             p.setLayoutParams(doc.getLpPages());
             doc.addView(p, 0);
             if (doc.getParent() != null) {
-                ((ViewGroup) doc.getParent()).removeView(doc);
+                ((ViewGroup)doc.getParent()).removeView(doc);
             }
 
             //mLayout.addView(doc);

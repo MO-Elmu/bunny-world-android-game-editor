@@ -432,7 +432,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                     hideInspector();
                 }
 
-                invalidate();
+                //invalidate();
                 //Check for onDrag events on the page
 
                 return true;
