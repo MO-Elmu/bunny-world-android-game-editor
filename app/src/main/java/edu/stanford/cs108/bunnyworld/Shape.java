@@ -199,8 +199,9 @@ public class Shape{
         //usually has one clause will only handle the first clause from the left.
         StringTokenizer tokenizer = new StringTokenizer(clauses.get(0));
         String key, value;
-        List<String> holder = new ArrayList<String>();
+
         while(tokenizer.hasMoreTokens()){
+            List<String> holder = new ArrayList<String>();
             key = tokenizer.nextToken();
             value = tokenizer.nextToken();
             holder.clear();
