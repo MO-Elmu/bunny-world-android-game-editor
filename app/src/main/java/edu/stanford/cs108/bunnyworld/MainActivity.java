@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
                 +" ('Bunny World', 'shape3', 'CLICK', '', 'GOTO', '','','page1', 1, NULL), ('Bunny World', 'shape6', 'CLICK', '', 'GOTO','','', 'page3', 1, NULL),"
                 +" ('Bunny World', 'shape10', 'CLICK', '', 'GOTO', '','','page4', 1, NULL), ('Bunny World', 'shape11','CLICK', '', 'GOTO','','','page2', 1, NULL),"
                 +" ('Bunny World', 'shape1', 'ENTER', '', 'SHOW', 'shape6', '', '', 1, NULL), ('Bunny World', 'shape7','ENTER','','PLAY', '','fire', '', 1, NULL),"
-                +" ('Bunny World', 'shape12', 'ENTER', '', 'PLAY', '','evillaugh', '', 1, NULL), ('Bunny World', 'shape1', 'CLICK', '', 'PLAY', '','munch', '', 1, NULL),"
+                +" ('Bunny World', 'shape12', 'ENTER', '', 'PLAY', '','evillaugh', '', 1, NULL), ('Bunny World', 'shape1', 'CLICK', '', 'PLAY', '','munch', '', 2, NULL),"
                 +" ('Bunny World', 'shape12', 'DROP', 'shape9', 'PLAY', '','munching', '', 1, NULL), ('Bunny World', 'shape12', 'DROP', 'shape9', 'SHOW', 'shape15', '', '', 1, NULL),"
                 +" ('Bunny World', 'shape12', 'DROP', 'shape9', 'HIDE', 'shape12', '', '' , 1, NULL), ('Bunny World', 'shape12', 'DROP', 'shape9','HIDE', 'shape9','','', 1, NULL),"
                 +" ('Bunny World', 'shape19', 'ENTER','','PLAY','','hooray','', 1, NULL), ('Bunny World', 'shape15', 'CLICK', '', 'GOTO', '','','page5', 1, NULL);";
