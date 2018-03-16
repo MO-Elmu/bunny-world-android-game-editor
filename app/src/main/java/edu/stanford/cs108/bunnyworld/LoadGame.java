@@ -234,6 +234,44 @@ public class LoadGame {
 //                mLayout.addView(p);
                 cursorS.moveToNext();
             }
+
+            //load shapes into possessions
+            String loadPossShapes = "SELECT * from shapes where page_name = 'POSS' and game_name = '"+name+"';";
+            Cursor cursorP = db.rawQuery(loadPossShapes,null);
+            cursorP.moveToFirst();
+            for(int j = 0; j < cursorP.getCount(); j++){
+                if(cursorP.getInt(8) == 0) {
+                    movable = false;
+                } else {
+                    movable = true;
+                }
+                if(cursorP.getInt(7) == 0) {
+                    visible = false;
+                } else {
+                    visible = true;
+                }
+                Shape s = new Shape(cursorP.getInt(9), cursorP.getInt(10), cursorP.getInt(11)
+                        ,cursorP.getInt(12), movable, visible, cursorP.getString(4),context);
+                if (!cursorP.getString(3).equals("")){
+                    s.setText(cursorP.getString(3));
+                    float scaledFontSize = Integer.valueOf(cursorP.getInt(13)) * context.getResources().getDisplayMetrics().scaledDensity;
+                    s.setTxtFontSize((int)scaledFontSize);
+                }
+                s.setName(cursorP.getString(0));
+                s.setPossessable(cursorP.getInt(6));
+                setupShapeScript(s, cursorP.getString(0), name);
+
+                if(!cursorP.getString(1).equals("POSS")) {
+                    System.out.println("shape does not start in possessions");
+                } else {
+                    System.out.println("shape starts in possessions");
+                    s.setInPossession(true);
+                    possessions.addShape(s);
+                    s.setVisible(true);
+                }
+//              mLayout.addView(p);
+                cursorP.moveToNext();
+            }
             //mLayout.removeView(p);
             p.setLayoutParams(doc.getLpPages());
             doc.addView(p, 0);
