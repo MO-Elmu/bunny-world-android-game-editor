@@ -268,7 +268,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                         if(selectedShape != null) {
                             selectedShape.execOnClickScript(getContext(), (ViewGroup) this.getParent(), this);
 
-                            if (selectedShape.imageIdentifier != 0 && selectedShape.getPossessable() == 1 && selectedShape.getImageName().equals("") ) {
+                            if (selectedShape.imageIdentifier != 0 && selectedShape.getPossessable() == 1 && selectedShape.getText().equals("") ) {
                                 DragShadowBuilder shapeShadowBuilder = ImageDragShadowBuilder.fromResource(getContext(), selectedShape.imageIdentifier);
                                 ClipData.Item item1_shapeName = new ClipData.Item(selectedShape.getName());
                                 ClipData.Item item2_imageId = new ClipData.Item(selectedShape.imageName);
@@ -395,10 +395,12 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
         // Handles all the expected events
         switch(action) {
             case DragEvent.ACTION_DRAG_STARTED:
+                //this.isDragging = true;
                 System.out.println("ACTION_DRAG_STARTED In page");
                 if(!playMode) {
                     hideInspector();
                 }
+                //invalidate();
                 //Check for onDrag events on the page
 
                 return true;
