@@ -488,7 +488,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                 System.out.println("ACTION_DROP In page");
                 int currX, currY;
                 currX = (int) event.getX();
-                currY = (int) event.getY();
+                currY = checkY(event.getY());
 
                 if(selectedShape == null) {
                     System.out.println("ACTION_DROP In page, null");
@@ -606,6 +606,19 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                 break;
         }
         return false;
+    }
+
+    public int checkY(float eventY) {
+        int tempY = (int) eventY;
+        if(selectedShape != null) {
+            if(tempY  + selectedShape.getHeight()/2 > this.getBottom()) {
+                tempY -= (selectedShape.getHeight()/2 + 100);
+            }
+            selectedShape.setVisible(true);
+        }
+
+
+        return tempY;
     }
 
 
