@@ -178,7 +178,6 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
     }
 
     public void removeShape (Shape shape) {
-        shapeCounter --;
         shapes.remove(shape);
         selectedShape = null;
     }
@@ -602,6 +601,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
         }
         return false;
     }
+
 
     // change the x, y, width and height for shape inspector based on input shape
     private void ChangeText (Shape shape) {
