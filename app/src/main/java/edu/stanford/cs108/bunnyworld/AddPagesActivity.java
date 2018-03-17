@@ -730,13 +730,6 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
                 saveShapes(shapes, gameName, "POSS", 1);
             }
         }
-
-        // print tables
-        System.out.println(tableToString("games"));
-        System.out.println(tableToString("pages"));
-        System.out.println(tableToString("shapes"));
-        System.out.println(tableToString("scripts"));
-
     }
 
     private void removeGame(String gameName) {
@@ -852,38 +845,6 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
                 break;
         }
     }
-
-    // helper function to print table, shoudl be removed after debugging
-    // https://stackoverflow.com/questions/27003486/printing-all-rows-of-a-sqlite-database-in-android
-    private String tableToString(String tableName) {
-
-        String tableString = String.format("Table %s:\n", tableName);
-
-        Cursor cursor = db.rawQuery("SELECT * FROM " + tableName, null);
-
-        tableString += cursorToString(cursor);
-        return tableString;
-    }
-
-    private String cursorToString(Cursor cursor) {
-        String cursorString = "";
-        if (cursor.moveToFirst() ){
-            String[] columnNames = cursor.getColumnNames();
-            for (String name: columnNames)
-                cursorString += String.format("%s ", name);
-            cursorString += "\n";
-            do {
-                for (String name: columnNames) {
-                    cursorString += String.format("%s  ",
-                            cursor.getString(cursor.getColumnIndex(name)));
-                }
-                cursorString += "\n";
-            } while (cursor.moveToNext());
-        }
-        cursorString += "\n";
-        return cursorString;
-    }
-    // end of helper function to print tables
 
     private boolean checkTableExist(String tableName) {
         String[] queryParameters = {tableName};
