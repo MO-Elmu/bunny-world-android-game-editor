@@ -26,7 +26,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 public class AddPagesActivity extends AppCompatActivity implements AlertDialogFragment.AlertDialogListener, AddShapeDialogFragment.addShapeDialogFragmentListener {
 
@@ -241,6 +243,83 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
     // The dialog fragment receives a reference to this Activity through the
     // Fragment.onAttach() callback, which it uses to call the following methods
     // defined by the AlerDialogFragment.AlertDialogListener interface
+
+    //Helper methods to preserve consistency in all shapes scripts if page name is changed
+    private List<String> tokenizeShapeScripts (String shapeScript){
+        //strip all the semicolon ";" in scripts
+        //String script = shapeScript.replaceAll(";","");
+        List<String> tokens = new ArrayList<>();
+        StringTokenizer tok = new StringTokenizer(shapeScript);
+        while(tok.hasMoreTokens()){
+            tokens.add(tok.nextToken());
+        }
+        return tokens;
+    }
+    private String checkAndReplace(String newPageName, String oldPageName, List<String> list){
+        StringBuilder builder = new StringBuilder();
+        for(int i=0; i<list.size(); i++){
+            if(list.get(i).replaceAll(";","").equals(oldPageName)){
+                if(list.get(i).contains(";")) list.set(i, newPageName+";");
+                else list.set(i, newPageName);
+            }
+        }
+        if (!list.isEmpty()){
+            for(String s : list){
+                builder.append(s+" ");
+            }
+        }
+        String result = builder.toString();
+        return result;
+
+    }
+    private void ensurePageNameConsistency (String newPageName, String oldPageName){
+        if(!newPageName.equals(oldPageName)){
+            if(mLayout != null){
+                for (int j = 0; j < mLayout.getChildCount(); j++) {
+                    if (mLayout.getChildAt(j) instanceof Page) {
+                        for(int i =0; i<((Page) mLayout.getChildAt(j)).shapes.size(); i++){
+                            List<String> tempOnClick = new ArrayList<String>();
+                            List<String> tempOnEnter = new ArrayList<String>();
+                            List<String> tempOnDrop = new ArrayList<String>();
+                            String onClickScript, onEnterScript, onDropScript;
+                            onClickScript = ((Page) mLayout.getChildAt(j)).shapes.get(i).getOnClickScript();
+                            onEnterScript = ((Page) mLayout.getChildAt(j)).shapes.get(i).getOnEnterScript();
+                            onDropScript =  ((Page) mLayout.getChildAt(j)).shapes.get(i).getOnDropScript();
+                            tempOnClick = tokenizeShapeScripts(onClickScript);
+                            tempOnEnter = tokenizeShapeScripts(onEnterScript);
+                            tempOnDrop = tokenizeShapeScripts(onDropScript);
+                            ((Page) mLayout.getChildAt(j)).shapes.get(i).setOnClickScript(checkAndReplace(newPageName, oldPageName,tempOnClick));
+                            ((Page) mLayout.getChildAt(j)).shapes.get(i).setOnEnterScript(checkAndReplace(newPageName, oldPageName,tempOnEnter));
+                            ((Page) mLayout.getChildAt(j)).shapes.get(i).setOnDropScript(checkAndReplace(newPageName, oldPageName,tempOnDrop));
+                        }
+                    }
+                }
+            }
+            if(newGame != null){
+                for (int j = 0; j < newGame.getChildCount(); j++) {
+                    if (newGame.getChildAt(j) instanceof Page) {
+                        for(int i =0; i<((Page) newGame.getChildAt(j)).shapes.size(); i++){
+                            List<String> tempOnClick = new ArrayList<String>();
+                            List<String> tempOnEnter = new ArrayList<String>();
+                            List<String> tempOnDrop = new ArrayList<String>();
+                            String onClickScript, onEnterScript, onDropScript;
+                            onClickScript = ((Page) newGame.getChildAt(j)).shapes.get(i).getOnClickScript();
+                            onEnterScript = ((Page) newGame.getChildAt(j)).shapes.get(i).getOnEnterScript();
+                            onDropScript =  ((Page) newGame.getChildAt(j)).shapes.get(i).getOnDropScript();
+                            tempOnClick = tokenizeShapeScripts(onClickScript);
+                            tempOnEnter = tokenizeShapeScripts(onEnterScript);
+                            tempOnDrop = tokenizeShapeScripts(onDropScript);
+                            ((Page) newGame.getChildAt(j)).shapes.get(i).setOnClickScript(checkAndReplace(newPageName, oldPageName,tempOnClick));
+                            ((Page) newGame.getChildAt(j)).shapes.get(i).setOnEnterScript(checkAndReplace(newPageName, oldPageName,tempOnEnter));
+                            ((Page) newGame.getChildAt(j)).shapes.get(i).setOnDropScript(checkAndReplace(newPageName, oldPageName,tempOnDrop));
+                        }
+                    }
+                }
+            }
+
+        }
+
+    }
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
         isPageCreated = true;
@@ -250,10 +329,13 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         EditText pageName = (EditText)dialogView.findViewById(R.id.page_name);
         CheckBox starterPage = (CheckBox)dialogView.findViewById(R.id.starter_page);
 	if(editingPage){
+        String oldPageName = newPage.getPageName();
     		if(pageName.getText().toString().trim().isEmpty()){
         		newPage.setPageName("page" + (newGame.getChildCount()));
+                ensurePageNameConsistency ( newPage.getPageName(), oldPageName);
     		}else{
         		newPage.setPageName(pageName.getText().toString());
+                ensurePageNameConsistency ( newPage.getPageName(), oldPageName);
     		}
     		adjustStarterPage(starterPage.isChecked());
     		newPage.setStarterPage(starterPage.isChecked());
