@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="edu.stanford.cs108.bunnyworld.Instructions">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity ="center"
+            android:fillViewport="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="0dp"
+            android:id="@+id/scrollView">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:textColor="#000"
+                    android:textColorLink="@android:color/black"
+                    android:textSize="22sp"
+                    android:text="Create Game Instructions: When the App opens you will see a game tile for 'Bunny World' and a plus icon. "/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:paddingRight="10dp"
+                        android:src="@drawable/happybunny"/>
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/plus"/>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:textColor="#000"
+                    android:textColorLink="@android:color/black"
+                    android:textSize="22sp"
+                    android:text="Click on the plus button and then a ‘Create New Game’ button will appear, and click on that to create a new game."/>
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:textColor="#000"
+                    android:textColorLink="@android:color/black"
+                    android:textSize="22sp"
+                    android:text="Enter a game name and choose an icon for your game and select next, which will open the game editor."/>
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:textColor="#000"
+                    android:textColorLink="@android:color/black"
+                    android:textSize="22sp"
+                    android:text="In the game editor, the left most icon will list already saved pages(empty when starting)"/>
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/ic_find_in_page_black_24dpxx"/>
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:textColor="#000"
+                    android:textColorLink="@android:color/black"
+                    android:textSize="22sp"
+                    android:text="The icon directly next to that will add shapes (initially greyed out as there is no page to add a shape to)"/>
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/plus"/>
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:textColor="#000"
+                    android:textColorLink="@android:color/black"
+                    android:textSize="22sp"
+                    android:text="The next icon will add a new page."/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:paddingRight="10dp"
+                        android:src="@drawable/ic_note_add_black_24dp2"/>
+                </LinearLayout>
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:textColor="#000"
+                    android:textColorLink="@android:color/black"
+                    android:textSize="22sp"
+                    android:text="The right most icon is a dropdown with option to save the page, save the game, etc."/>
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:textColor="#000"
+                    android:textColorLink="@android:color/black"
+                    android:textSize="22sp"
+                    android:text="To begin creating a game, select the second from the right button to add a page. Enter a page name (or leave it blank to autofill) and select whether or not this is the starter page, then select ‘Create’.To see what page you are on, double click anywhere on the page and a toast will pop up to let you know!" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
+
+
+
+</android.support.constraint.ConstraintLayout>

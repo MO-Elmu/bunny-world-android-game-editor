@@ -84,11 +84,15 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
             possessions.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1.0f));
             putInEditMode(newGame);
             //mLayout.addView(possessions);
+            LinearLayout inspector = findViewById(R.id.inspector);
+            inspector.setVisibility(View.INVISIBLE);
+            inspector.setVisibility(View.GONE);
             //return;
         }
         mLayout.addView(possessions);
         LinearLayout inspector = findViewById(R.id.inspector);
         inspector.setVisibility(View.INVISIBLE);
+        inspector.setVisibility(View.GONE);
 
     }
 
