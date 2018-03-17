@@ -144,7 +144,7 @@ public class LoadGame {
 
         cursorG.moveToFirst();
         for(int i = 0; i < cursorG.getCount(); i++){
-            doc = new Document(context, cursorG.getString(0), 0, "");
+            doc = new Document(context, cursorG.getString(0), cursorG.getInt(1), "");
 
         }
 
