@@ -74,6 +74,8 @@ public class AddShapeDialogFragment extends DialogFragment implements View.OnCli
         list.add(new SpinnerAdapter.ItemData("mystic",R.drawable.mystic));
         list.add(new SpinnerAdapter.ItemData("easterBunny",R.drawable.easterbunny));
         list.add(new SpinnerAdapter.ItemData("happyBunny",R.drawable.happybunny));
+        list.add(new SpinnerAdapter.ItemData("rightarrow",R.drawable.ic_chevron_right_black_24dpxxx));
+        list.add(new SpinnerAdapter.ItemData("leftarrow",R.drawable.ic_keyboard_arrow_left_black_24dpxx));
         SpinnerAdapter adapter=new SpinnerAdapter(getActivity(),
                 R.layout.spinner_layout,R.id.txt,list);
         imagesSpinner = (Spinner)view.findViewById(R.id.image_spinner);
