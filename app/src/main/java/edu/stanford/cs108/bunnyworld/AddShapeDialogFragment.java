@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -154,7 +155,15 @@ public class AddShapeDialogFragment extends DialogFragment implements View.OnCli
                         shapeOnClickScript.getText().toString(), shapeOnEnterScript.getText().toString(),
                         shapeOnDropScript.getText().toString()};
                 if (mListener != null) {
-                    mListener.onSaveShapeClick(shapeStringValues, checkBoxValues);
+                    System.out.println("#7 "+ validateScript(shapeOnClickScript.getText().toString(),"click", checkBoxValues ));
+                    System.out.println("#7 "+ validateScript(shapeOnEnterScript.getText().toString(),"enter", checkBoxValues ));
+                    System.out.println("#7 "+ validateScript(shapeOnDropScript.getText().toString(),"drop", checkBoxValues ));
+                    if(validateScript(shapeOnClickScript.getText().toString(),"click", checkBoxValues ) &&
+                        validateScript(shapeOnEnterScript.getText().toString(),"enter", checkBoxValues ) &&
+                        validateScript(shapeOnDropScript.getText().toString(),"drop", checkBoxValues )){
+                        mListener.onSaveShapeClick(shapeStringValues, checkBoxValues);
+
+                    }
                 }
                 break;
             case R.id.cancel_shape:
@@ -163,6 +172,105 @@ public class AddShapeDialogFragment extends DialogFragment implements View.OnCli
                 }
                 break;
         }
+    }
+
+    private boolean checkActions(String script, String scriptType){
+        String[] clauses = script.trim().split(";");
+
+        for (int i = 0; i < clauses.length; i++) {
+
+            System.out.println("CLAUSES" + clauses[i]);
+
+            String triggerRecipient = "";
+
+            String[] words = clauses[i].trim().split(" ");
+
+
+            System.out.println("WORDS" + words);
+            int start;
+
+            if (scriptType.equals("drop")) {
+                triggerRecipient = words[0];
+                start = 1;
+            } else {
+                start = 0;
+            }
+
+            int actionCounter = 0;
+            for (int j = start; j < words.length; j += 2) {
+                System.out.println(words[j] + "WORDS");
+                System.out.println(words.length + "WORDS length");
+                System.out.println(scriptType + "type");
+                String actionName = words[j].toUpperCase();
+                try {
+                    String actionRecipient = words[j + 1];
+                } catch (IndexOutOfBoundsException e) {
+                    Toast.makeText(getActivity(),"Your script does not have an action recipient!", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                if (!actionName.equals("SHOW") && !actionName.equals("HIDE") && !actionName.equals("GOTO")
+                        && !actionName.equals("PLAY")) {
+                    Toast.makeText(getActivity(),"Your script does not have the right action word!", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                actionCounter++;
+            }
+        }
+        return true;
+
+    }
+
+    private boolean validateScript(String script, String scriptType, boolean[] checkBox) {
+        if( scriptType.equals("click")) {
+            System.out.println("CCHEC ACTIONS 1");
+            if(checkBox[0]){ //if the on click script is checked, check there is a script there
+                System.out.println("#7 script "+script);
+                if(script.length()<1){
+                    Toast.makeText(getActivity(),"Your on click script has too few words!", Toast.LENGTH_SHORT).show();
+                    return false;
+                } else {
+                    return checkActions(script, scriptType);
+                }
+            } else {
+                if(script.length()>0){
+                    Toast.makeText(getActivity(),"Your on click script is not checked!", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            }
+        } else if( scriptType.equals("enter")) {
+            if(checkBox[1]){ //if the on enter script is checked, check there is a script there
+                System.out.println("#7 script "+script);
+                if(script.length()<1){
+                    Toast.makeText(getActivity(),"Your on enter script has too few words!", Toast.LENGTH_SHORT).show();
+                    return false;
+                } else {
+                    return checkActions(script, scriptType);
+                }
+            } else {
+                if(script.length()>0){
+                    Toast.makeText(getActivity(),"Your on enter script is not checked!", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            }
+        } else if(scriptType.equals("drop")) {
+            if(checkBox[2]){ //if the on drop script is checked, check there is a script there
+                System.out.println("#7 script "+script);
+                if(script.length()<2){
+                    Toast.makeText(getActivity(),"Your on drop script has too few words!", Toast.LENGTH_SHORT).show();
+                    return false;
+                } else {
+                    return checkActions(script, scriptType);
+                }
+            } else { //if box has script, no checkmark
+                if(script.length()>0){
+                    Toast.makeText(getActivity(),"Your on drop script is not checked!", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+        return true;
     }
 
     /**

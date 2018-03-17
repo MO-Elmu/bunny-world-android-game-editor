@@ -128,15 +128,6 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
 
     private void init(AttributeSet attrs, int defStyle) {
         // this.setBackgroundColor(Color.WHITE);  //Page background is white (specs)
-    }
-
-
-    // XT Implemented start
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-
-        //hideInspector();
         if (!playMode) {
             Button updateBtn = ((Activity) getContext()).findViewById(R.id.update_btn);
             updateBtn.setOnClickListener(new UpdateButtonHandlr());
@@ -149,17 +140,26 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
         }
     }
 
+
+    // XT Implemented start
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+
+        //hideInspector();
+
+    }
+
     class AdvancedButtonHandlr implements View.OnClickListener {
         @Override
         public void onClick(View view) {
+            selectedShape = ShapeSingleton.getInstance().getSelectedShape();
             if (selectedShape != null) {
                 ShapeSingleton.getInstance().setSelectedShape(selectedShape);
                 ShapeSingleton.getInstance().setSelectedShapeContainer(shapes);
 
                 AddPagesActivity a = (AddPagesActivity) getContext();
                 a.showAddShapeDialog();
-
-
             }
         }
     }
@@ -167,6 +167,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
     class DeleteButtonHandlr implements View.OnClickListener {
         @Override
         public void onClick(View view) {
+            selectedShape = ShapeSingleton.getInstance().getSelectedShape();
             if (selectedShape != null) {
                 removeShape(selectedShape);
                 ChangeText(selectedShape);
@@ -178,6 +179,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
     }
 
     public void removeShape (Shape shape) {
+        //shapeCounter --;
         shapes.remove(shape);
         selectedShape = null;
     }
@@ -198,7 +200,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
     class UpdateButtonHandlr implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-
+            selectedShape = ShapeSingleton.getInstance().getSelectedShape();
             if (selectedShape != null) {
                 EditText X = ((Activity) getContext()).findViewById(R.id.X_input);
                 EditText Y = ((Activity) getContext()).findViewById(R.id.Y_input);
@@ -229,14 +231,18 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                 x = (int)event.getX();
                 y = (int)event.getY();
 
+
                 selectedShape = null;  //nullify the previously selected shape
+                ShapeSingleton.getInstance().setSelectedShape(null);
+
+
                 if(!shapes.isEmpty()){
                     for (Shape sh : shapes) {
                         if (sh.contains(x,y)) {
                             if(sh.isVisible())selectedShape = sh;  //select last added shape to the page
+                            ShapeSingleton.getInstance().setSelectedShape(selectedShape);
 
-
-                	    }
+                        }
                     }
 
                     if(!playMode) {
