@@ -102,6 +102,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         return true;
     }
     public boolean onOptionsItemSelected(MenuItem item) {
+        hideInspector();
         switch (item.getItemId()) {
             case R.id.created_pages:
                 savedPagesSubMenu.clear();
@@ -983,6 +984,11 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         //Toast toast = Toast.makeText(getApplicationContext(), "Cancel Clicked", Toast.LENGTH_SHORT);
         //toast.show();
         addShapeDialogFragment.dismiss();
+    }
+    private void hideInspector () {
+        LinearLayout inspector = findViewById(R.id.inspector);
+        inspector.setVisibility(View.GONE);
+
     }
 
 }
