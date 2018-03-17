@@ -236,22 +236,39 @@ public class Possessions extends View {
         System.out.println("OG Called organizePossessions");
 //        int posX = Math.round(this.getX());
 //        int posY = Math.round(this.getY());
+        int rows = 0;
         int posX = 10;
         int posY = 10;
         int shapeSize = 100;
         System.out.println("OG " + shapes.size());
         int right = this.getRight();
+        int k = 0;
 
         for (int i = 0; i < shapes.size(); i++) {
             Shape shape = shapes.get(i);
             float aspectRatio = shape.getHeight()/shape.getWidth();
 
             // place single possession in upper corner and resize
+
+            if((posX + shapeSize + ((i-k) * (shapeSize + posX)) >= right)) {
+                System.out.println("OUT OF BOUNDS!");
+                rows++;
+                k = i;
+            }
+
+            shape.setX1(posX + ((i-k) * (shapeSize + posX)));
+            shape.setY1(posY + (rows * (shapeSize * Math.round(aspectRatio) + posY)));
+            shape.setX2(posX + shapeSize + ((i-k) * (shapeSize + posX)));
+            shape.setY2(posY + shapeSize * Math.round(aspectRatio) + (rows * (shapeSize * Math.round(aspectRatio) + posY)));
+
+
+
+/*
+
             if (i == 0) {
 
                 shape.setX1(posX);
                 shape.setY1(posY);
-
                 shape.setX2(posX + shapeSize);
                 shape.setY2(Math.round(posY + shapeSize * aspectRatio));
 
@@ -262,6 +279,7 @@ public class Possessions extends View {
                 shape.setX2(shapes.get(i - 1).getX2() + posX + shapeSize);
                 shape.setY2(Math.round(posY + shapeSize * aspectRatio));
             }
+            */
 
         }
     }
