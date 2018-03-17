@@ -429,9 +429,9 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
     		Toast toast = Toast.makeText(getApplicationContext(), "No page to delete in Layout", Toast.LENGTH_SHORT);
     		toast.show();
     		return;
-	}
+	    }
         mLayout.removeView(newPage);
-        if(mLayout.getChildCount()>1) {
+        if(mLayout.getChildCount() > 2) {
             for (int j = 0; j < mLayout.getChildCount(); j++) {
                 if (mLayout.getChildAt(j) instanceof Page) {
                     mLayout.getChildAt(j).setVisibility(View.VISIBLE);
@@ -534,7 +534,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         //My code to help designer play the game he just finished creating
         // before it goes into the database
         if(gameInflated) return;;
-        if(newGame.getChildCount()< 1){
+        if(newGame.getChildCount()< 2){
             Toast toast = Toast.makeText(getApplicationContext(), "Save at least one Page to play a game", Toast.LENGTH_SHORT);
             toast.show();
             return;
@@ -568,7 +568,7 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
     }
     //saves the current game in the database
     private void saveGame(){
-        if(newGame.getChildCount()< 1){
+        if(newGame.getChildCount()< 2){
             Toast toast = Toast.makeText(getApplicationContext(), "Create at least one Page to save a game", Toast.LENGTH_SHORT);
             toast.show();
             return;
