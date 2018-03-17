@@ -439,7 +439,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
                 System.out.println("ACTION_DRAG_ENTERED In page");
                 if(selectedShape != null) {
                     selectedShape.setInPossession(false);
-
+                    selectedShape.setOnBorder(false);
                 }
                 return true;
 
@@ -476,7 +476,7 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
 
                 if(selectedShape != null) {
                     selectedShape.setInPossession(true);
-
+                    selectedShape.setOnBorder(true);
 //                    if( !playMode) {
 //                        possessionMode = true;
 //                        hideInspector();

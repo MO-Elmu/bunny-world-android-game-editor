@@ -56,6 +56,7 @@ public class Shape{
     private Paint hiddenImagePaint;
     private int txtFontSize = 50;   //initial value font must be settable according to spec
     private final int fillColor = Color.GRAY;
+    private boolean isOnBorder = false;
 
     //container for the onDrop shapes
     List<String> onDropShapes = new ArrayList<>();
@@ -600,6 +601,14 @@ public class Shape{
     public void setWidth(int width) {
         this.width = width;
         this.x2 = x1 + width;
+    }
+
+    public boolean isOnBorder() {
+        return isOnBorder;
+    }
+
+    public void setOnBorder(boolean onBorder) {
+        isOnBorder = onBorder;
     }
 
     public void setHeight(int height) {
