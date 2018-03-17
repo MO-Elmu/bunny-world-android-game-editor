@@ -128,6 +128,16 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
 
     private void init(AttributeSet attrs, int defStyle) {
         // this.setBackgroundColor(Color.WHITE);  //Page background is white (specs)
+
+    }
+
+
+    // XT Implemented start
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+
+        //hideInspector();
         if (!playMode) {
             Button updateBtn = ((Activity) getContext()).findViewById(R.id.update_btn);
             updateBtn.setOnClickListener(new UpdateButtonHandlr());
@@ -138,15 +148,6 @@ public class Page extends View implements AddShapeDialogFragment.addShapeDialogF
             Button advancedBtn = ((Activity) getContext()).findViewById(R.id.advanced_btn);
             advancedBtn.setOnClickListener(new AdvancedButtonHandlr());
         }
-    }
-
-
-    // XT Implemented start
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-
-        //hideInspector();
 
     }
 
