@@ -139,6 +139,15 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /** Reacts to Instructions Button and takes
+     * the view to a new Activity to be able
+     * to play Games stored in the database.
+     * @param view
+     */
+    public void showInstructions(View view){
+        Intent intent = new Intent(this, InstructionsActivity.class);
+        startActivity(intent);
+    }
     /**
      -     * This method is used to add setup the database.
      -     */
