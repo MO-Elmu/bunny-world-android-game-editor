@@ -84,9 +84,9 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
             possessions.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1.0f));
             putInEditMode(newGame);
             //mLayout.addView(possessions);
-            LinearLayout inspector = findViewById(R.id.inspector);
-            inspector.setVisibility(View.INVISIBLE);
-            inspector.setVisibility(View.GONE);
+            //LinearLayout inspector = findViewById(R.id.inspector);
+            //inspector.setVisibility(View.INVISIBLE);
+            //inspector.setVisibility(View.GONE);
             //return;
         }
         mLayout.addView(possessions);
@@ -629,8 +629,14 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         mLayout.removeView(possessions);
         possessions.setLayoutParams(newGame.getLpPossessions());
         newGame.addView(possessions);
+        for (int i = 0; i < newGame.getChildCount(); i++) {
+            if (newGame.getChildAt(i) instanceof Page) {
+                (newGame.getChildAt(i)).setLayoutParams(newGame.getLpPages());
+            }
+        }
         putInPlayMode(newGame);
         organizeGamePages(newGame);
+        saveGameInDataBase(newGame);
         mLayout.addView(newGame, 0);
         gameInflated = true;
         invalidateOptionsMenu();
@@ -640,11 +646,29 @@ public class AddPagesActivity extends AppCompatActivity implements AlertDialogFr
         // can continue editing before it goes into the database
         if(!gameInflated) return;
         mLayout.removeView(newGame);
+        LoadGame lga = new LoadGame();
+        db = openOrCreateDatabase("BunnyDB",MODE_PRIVATE,null);
+        lga.setupGame(gameName, this, db);
+        //newGame = null;
+        newGame = lga.getDoc();
+        if(newGame.getChildCount()>0){
+            for(int i=0; i< newGame.getChildCount(); i++){
+                if (newGame.getChildAt(i) instanceof Possessions) {
+                    possessions = (Possessions) newGame.getChildAt(i);
+                    newGame.removeView(possessions);
+                }
+            }
+        }
+        possessions.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1.0f));
+        //putInEditMode(newGame);
         organizeGamePages(newGame);
         putInEditMode(newGame);
-        newGame.removeView(possessions);
-        possessions.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1.0f));
+        //newGame.removeView(possessions);
+        //possessions.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1.0f));
         mLayout.addView(possessions);
+        LinearLayout inspector = findViewById(R.id.inspector);
+        inspector.setVisibility(View.INVISIBLE);
+        inspector.setVisibility(View.GONE);
         for (int i = 0; i < newGame.getChildCount(); i++) {
             if (newGame.getChildAt(i) instanceof Page) {
                 (newGame.getChildAt(i)).setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 4.0f));
