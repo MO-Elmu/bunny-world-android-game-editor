@@ -23,3 +23,13 @@ Every shape has a block of "script" text which programs how the shape behaves du
 Just below the current the page there is a visually separate "possessions" area. As the player moves from page to page, the possessions area stays constant, and the shapes in it just sit there. During play, the possessions area enables the player to carry objects from one page to another. 
 ##### 5)Resources
 The game document will use image and sound resources. Preload your Bunny World editor with images and sounds. The user adds the resources to the document by selecting them from your catalog of images and sounds.
+
+### App Snapshots
+
+![bunnyworld2](https://user-images.githubusercontent.com/20994167/37756179-cabf8f0a-2d65-11e8-9dc6-a525af43047e.PNG)
+
+![bunnyworld4](https://user-images.githubusercontent.com/20994167/37756201-d8baccd2-2d65-11e8-9a16-28a4cefe5d17.PNG)
+
+![bunnyworld5](https://user-images.githubusercontent.com/20994167/37756211-df058fc8-2d65-11e8-8103-9e1b59cab027.PNG)
+
+![bunnyworld6](https://user-images.githubusercontent.com/20994167/37756219-e29aa9ac-2d65-11e8-9bd0-f33c64a1fc4f.PNG)
